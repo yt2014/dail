@@ -17,7 +17,7 @@
    <widget class="QLabel" name="label_Title">
     <property name="geometry">
      <rect>
-      <x>0</x>
+      <x>10</x>
       <y>0</y>
       <width>311</width>
       <height>41</height>
@@ -27,6 +27,32 @@
      <string>牛b拨号</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pBtn_Contactors">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>201</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>联系人</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pBtn_Dail">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>40</y>
+      <width>221</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>拨 号</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -34,7 +60,7 @@
      <x>0</x>
      <y>0</y>
      <width>517</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -43,7 +69,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>

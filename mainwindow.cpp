@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setAutoFillBackground(true);
     this->setFixedSize(541,557);
 
-    //this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint);
     this->setWindowOpacity(1);
 
     QTextCodec *codec = QTextCodec::codecForName("GBK");
@@ -39,12 +39,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QToolButton *tBtn_Contractors = new QToolButton;
     tBtn_Contractors->setText(QStringLiteral("联系人"));
     QToolButton *tBtn_Dail = new QToolButton;
-   tBtn_Dail->setText(QStringLiteral("拨  号"));
+    tBtn_Dail->setText(QStringLiteral("拨  号"));
 
     ui->mainToolBar->addWidget(tBtn_Contractors);
     ui->mainToolBar->addWidget(tBtn_Dail);
 
     ui->mainToolBar->hide();
+    this->ui->pBtn_Contactors->setFlat(1);
+    this->ui->pBtn_Dail->setFlat(1);
 
 }
 
