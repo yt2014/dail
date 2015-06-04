@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>517</width>
-    <height>313</height>
+    <height>522</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>万能电话</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QLabel" name="label_Title">
@@ -30,7 +30,7 @@
    <widget class="QPushButton" name="pBtn_Contactors">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>60</x>
       <y>40</y>
       <width>201</width>
       <height>41</height>
@@ -43,14 +43,112 @@
    <widget class="QPushButton" name="pBtn_Dail">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>260</x>
       <y>40</y>
       <width>221</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
-     <string>拨 号</string>
+     <string>通话记录</string>
+    </property>
+   </widget>
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>130</y>
+      <width>421</width>
+      <height>361</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="tabContactors">
+     <attribute name="title">
+      <string>联系人</string>
+     </attribute>
+     <widget class="QListWidget" name="listWidget">
+      <property name="geometry">
+       <rect>
+        <x>-10</x>
+        <y>0</y>
+        <width>261</width>
+        <height>341</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pBtn_Dailout">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>30</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>拨号</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pBtn_Edit">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>120</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>编辑</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tabRecord">
+     <attribute name="title">
+      <string>通话记录</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tabRingup">
+     <attribute name="title">
+      <string>来电</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tabDailout">
+     <attribute name="title">
+      <string>拨号</string>
+     </attribute>
+    </widget>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>100</y>
+      <width>421</width>
+      <height>61</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_indications">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>10</y>
+      <width>311</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
     </property>
    </widget>
   </widget>
@@ -60,7 +158,7 @@
      <x>0</x>
      <y>0</y>
      <width>517</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
