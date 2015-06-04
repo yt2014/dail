@@ -3,6 +3,9 @@
 
 #include <QToolButton>
 #include <QTextCodec>
+#include <QVBoxLayout>
+
+#include "QPushButtonExit.h"
 
 #pragma warning(disable: 4819)
 
@@ -46,7 +49,22 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->mainToolBar->hide();
     this->ui->pBtn_Contactors->setFlat(1);
+    this->ui->pBtn_Contactors->setMouseTracking(true);
     this->ui->pBtn_Dail->setFlat(1);
+
+    this->ui->pBtn_Contactors->hide();
+    this->ui->pBtn_Dail->hide();
+
+    QPushButtonExit * BtnExit = new QPushButtonExit();
+   // this->ui->mainToolBar->addWidget(BtnExit);
+   BtnExit->setText("eixt test");
+      BtnExit->setGeometry(20,10,260,40);
+      QWidget *qw=new QWidget(this);
+      qw->setGeometry(40,50,200,90);
+      QVBoxLayout *qb=new QVBoxLayout(qw);
+      qb->addWidget(BtnExit);
+      this->setCentralWidget(qw);
+      qw->setLayout(qb);
 
 }
 
