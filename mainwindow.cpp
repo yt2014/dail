@@ -4,6 +4,8 @@
 #include <QToolButton>
 #include <QTextCodec>
 #include <QSqlDatabase>
+#include <QCloseEvent>
+#include <QTimer>
 
 #pragma warning(disable: 4819)
 
@@ -28,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setAutoFillBackground(true);
     this->setFixedSize(541,557);
 
-    this->setWindowFlags(Qt::FramelessWindowHint);
+   // this->setWindowFlags(Qt::FramelessWindowHint);
     this->setWindowOpacity(1);
  //   this->setWindowFlags(Qt::WindowMinimizeButtonHint);
 
@@ -90,20 +92,59 @@ MainWindow::MainWindow(QWidget *parent) :
      minButton->setStyleSheet("background-color:transparent;");
      closeButton->setStyleSheet("background-color:transparent;");
 
+     ui->tabWidget->setCurrentIndex(0);
+     mSystemTrayIcon = new QSystemTrayIcon(this);
+     QIcon icon("tele.ico");
 
+      mSystemTrayIcon->setIcon(icon);
 
+      connect(mSystemTrayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(ReShowFromTray(QSystemTrayIcon::ActivationReason)));
 }
+
+/*void MainWindow::showMe(){
+    show();
+    setWindowState(Qt::WindowNoState);
+}
+*/
+void MainWindow::ReShowFromTray(QSystemTrayIcon::ActivationReason reason)
+{
+    this->show();
+    setWindowState(Qt::WindowNoState);
+}
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete mSystemTrayIcon;
+}
+
+//关闭到托盘---------
+void MainWindow::closeEvent(QCloseEvent *e)
+{
+    e->ignore();
+    this->hide();
+}
+
+
+//最小化到托盘----
+void MainWindow::changeEvent(QEvent *e)
+{
+    if(e->type()==QEvent::WindowStateChange){
+            if(windowState() & Qt::WindowMinimized){
+               QTimer::singleShot(0, this, SLOT(hide()));
+
+               mSystemTrayIcon->show();
+            }
+        QMainWindow::changeEvent(e);
+    }
 }
 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
     QString strDisplay = QString::number(index) + "is selected";
 
-    ui->label_ForDebug->setText(strDisplay);
+    ui->label_indications->setText(strDisplay);
 
     switch(index)
     {
