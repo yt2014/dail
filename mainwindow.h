@@ -17,8 +17,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    virtual void MainWindow::closeEvent(QCloseEvent *e);
-    virtual void MainWindow::changeEvent(QEvent *e);
+    virtual void closeEvent(QCloseEvent *e);
+    virtual void changeEvent(QEvent *e);
 
 private slots:
     void on_tabWidget_currentChanged(int index);
