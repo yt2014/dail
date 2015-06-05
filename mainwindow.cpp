@@ -121,6 +121,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete mSystemTrayIcon;
+    delete m_ContactorTable;
 }
 
 //关闭到托盘---------
@@ -159,7 +160,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
           for(int i=0;i<num_ToAdd;i++)
           {
-              ContactorInfo oneRecord = m_ContactorInfoList.takeAt(i);
+              ContactorInfo oneRecord = m_ContactorInfoList.at(i);
               QString str_ToAdd = oneRecord.name +  oneRecord.telenum;
               itemToAdd = new QListWidgetItem(str_ToAdd);
 

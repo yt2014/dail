@@ -24,7 +24,7 @@ typedef QList<ContactorInfo> ContactorInfoList;
 class CContactorsTable:CDatabaseTable
 {
 public:
-    CContactorsTable(QString DatabaseAlias = "Dail",QString TableName = "contractors");
+    CContactorsTable(QString DatabaseAlias = "Dail",QString TableName = "contactors");
     virtual ~CContactorsTable();
     void setDatabaseAlias(QString DatabaseAlias);
     void setTableName(QString TableName);
