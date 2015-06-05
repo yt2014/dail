@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QSystemTrayIcon>
+#include "CContatorsTable.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,7 +26,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QSystemTrayIcon * mSystemTrayIcon;
+    QSystemTrayIcon * mSystemTrayIcon;    
+    ContactorInfoList m_ContactorInfoList;
+    CContactorsTable * m_ContactorTable;
 };
 
 #endif // MAINWINDOW_H

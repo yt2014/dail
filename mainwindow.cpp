@@ -68,6 +68,10 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->label_indications->setText("can't open database!");
     }
 
+    m_ContactorTable = new CContactorsTable();
+
+    m_ContactorInfoList = m_ContactorTable->getListAllFromDatabase();
+
     int width = this->width();//获取界面的宽度
 
      //构建最小化、最大化、关闭按钮
@@ -92,7 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
      minButton->setStyleSheet("background-color:transparent;");
      closeButton->setStyleSheet("background-color:transparent;");
 
-     ui->tabWidget->setCurrentIndex(0);
+     ui->tabWidget->currentChanged(0);
      mSystemTrayIcon = new QSystemTrayIcon(this);
      QIcon icon("tele.ico");
 
@@ -122,8 +126,8 @@ MainWindow::~MainWindow()
 //关闭到托盘---------
 void MainWindow::closeEvent(QCloseEvent *e)
 {
-    e->ignore();
-    this->hide();
+//    e->ignore();
+//    this->hide();
 }
 
 
@@ -150,6 +154,18 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     {
     case 0:
     {
+          int num_ToAdd = m_ContactorInfoList.count();
+          QListWidgetItem * itemToAdd;
+
+          for(int i=0;i<num_ToAdd;i++)
+          {
+              ContactorInfo oneRecord = m_ContactorInfoList.takeAt(i);
+              QString str_ToAdd = oneRecord.name +  oneRecord.telenum;
+              itemToAdd = new QListWidgetItem(str_ToAdd);
+
+              ui->listWidget->insertItem(0,itemToAdd);
+          }
+
 
     }
         break;
