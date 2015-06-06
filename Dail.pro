@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-06-02T07:35:41
+# Project created by QtCreator 2015-06-07T06:00:00
 #
 #-------------------------------------------------
 
@@ -9,7 +9,7 @@ QT += sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Dail
+TARGET = dail
 TEMPLATE = app
 
 
@@ -18,8 +18,6 @@ SOURCES += main.cpp\
     CContactorsTable.cpp \
     DatabaseTable.cpp
 
-HEADERS  += mainwindow.h \
-    CContatorsTable.h \
-    DatabaseTable.h
+HEADERS  += mainwindow.h
 
 FORMS    += mainwindow.ui

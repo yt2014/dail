@@ -23,6 +23,8 @@ public:
 private slots:
     void on_tabWidget_currentChanged(int index);
     void ReShowFromTray(QSystemTrayIcon::ActivationReason reason);
+    void setWindowMin();
+    void closeWindow();
 
 private:
     Ui::MainWindow *ui;

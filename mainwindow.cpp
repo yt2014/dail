@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setPalette(palette);
     this->setAutoFillBackground(true);
     this->setFixedSize(541,557);
+    this->setBaseSize(541,557);
 
    // this->setWindowFlags(Qt::FramelessWindowHint);
     this->setWindowOpacity(1);
@@ -96,6 +97,11 @@ MainWindow::MainWindow(QWidget *parent) :
      minButton->setStyleSheet("background-color:transparent;");
      closeButton->setStyleSheet("background-color:transparent;");
 
+     connect(closeButton, SIGNAL(clicked()), this, SLOT(closeWindow()) );
+     connect(minButton, SIGNAL(clicked()), this, SLOT(setWindowMin()));
+    // connect(maxButton, SIGNAL(clicked()), this, SLOT(winmax()));
+
+
      ui->tabWidget->currentChanged(0);
      mSystemTrayIcon = new QSystemTrayIcon(this);
      QIcon icon("tele.ico");
@@ -110,6 +116,16 @@ MainWindow::MainWindow(QWidget *parent) :
     setWindowState(Qt::WindowNoState);
 }
 */
+void MainWindow::setWindowMin()
+{
+    this->showMinimized();
+}
+
+void MainWindow::closeWindow()
+{
+  this->close();
+}
+
 void MainWindow::ReShowFromTray(QSystemTrayIcon::ActivationReason reason)
 {
     this->show();
