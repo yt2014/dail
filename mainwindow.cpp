@@ -28,8 +28,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setFont(font);
     this->setPalette(palette);
     this->setAutoFillBackground(true);
-    this->setFixedSize(541,557);
-    this->setBaseSize(541,557);
+    //this->setFixedSize(541,557);
+    //this->setBaseSize(541,557);
+    this->resize( QSize( 541, 557 ));
 
    // this->setWindowFlags(Qt::FramelessWindowHint);
     this->setWindowOpacity(1);
@@ -94,8 +95,8 @@ MainWindow::MainWindow(QWidget *parent) :
      minButton->setToolTip(tr("最小化"));
      closeButton->setToolTip(tr("关闭"));
      //设置最小化、关闭按钮的样式
-     minButton->setStyleSheet("background-color:transparent;");
-     closeButton->setStyleSheet("background-color:transparent;");
+     minButton->setStyleSheet("background-color:grey;");
+     closeButton->setStyleSheet("background-color:red;");
 
      connect(closeButton, SIGNAL(clicked()), this, SLOT(closeWindow()) );
      connect(minButton, SIGNAL(clicked()), this, SLOT(setWindowMin()));
@@ -118,11 +119,13 @@ MainWindow::MainWindow(QWidget *parent) :
 */
 void MainWindow::setWindowMin()
 {
+    ui->label_indications->setText("min button clicked");
     this->showMinimized();
 }
 
 void MainWindow::closeWindow()
 {
+  ui->label_indications->setText("close button clicked");
   this->close();
 }
 
@@ -197,4 +200,20 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
 
     }
+}
+
+void MainWindow::on_pBtn_Dailout_clicked()
+{
+    ui->label_indications->setText("拨号中。。。");
+}
+
+void MainWindow::on_pBtn_Contactors_clicked()
+{
+    ui->tabWidget->currentChanged(0);
+}
+
+
+void MainWindow::on_pBtn_Dail_clicked()
+{
+    ui->tabWidget->currentChanged(1);
 }

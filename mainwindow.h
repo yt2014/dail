@@ -26,6 +26,12 @@ private slots:
     void setWindowMin();
     void closeWindow();
 
+    void on_pBtn_Dailout_clicked();
+
+    void on_pBtn_Contactors_clicked();
+
+    void on_pBtn_Dail_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon * mSystemTrayIcon;    
