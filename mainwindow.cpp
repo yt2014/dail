@@ -252,7 +252,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
                                                                <<oneFullRecord.startTime.toString()
                                                                <<oneFullRecord.callDuration
                                                                <<oneFullRecord.isCallIn
-                                                               <<oneFullRecord.ringTimes;
+                                                               <<oneFullRecord.ringTimes
                                                                <<oneFullRecord.isCallConnected;
                             ItemToAdd = new QTreeWidgetItem(strList);
                             m_CommRecordTree->addTopLevelItem(ItemToAdd);
@@ -262,17 +262,13 @@ void MainWindow::on_tabWidget_currentChanged(int index)
                             QStringList strList = QStringList()<<oneFullRecord.startTime.toString()
                                                                <<oneFullRecord.callDuration
                                                                <<oneFullRecord.isCallIn
-                                                               <<oneFullRecord.ringTimes;
+                                                               <<oneFullRecord.ringTimes
                                                                <<oneFullRecord.isCallConnected;
                             ItemToAdd->addChild(new QTreeWidgetItem(strList));
                         }
                     }
-
-
-                    itemToAdd = new QListWidgetItem(str_ToAdd);
-                    ui->listWidget->insertItem(0,itemToAdd);
                }
-              NeedDisplay_ContactorsInfoAll = false;
+              NeedDisplay_CommRecordInfoAll = false;
            }
 
         }
