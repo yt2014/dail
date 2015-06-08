@@ -1,18 +1,18 @@
-﻿#include "CContatorsTable.h"
+#include "CommRecordTable.h"
 
 
-CContactorsTable::CContactorsTable(QString DatabaseAlias,QString TableName)
+CCommRecordTable::CCommRecordTable(QString DatabaseAlias,QString TableName)
 {
     m_DatabaseAlias = DatabaseAlias;
     m_TableName = TableName;
-    m_ContactorInfoList = ContactorInfoList();
+    m_CommRecordInfoList = CommRecordInfoList();
 }
 
-CContactorsTable::~CContactorsTable()
+CCommRecordTable::~CCommRecordTable()
 {
-    if(m_ContactorInfoList.count()!=0)
+    if(m_CommRecordInfoList.count()!=0)
     {
-       m_ContactorInfoList.clear();
+       m_CommRecordInfoList.clear();
     }
 
     if(db.isOpen())
@@ -21,21 +21,21 @@ CContactorsTable::~CContactorsTable()
     }
 }
 
-void CContactorsTable::setDatabaseAlias(QString DatabaseAlias)
+void CCommRecordTable::setDatabaseAlias(QString DatabaseAlias)
 {
      m_DatabaseAlias = DatabaseAlias;
 }
 
-void CContactorsTable::setTableName(QString TableName)
+void CCommRecordTable::setTableName(QString TableName)
 {
     m_TableName = TableName;
 }
 
-ContactorInfoList CContactorsTable::getListAllFromDatabase()
+CommRecordInfoList CCommRecordTable::getListAllFromDatabase()
 {
-    if(m_ContactorInfoList.count()!=0)
+    if(m_CommRecordInfoList.count()!=0)
     {
-         m_ContactorInfoList.clear();
+         m_CommRecordInfoList.clear();
     }
     if(openDatabase())
     {
@@ -46,31 +46,39 @@ ContactorInfoList CContactorsTable::getListAllFromDatabase()
         {
                QSqlRecord columns = query.record();
 
-               int index_Name = columns.indexOf("name");
                int index_telenum = columns.indexOf("telenumber");
+               int index_startTime = columns.indexOf("startTime");
+               int index_duration = columns.indexOf("duration");
+               int index_CallIn   = columns.indexOf("come_go");
+               int index_CallConnected = columns.indexOf("dail_on");
+               int index_RingTimes = columns.indexOf("ring_times");
 
                while(query.next())
                {
-                   ContactorInfo oneinfo;
-                   oneinfo.name = query.value(index_Name).toString();
+                   CommRecordInfo oneinfo;
                    oneinfo.telenum = query.value(index_telenum).toString();
+                   oneinfo.startTime = query.value(index_startTime).toDateTime();
+                   oneinfo.callDuration = query.value(index_duration).toInt();
+                   oneinfo.isCallIn = query.value(index_CallIn).toBool();
+                   oneinfo.isCallConnected = query.value(index_CallConnected).toBool();
+                   oneinfo.ringTimes = query.value(index_RingTimes).toInt();
 
-                   m_ContactorInfoList.append(oneinfo);
+                   m_CommRecordInfoList.append(oneinfo);
 
                }
         }
-        return m_ContactorInfoList;
+        return m_CommRecordInfoList;
     }
     else
     {
       //  QMessageBox::warning(this,QObject::tr("warning"),QObject::tr("can't open database!"),QMessageBox::Ok);
         qDebug()<<"can't open database!";
-        return m_ContactorInfoList;
+        return m_CommRecordInfoList;
     }
 }
 
 
-bool CContactorsTable::openDatabase()
+bool CCommRecordTable::openDatabase()
 {
     db = QSqlDatabase::database(m_DatabaseAlias,true);
 
@@ -84,15 +92,15 @@ bool CContactorsTable::openDatabase()
     }
 }
 
-int CContactorsTable::isUserNameExist(ContactorInfo RecordToStore)
+int CCommRecordTable::isUserNameExist(CommRecordInfo RecordToStore)
 {
     QString strToFind =  RecordToStore.name;
 
-    int num_records = m_ContactorInfoList.count();
+    int num_records = m_CommRecordInfoList.count();
     int i=0;
     for(i=0;i<num_records;i++)
     {
-        if(m_ContactorInfoList.at(i).name == strToFind)
+        if(m_CommRecordInfoList.at(i).name == strToFind)
             break;
     }
     if(i<num_records)
@@ -106,33 +114,7 @@ int CContactorsTable::isUserNameExist(ContactorInfo RecordToStore)
 
 }
 
-int CContactorsTable::isTeleNumExit(ContactorInfo oneRecord)
-{
-    int retVal = -1;
-    QString strToFind =  oneRecord.telenum;
-
-    int num_records = m_ContactorInfoList.count();
-    int i=0;
-    for(i=0;i<num_records;i++)
-    {
-        if(m_ContactorInfoList.at(i).telenum == strToFind)
-            break;
-    }
-    if(i<num_records)
-    {
-        retVal = i;
-    }
-    else
-    {
-        retVal = -1;
-    }
-    return retVal;
-
-}
-
-
-
-Operation_Result CContactorsTable::addOneRecord(ContactorInfo RecordToStore)
+Operation_Result CCommRecordTable::addOneRecord(CommRecordInfo RecordToStore)
 {
     Operation_Result value_ret = AddFailed;
 
@@ -152,13 +134,13 @@ Operation_Result CContactorsTable::addOneRecord(ContactorInfo RecordToStore)
          {
              QSqlQuery query(db);
 
-             QString strSQL = "insert into " + m_TableName + " (UserName,password,permission) values (\'"
+             QString strSQL = "insert into " + m_TableName + " (,password,permission) values (\'"
                                                               + RecordToStore.name + "\',\'"
                                                               + RecordToStore.telenum + "\')";
             if(query.exec(strSQL))
             {
                 value_ret = AddSuccess;
-                m_ContactorInfoList.append(RecordToStore);
+                m_CommRecordInfoList.append(RecordToStore);
             }
             else
             {
@@ -172,7 +154,7 @@ Operation_Result CContactorsTable::addOneRecord(ContactorInfo RecordToStore)
 return value_ret;
 
 }
-Operation_Result CContactorsTable::UpdateOneRecord(ContactorInfo RecordToUpdate)
+Operation_Result CCommRecordTable::UpdateOneRecord(CommRecordInfo RecordToUpdate)
 {
     Operation_Result value_ret = UpdateFailed;
 
@@ -199,8 +181,8 @@ Operation_Result CContactorsTable::UpdateOneRecord(ContactorInfo RecordToUpdate)
            if(query.exec(strSQL))
            {
                value_ret = UpdateSuccess;
-               m_ContactorInfoList.removeAt(index_to_update);
-               m_ContactorInfoList.insert(index_to_update,RecordToUpdate);
+               m_CommRecordInfoList.removeAt(index_to_update);
+               m_CommRecordInfoList.insert(index_to_update,RecordToUpdate);
            }
            else
            {
@@ -213,7 +195,7 @@ Operation_Result CContactorsTable::UpdateOneRecord(ContactorInfo RecordToUpdate)
 
     return value_ret;
 }
-Operation_Result CContactorsTable::DeleteOneRecord(ContactorInfo RecordToDelete)
+Operation_Result CCommRecordTable::DeleteOneRecord(CommRecordInfo RecordToDelete)
 {
     Operation_Result value_ret = DeleteFailed;
 
@@ -239,7 +221,7 @@ Operation_Result CContactorsTable::DeleteOneRecord(ContactorInfo RecordToDelete)
            if(query.exec(strSQL))
            {
                value_ret = DeleteSuccess;
-               m_ContactorInfoList.removeAt(index_to_delete);
+               m_CommRecordInfoList.removeAt(index_to_delete);
            }
            else
            {

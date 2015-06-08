@@ -37,6 +37,8 @@ private:
     QSystemTrayIcon * mSystemTrayIcon;    
     ContactorInfoList m_ContactorInfoList;
     CContactorsTable * m_ContactorTable;
+    bool NeedRead_ContactorsInfoAll;
+    bool NeedDisplay_ContactorsInfoAll;
 };
 
 #endif // MAINWINDOW_H

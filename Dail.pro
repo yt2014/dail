@@ -16,11 +16,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     CContactorsTable.cpp \
-    DatabaseTable.cpp
+    DatabaseTable.cpp \
+    CommRecordTable.cpp
 
 HEADERS  += mainwindow.h \
     CContatorsTable.h \
-    DatabaseTable.h
+    DatabaseTable.h \
+    CommRecordTable.h
 
 FORMS    += mainwindow.ui
 

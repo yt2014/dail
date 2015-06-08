@@ -73,7 +73,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ContactorTable = new CContactorsTable();
 
     m_ContactorInfoList = m_ContactorTable->getListAllFromDatabase();
-
+    NeedRead_ContactorsInfoAll = false;
+    NeedDisplay_ContactorsInfoAll = true;
     int width = this->width();//获取界面的宽度
 
      //构建最小化、最大化、关闭按钮
@@ -175,22 +176,32 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
     ui->label_indications->setText(strDisplay);
 
+
+
     switch(index)
     {
     case 0:
     {
-          int num_ToAdd = m_ContactorInfoList.count();
-          QListWidgetItem * itemToAdd;
-
-          for(int i=0;i<num_ToAdd;i++)
+          if(NeedRead_ContactorsInfoAll == true)
           {
-              ContactorInfo oneRecord = m_ContactorInfoList.at(i);
-              QString str_ToAdd = oneRecord.name +  oneRecord.telenum;
-              itemToAdd = new QListWidgetItem(str_ToAdd);
-
-              ui->listWidget->insertItem(0,itemToAdd);
+              m_ContactorInfoList = m_ContactorTable->getListAllFromDatabase();
+              NeedRead_ContactorsInfoAll = false;
           }
+          if(NeedDisplay_ContactorsInfoAll)
+          {
+               int num_ToAdd = m_ContactorInfoList.count();
+               QListWidgetItem * itemToAdd;
 
+               for(int i=0;i<num_ToAdd;i++)
+               {
+                    ContactorInfo oneRecord = m_ContactorInfoList.at(i);
+                    QString str_ToAdd = oneRecord.name +  oneRecord.telenum;
+                    itemToAdd = new QListWidgetItem(str_ToAdd);
+
+                     ui->listWidget->insertItem(0,itemToAdd);
+               }
+               NeedDisplay_ContactorsInfoAll = false;
+          }
 
     }
         break;
