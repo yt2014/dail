@@ -1,4 +1,4 @@
-#ifndef COMMRECORDTABLE_H
+﻿#ifndef COMMRECORDTABLE_H
 #define COMMRECORDTABLE_H
 
 #include "DatabaseTable.h"
@@ -23,8 +23,15 @@ typedef struct
     int ringTimes;
 }CommRecordInfo;
 
-typedef QList<CommRecordInfo> CommRecordInfoList;
+typedef struct
+{
+    QString telenum;
+    QDateTime startTime;
+}CommRecordTopInfo;
 
+
+typedef QList<CommRecordInfo> CommRecordInfoList;
+typedef QList<CommRecordTopInfo> CommRecordTopList;
 
 class CCommRecordTable:CDatabaseTable
 {
@@ -34,6 +41,8 @@ public:
     void setDatabaseAlias(QString DatabaseAlias);
     void setTableName(QString TableName);
     CommRecordInfoList getListAllFromDatabase();
+    CommRecordInfoList getListBySql(QString strSql);
+    CommRecordTopList getListTop();
     int isUserNameExist(ContactorInfo RecordToStore);//if not exist, return value set to -1, else return value set to the index.
     bool openDatabase();
     Operation_Result addOneRecord(CommRecordInfo RecordToStore);

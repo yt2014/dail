@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include <QSystemTrayIcon>
 #include "CContatorsTable.h"
+#include "CommRecordTable.h"
+#include <QTreeWidget>
+
 
 namespace Ui {
 class MainWindow;
@@ -35,10 +38,22 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon * mSystemTrayIcon;    
+
+    /*for contactors table below values*/
     ContactorInfoList m_ContactorInfoList;
     CContactorsTable * m_ContactorTable;
     bool NeedRead_ContactorsInfoAll;
     bool NeedDisplay_ContactorsInfoAll;
+
+    /*for communication record below values*/
+    CommRecordInfoList m_CommRecordInfoList;
+    CCommRecordTable * m_CCommRecordTable;
+    bool NeedRead_CommRecordInfoAll;
+    bool NeedDisplay_CommRecordInfoAll;
+
+    /*tree widget value*/
+    QTreeWidget * m_CommRecordTree;
+
 };
 
 #endif // MAINWINDOW_H

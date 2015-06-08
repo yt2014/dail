@@ -1,4 +1,4 @@
-#include "CommRecordTable.h"
+﻿#include "CommRecordTable.h"
 
 
 CCommRecordTable::CCommRecordTable(QString DatabaseAlias,QString TableName)
@@ -77,6 +77,96 @@ CommRecordInfoList CCommRecordTable::getListAllFromDatabase()
     }
 }
 
+CommRecordInfoList CCommRecordTable::getListBySql(QString strSql)
+{
+    CommRecordInfoList tempList = new CommRecordInfoList();
+
+    if(tempList.count()!=0)
+    {
+         tempList.clear();
+    }
+    if(openDatabase())
+    {
+        QSqlQuery query(db);
+
+        if(query.exec(strSql))
+        {
+               QSqlRecord columns = query.record();
+
+               int index_telenum = columns.indexOf("telenumber");
+               int index_startTime = columns.indexOf("startTime");
+               int index_duration = columns.indexOf("duration");
+               int index_CallIn   = columns.indexOf("come_go");
+               int index_CallConnected = columns.indexOf("dail_on");
+               int index_RingTimes = columns.indexOf("ring_times");
+
+               while(query.next())
+               {
+                   CommRecordInfo oneinfo;
+                   oneinfo.telenum = query.value(index_telenum).toString();
+                   oneinfo.startTime = query.value(index_startTime).toDateTime();
+                   oneinfo.callDuration = query.value(index_duration).toInt();
+                   oneinfo.isCallIn = query.value(index_CallIn).toBool();
+                   oneinfo.isCallConnected = query.value(index_CallConnected).toBool();
+                   oneinfo.ringTimes = query.value(index_RingTimes).toInt();
+
+                   tempList.append(oneinfo);
+
+               }
+        }
+        return tempList;
+    }
+    else
+    {
+      //  QMessageBox::warning(this,QObject::tr("warning"),QObject::tr("can't open database!"),QMessageBox::Ok);
+        qDebug()<<"can't open database!";
+        return tempList;
+    }
+}
+
+CommRecordTopList CCommRecordTable::getListTop()
+{
+    CommRecordTopList tempList = new CommRecordTopList();
+
+    if(tempList.count()!=0)
+    {
+         tempList.clear();
+    }
+    if(openDatabase())
+    {
+        QSqlQuery query(db);
+
+        QString strSQL = "select max(startTime) telenum from communicate_record " +
+                         "group by telenum "+
+                         "order by startTime DESC";
+
+        if(query.exec(strSQL))
+        {
+               QSqlRecord columns = query.record();
+
+               int index_telenum = columns.indexOf("telenumber");
+               int index_startTime = columns.indexOf("startTime");
+
+
+               while(query.next())
+               {
+                   CommRecordTopInfo oneinfo;
+                   oneinfo.telenum = query.value(index_telenum).toString();
+                   oneinfo.startTime = query.value(index_startTime).toDateTime();
+
+                   tempList.append(oneinfo);
+
+               }
+        }
+        return tempList;
+    }
+    else
+    {
+      //  QMessageBox::warning(this,QObject::tr("warning"),QObject::tr("can't open database!"),QMessageBox::Ok);
+        qDebug()<<"can't open database!";
+        return tempList;
+    }
+}
 
 bool CCommRecordTable::openDatabase()
 {

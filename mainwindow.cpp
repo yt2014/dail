@@ -70,11 +70,19 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->label_indications->setText("can't open database!");
     }
 
-    m_ContactorTable = new CContactorsTable();
 
+    m_ContactorTable = new CContactorsTable();
     m_ContactorInfoList = m_ContactorTable->getListAllFromDatabase();
     NeedRead_ContactorsInfoAll = false;
     NeedDisplay_ContactorsInfoAll = true;
+
+
+    m_CCommRecordTable = new CCommRecordTable();
+    m_CommRecordInfoList = m_CCommRecordTable->getListAllFromDatabase();
+    NeedRead_CommRecordInfoAll = false;
+    NeedDisplay_CommRecordInfoAll = true;
+    m_CommRecordTree = ui->treeWidget;
+
     int width = this->width();//获取界面的宽度
 
      //构建最小化、最大化、关闭按钮
@@ -147,6 +155,7 @@ MainWindow::~MainWindow()
     delete ui;
     delete mSystemTrayIcon;
     delete m_ContactorTable;
+    delete m_CCommRecordTable;
 }
 
 //关闭到托盘---------
@@ -206,6 +215,67 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     }
         break;
     case 1:
+        {
+           CommRecordTopList temList;
+           CommRecordInfoList tempListOneNum;
+           if(NeedRead_CommRecordInfoAll == true)
+           {
+
+               temList = m_CCommRecordTable->getListTop();
+               NeedRead_CommRecordInfoAll = false;
+           }
+           if(NeedDisplay_CommRecordInfoAll)
+           {
+               int num_ToAdd = temList.count();
+
+               QString str_sql_begin = "select * from communicate_record where telenum = ";
+               QString str_sql_end = " order by startTime DESC";
+               QString str_sql;
+
+               int j=0;
+               int numOneTeleNum;
+               for(int i=0;i<num_ToAdd;i++)
+               {
+                    CommRecordTopInfo oneTopRecord = m_ContactorInfoList.at(i);
+                    str_sql = str_sql_begin + oneTopRecord.telenum + str_sql_end;
+                    tempListOneNum = m_CCommRecordTable->getListBySql(str_sql);
+                    numOneTeleNum = tempListOneNum.count();
+                    QTreeWidgetItem * ItemToAdd;
+                    CommRecordInfo oneFullRecord;
+                    for(j=0;j<numOneTeleNum;j++)
+                    {
+                        oneFullRecord = tempListOneNum.at(j);
+
+                        if(j==0)
+                        {
+                            QStringList strList = QStringList()<<oneFullRecord.telenum
+                                                               <<oneFullRecord.startTime.toString()
+                                                               <<oneFullRecord.callDuration
+                                                               <<oneFullRecord.isCallIn
+                                                               <<oneFullRecord.ringTimes;
+                                                               <<oneFullRecord.isCallConnected;
+                            ItemToAdd = new QTreeWidgetItem(strList);
+                            m_CommRecordTree->addTopLevelItem(ItemToAdd);
+                        }
+                        else
+                        {
+                            QStringList strList = QStringList()<<oneFullRecord.startTime.toString()
+                                                               <<oneFullRecord.callDuration
+                                                               <<oneFullRecord.isCallIn
+                                                               <<oneFullRecord.ringTimes;
+                                                               <<oneFullRecord.isCallConnected;
+                            ItemToAdd->addChild(new QTreeWidgetItem(strList));
+                        }
+                    }
+
+
+                    itemToAdd = new QListWidgetItem(str_ToAdd);
+                    ui->listWidget->insertItem(0,itemToAdd);
+               }
+              NeedDisplay_ContactorsInfoAll = false;
+           }
+
+        }
         break;
     case 2:
         break;
