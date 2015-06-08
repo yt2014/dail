@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //this->setBaseSize(541,557);
     this->resize( QSize( 541, 557 ));
 
-   // this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint);
     this->setWindowOpacity(1);
  //   this->setWindowFlags(Qt::WindowMinimizeButtonHint);
 
@@ -95,8 +95,13 @@ MainWindow::MainWindow(QWidget *parent) :
      minButton->setToolTip(tr("最小化"));
      closeButton->setToolTip(tr("关闭"));
      //设置最小化、关闭按钮的样式
-     minButton->setStyleSheet("background-color:grey;");
-     closeButton->setStyleSheet("background-color:red;");
+  //  minButton->setStyleSheet("QToolButton{background-color:transparent;}");
+     closeButton->setStyleSheet("QToolButton{background-color:transparent;}");
+
+     minButton->setStyleSheet("QToolButton{background-color:transparent;}"
+                              "QToolButton:hover{background-color:grey;}");
+     closeButton->setStyleSheet("QToolButton{background-color:transparent;}"
+                                "QToolButton:hover{background-color:red;}");
 
      connect(closeButton, SIGNAL(clicked()), this, SLOT(closeWindow()) );
      connect(minButton, SIGNAL(clicked()), this, SLOT(setWindowMin()));

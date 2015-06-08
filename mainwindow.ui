@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>万能电话</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="icons.qrc">
+    <normaloff>:/pre_icons/tele.ico</normaloff>:/pre_icons/tele.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QLabel" name="label_Title">
     <property name="geometry">
@@ -173,6 +177,8 @@
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

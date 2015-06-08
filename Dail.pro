@@ -18,6 +18,13 @@ SOURCES += main.cpp\
     CContactorsTable.cpp \
     DatabaseTable.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    CContatorsTable.h \
+    DatabaseTable.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    icons.qrc
+
+RC_FILE += myapp.rc

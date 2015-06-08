@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/pre_icons">
+        <file>tele.ico</file>
+    </qresource>
+</RCC>
