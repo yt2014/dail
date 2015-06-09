@@ -82,6 +82,8 @@ MainWindow::MainWindow(QWidget *parent) :
     NeedRead_CommRecordInfoAll = true;
     NeedDisplay_CommRecordInfoAll = true;
     m_CommRecordTree = ui->treeWidget;
+    ui->treeWidget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+    ui->treeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     int width = this->width();//获取界面的宽度
 
@@ -248,22 +250,19 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
                         if(j==0)
                         {
-                            QStringList strList = QStringList()<<oneFullRecord.telenum
-                                                               <<oneFullRecord.startTime.toString()
-                                                               <<QString::number(oneFullRecord.callDuration)
-                                                               <<QString::number(oneFullRecord.isCallIn)
-                                                               <<QString::number(oneFullRecord.ringTimes)
-                                                               <<QString::number(oneFullRecord.isCallConnected);
+                            QStringList strList = QStringList()<<oneFullRecord.telenum+"                                  ";
                             ItemToAdd = new QTreeWidgetItem(strList);
                             m_CommRecordTree->addTopLevelItem(ItemToAdd);
+
+                            QString str_record = m_CCommRecordTable->ConstructRecordString(oneFullRecord);
+
+                            strList = QStringList()<<str_record;
+
+                            ItemToAdd->addChild(new QTreeWidgetItem(strList));
                         }
                         else
                         {
-                            QStringList strList = QStringList()<<oneFullRecord.startTime.toString()
-                                                               <<QString::number(oneFullRecord.callDuration)
-                                                               <<QString::number(oneFullRecord.isCallIn)
-                                                               <<QString::number(oneFullRecord.ringTimes)
-                                                               <<QString::number(oneFullRecord.isCallConnected);
+                            QStringList strList = QStringList()<<m_CCommRecordTable->ConstructRecordString(oneFullRecord);
                             ItemToAdd->addChild(new QTreeWidgetItem(strList));
                         }
                     }
@@ -291,11 +290,14 @@ void MainWindow::on_pBtn_Dailout_clicked()
 
 void MainWindow::on_pBtn_Contactors_clicked()
 {
-    ui->tabWidget->currentChanged(0);
+    //ui->tabWidget->currentChanged(0);
+    ui->tabWidget->setCurrentIndex(0);
 }
 
 
 void MainWindow::on_pBtn_Dail_clicked()
 {
-    ui->tabWidget->currentChanged(1);
+
+    //ui->tabWidget->currentChanged(1);
+    ui->tabWidget->setCurrentIndex(1);
 }

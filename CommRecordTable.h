@@ -48,6 +48,8 @@ public:
     Operation_Result addOneRecord(CommRecordInfo RecordToStore);
     Operation_Result UpdateOneRecord(CommRecordInfo RecordToUpdate);
     Operation_Result DeleteOneRecord(CommRecordInfo RecordToDelete);
+
+    QString ConstructRecordString(CommRecordInfo RecordToDisplay);
 private:
     QString m_DatabaseAlias;
     QString m_TableName;

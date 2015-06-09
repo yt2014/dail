@@ -324,3 +324,46 @@ Operation_Result CCommRecordTable::DeleteOneRecord(CommRecordInfo RecordToDelete
 
     return value_ret;
 }
+
+QString CCommRecordTable::ConstructRecordString(CommRecordInfo RecordToDisplay)
+{
+    QString str_record = RecordToDisplay.startTime.toString();
+    QString str_duration = "";
+    if(RecordToDisplay.isCallIn)
+    {
+        str_record += " 呼入";
+
+    }
+    else
+    {
+        str_record += " 呼出";
+    }
+
+    if(RecordToDisplay.isCallConnected)
+    {
+        int hours_duration = RecordToDisplay.callDuration/3600;
+        int minutes_duration = (RecordToDisplay.callDuration%3600)/60;
+        int seconds_duration = RecordToDisplay.callDuration%60;
+        if(hours_duration!=0)
+        {
+            str_duration += QString::number(hours_duration) + "小时";
+        }
+        if(minutes_duration!=0)
+        {
+           str_duration +=  QString::number(minutes_duration) + "分钟";
+        }
+        if(seconds_duration!=0)
+        {
+            str_duration +=  QString::number(seconds_duration) + "秒";
+        }
+        str_record += " 时长:" + str_duration;
+    }
+    else
+    {
+        str_record += " 未接通 响铃" + QString::number(RecordToDisplay.ringTimes) + "次";
+    }
+    return str_record;
+}
+
+
+
