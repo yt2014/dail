@@ -79,7 +79,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_CCommRecordTable = new CCommRecordTable();
     m_CommRecordInfoList = m_CCommRecordTable->getListAllFromDatabase();
-    NeedRead_CommRecordInfoAll = false;
+    NeedRead_CommRecordInfoAll = true;
     NeedDisplay_CommRecordInfoAll = true;
     m_CommRecordTree = ui->treeWidget;
 
@@ -228,8 +228,8 @@ void MainWindow::on_tabWidget_currentChanged(int index)
            {
                int num_ToAdd = temList.count();
 
-               QString str_sql_begin = "select * from communicate_record where telenum = ";
-               QString str_sql_end = " order by startTime DESC";
+               QString str_sql_begin = "select * from communicate_record where telenumber = \'";
+               QString str_sql_end = "\' order by startTime DESC";
                QString str_sql;
 
                int j=0;

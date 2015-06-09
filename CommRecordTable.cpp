@@ -136,16 +136,16 @@ CommRecordTopList CCommRecordTable::getListTop()
     {
         QSqlQuery query(db);
 
-        QString strSQL = "select max(startTime) telenum from communicate_record";
-                strSQL += "group by telenum ";
-                strSQL += "order by startTime DESC";
+        QString strSQL = "select max(startTime) as m_startTime,telenumber from communicate_record ";
+                strSQL += "group by telenumber ";
+                strSQL += "order by max(startTime) DESC";
 
         if(query.exec(strSQL))
         {
                QSqlRecord columns = query.record();
 
                int index_telenum = columns.indexOf("telenumber");
-               int index_startTime = columns.indexOf("startTime");
+               int index_startTime = columns.indexOf("m_startTime");
 
 
                while(query.next())
