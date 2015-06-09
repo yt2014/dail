@@ -43,7 +43,7 @@ public:
     CommRecordInfoList getListAllFromDatabase();
     CommRecordInfoList getListBySql(QString strSql);
     CommRecordTopList getListTop();
-    int isUserNameExist(ContactorInfo RecordToStore);//if not exist, return value set to -1, else return value set to the index.
+    int isUserNameExist(CommRecordInfo RecordToStore);//if not exist, return value set to -1, else return value set to the index.
     bool openDatabase();
     Operation_Result addOneRecord(CommRecordInfo RecordToStore);
     Operation_Result UpdateOneRecord(CommRecordInfo RecordToUpdate);

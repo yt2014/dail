@@ -236,7 +236,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
                int numOneTeleNum;
                for(int i=0;i<num_ToAdd;i++)
                {
-                    CommRecordTopInfo oneTopRecord = m_ContactorInfoList.at(i);
+                    CommRecordTopInfo oneTopRecord = temList.at(i);
                     str_sql = str_sql_begin + oneTopRecord.telenum + str_sql_end;
                     tempListOneNum = m_CCommRecordTable->getListBySql(str_sql);
                     numOneTeleNum = tempListOneNum.count();
@@ -250,20 +250,20 @@ void MainWindow::on_tabWidget_currentChanged(int index)
                         {
                             QStringList strList = QStringList()<<oneFullRecord.telenum
                                                                <<oneFullRecord.startTime.toString()
-                                                               <<oneFullRecord.callDuration
-                                                               <<oneFullRecord.isCallIn
-                                                               <<oneFullRecord.ringTimes
-                                                               <<oneFullRecord.isCallConnected;
+                                                               <<QString::number(oneFullRecord.callDuration)
+                                                               <<QString::number(oneFullRecord.isCallIn)
+                                                               <<QString::number(oneFullRecord.ringTimes)
+                                                               <<QString::number(oneFullRecord.isCallConnected);
                             ItemToAdd = new QTreeWidgetItem(strList);
                             m_CommRecordTree->addTopLevelItem(ItemToAdd);
                         }
                         else
                         {
                             QStringList strList = QStringList()<<oneFullRecord.startTime.toString()
-                                                               <<oneFullRecord.callDuration
-                                                               <<oneFullRecord.isCallIn
-                                                               <<oneFullRecord.ringTimes
-                                                               <<oneFullRecord.isCallConnected;
+                                                               <<QString::number(oneFullRecord.callDuration)
+                                                               <<QString::number(oneFullRecord.isCallIn)
+                                                               <<QString::number(oneFullRecord.ringTimes)
+                                                               <<QString::number(oneFullRecord.isCallConnected);
                             ItemToAdd->addChild(new QTreeWidgetItem(strList));
                         }
                     }

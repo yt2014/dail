@@ -79,7 +79,7 @@ CommRecordInfoList CCommRecordTable::getListAllFromDatabase()
 
 CommRecordInfoList CCommRecordTable::getListBySql(QString strSql)
 {
-    CommRecordInfoList tempList = new CommRecordInfoList();
+    CommRecordInfoList tempList = CommRecordInfoList();
 
     if(tempList.count()!=0)
     {
@@ -126,7 +126,7 @@ CommRecordInfoList CCommRecordTable::getListBySql(QString strSql)
 
 CommRecordTopList CCommRecordTable::getListTop()
 {
-    CommRecordTopList tempList = new CommRecordTopList();
+    CommRecordTopList tempList = CommRecordTopList();
 
     if(tempList.count()!=0)
     {
@@ -136,9 +136,9 @@ CommRecordTopList CCommRecordTable::getListTop()
     {
         QSqlQuery query(db);
 
-        QString strSQL = "select max(startTime) telenum from communicate_record " +
-                         "group by telenum "+
-                         "order by startTime DESC";
+        QString strSQL = "select max(startTime) telenum from communicate_record";
+                strSQL += "group by telenum ";
+                strSQL += "order by startTime DESC";
 
         if(query.exec(strSQL))
         {
@@ -184,13 +184,13 @@ bool CCommRecordTable::openDatabase()
 
 int CCommRecordTable::isUserNameExist(CommRecordInfo RecordToStore)
 {
-    QString strToFind =  RecordToStore.name;
+    QString strToFind =  RecordToStore.telenum;
 
     int num_records = m_CommRecordInfoList.count();
     int i=0;
     for(i=0;i<num_records;i++)
     {
-        if(m_CommRecordInfoList.at(i).name == strToFind)
+        if(m_CommRecordInfoList.at(i).telenum == strToFind)
             break;
     }
     if(i<num_records)
@@ -224,8 +224,8 @@ Operation_Result CCommRecordTable::addOneRecord(CommRecordInfo RecordToStore)
          {
              QSqlQuery query(db);
 
-             QString strSQL = "insert into " + m_TableName + " (,password,permission) values (\'"
-                                                              + RecordToStore.name + "\',\'"
+             QString strSQL = "insert into " + m_TableName + " (telenumber,startTime) values (\'"
+                                                              + RecordToStore.startTime.toString() + "\',\'"
                                                               + RecordToStore.telenum + "\')";
             if(query.exec(strSQL))
             {
@@ -266,7 +266,7 @@ Operation_Result CCommRecordTable::UpdateOneRecord(CommRecordInfo RecordToUpdate
             QSqlQuery query(db);
 
             QString strSQL = "update " + m_TableName + " set telenumber = '" + RecordToUpdate.telenum
-                                                     +" where UserName = '" + RecordToUpdate.name
+                                                     +" where UserName = '" + RecordToUpdate.startTime.toString()
                                                      +"'";
            if(query.exec(strSQL))
            {
@@ -306,7 +306,7 @@ Operation_Result CCommRecordTable::DeleteOneRecord(CommRecordInfo RecordToDelete
         {
             QSqlQuery query(db);
 
-            QString strSQL = "delete from " + m_TableName + " where UserName = '" + RecordToDelete.name
+            QString strSQL = "delete from " + m_TableName + " where UserName = '" + RecordToDelete.startTime.toString()
                                                         +"'";
            if(query.exec(strSQL))
            {
