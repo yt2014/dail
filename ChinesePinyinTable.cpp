@@ -1311,7 +1311,6 @@ CChinesePinyinTable::CChinesePinyinTable(QString DatabaseAlias,QString TableName
 {
     m_DatabaseAlias = DatabaseAlias;
     m_TableName = TableName;
-    m_ContactorInfoList = ContactorInfoList();
 }
 
 CChinesePinyinTable::~CChinesePinyinTable()
@@ -1350,7 +1349,7 @@ pyhz_tabList CChinesePinyinTable::getListBySql(QString strSql)
 {
     pyhz_tabList tempList = pyhz_tabList();
 
-    if(tempList.count()!=0)
+    /*if(tempList.count()!=0)
     {
          tempList.clear();
     }
@@ -1362,17 +1361,16 @@ pyhz_tabList CChinesePinyinTable::getListBySql(QString strSql)
         {
                QSqlRecord columns = query.record();
 
-               int index_telenum = columns.indexOf("telenumber");
-               int index_startTime = columns.indexOf("startTime");
-               int index_duration = columns.indexOf("duration");
-               int index_CallIn   = columns.indexOf("come_go");
-               int index_CallConnected = columns.indexOf("dail_on");
-               int index_RingTimes = columns.indexOf("ring_times");
+               int index_pinyin = columns.indexOf("pinyin");
+               int index_pinyinshengdiao = columns.indexOf("pinyin_shengdiao");
+               int index_shengdiao = columns.indexOf("shengdiao");
+               int index_ChineseCharactor   = columns.indexOf("ChineseCharactor");
+               int index_FirstAlphabet = columns.indexOf("First_Alphabet");
 
                while(query.next())
                {
                    pyhz_tab oneinfo;
-                   oneinfo.telenum = query.value(index_telenum).toString();
+                   oneinfo.py= query.value(index_pinyin).toString();
                    oneinfo.startTime = query.value(index_startTime).toDateTime();
                    oneinfo.callDuration = query.value(index_duration).toInt();
                    oneinfo.isCallIn = query.value(index_CallIn).toBool();
@@ -1390,12 +1388,13 @@ pyhz_tabList CChinesePinyinTable::getListBySql(QString strSql)
       //  QMessageBox::warning(this,QObject::tr("warning"),QObject::tr("can't open database!"),QMessageBox::Ok);
         qDebug()<<"can't open database!";
         return tempList;
-    }
+    }*/
+    return tempList;
 }
 
 Operation_Result CChinesePinyinTable::addOneRecord(pyhz_tab RecordToStore)
 {
-    Operation_Result value_ret = AddFailed;
+    /*Operation_Result value_ret = AddFailed;
 
 
 
@@ -1430,6 +1429,62 @@ Operation_Result CChinesePinyinTable::addOneRecord(pyhz_tab RecordToStore)
 
      }
 
-return value_ret;
+return value_ret;*/
+    return AddFailed;
 
 }
+
+bool CChinesePinyinTable::initTable()
+{
+    bool value_ret = false;
+
+
+    int num_records = sizeof(p2h)/sizeof(p2h[0]);
+    int i=0;
+
+
+    if(!openDatabase())
+    {
+       value_ret =  DataBaseNotOpen;
+    }
+    else
+    {
+
+            QSqlQuery query(db);
+
+            for(i=0;i<num_records;i++)
+            {
+                  pyhz_tab tempRecord = p2h[i];
+
+                  QChar firstAlphabet = tempRecord.py.at(0);
+
+                  QString strSQL = "insert into " + m_TableName + " (pinyin,pinyin_shengdiao,shengdiao,ChineseCharactor,First_Alphabet) values (\'"
+                                                             + tempRecord.py + "\',\'"
+                                                             + tempRecord.py_shengdiao + "\',"
+                                                             + QString::number(tempRecord.shengdiao) + ",\'"
+                                                             + tempRecord.hz + "\',\'"
+                                                             + firstAlphabet + "\')";
+
+                 /*QString strSQL = "insert into " + m_TableName + " (pinyin,pinyin_shengdiao) values (\'"
+                                                                               + tempRecord.py + "\',\'"
+                                                                               + tempRecord.py_shengdiao + "\')";*/
+               //  strSQL = "select * from " + m_TableName;
+
+                  //qDebug()<<strSQL;
+
+                  if(query.exec(strSQL))
+                  {
+                     value_ret = true;
+                  }
+                  else
+                  {
+                     value_ret = false;
+                  }
+            }
+
+    }
+
+    return value_ret;
+}
+
+

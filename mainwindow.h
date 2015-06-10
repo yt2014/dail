@@ -5,6 +5,7 @@
 #include <QSystemTrayIcon>
 #include "CContatorsTable.h"
 #include "CommRecordTable.h"
+#include "ChinesePinyinTable.h"
 #include <QTreeWidget>
 
 
@@ -35,6 +36,8 @@ private slots:
 
     void on_pBtn_Dail_clicked();
 
+    void on_pBtnDail_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon * mSystemTrayIcon;    
@@ -53,6 +56,9 @@ private:
 
     /*tree widget value*/
     QTreeWidget * m_CommRecordTree;
+
+    /*chinese pinyin*/
+    CChinesePinyinTable * m_CChinesePinyinTable;
 
 };
 

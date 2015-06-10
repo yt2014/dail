@@ -85,6 +85,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->treeWidget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
     ui->treeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
+
+    m_CChinesePinyinTable = new CChinesePinyinTable();
+
     int width = this->width();//获取界面的宽度
 
      //构建最小化、最大化、关闭按钮
@@ -154,10 +157,13 @@ void MainWindow::ReShowFromTray(QSystemTrayIcon::ActivationReason reason)
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+
     delete mSystemTrayIcon;
     delete m_ContactorTable;
     delete m_CCommRecordTable;
+    delete m_CChinesePinyinTable;
+    delete ui;
+
 }
 
 //关闭到托盘---------
@@ -300,4 +306,9 @@ void MainWindow::on_pBtn_Dail_clicked()
 
     //ui->tabWidget->currentChanged(1);
     ui->tabWidget->setCurrentIndex(1);
+}
+
+void MainWindow::on_pBtnDail_clicked()
+{
+     //m_CChinesePinyinTable->initTable();
 }
