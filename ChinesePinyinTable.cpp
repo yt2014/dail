@@ -1346,9 +1346,9 @@ bool CChinesePinyinTable::openDatabase()
         return false;
     }
 }
-CommRecordInfoList CCommRecordTable::getListBySql(QString strSql)
+pyhz_tabList CChinesePinyinTable::getListBySql(QString strSql)
 {
-    CommRecordInfoList tempList = CommRecordInfoList();
+    pyhz_tabList tempList = pyhz_tabList();
 
     if(tempList.count()!=0)
     {
@@ -1371,7 +1371,7 @@ CommRecordInfoList CCommRecordTable::getListBySql(QString strSql)
 
                while(query.next())
                {
-                   CommRecordInfo oneinfo;
+                   pyhz_tab oneinfo;
                    oneinfo.telenum = query.value(index_telenum).toString();
                    oneinfo.startTime = query.value(index_startTime).toDateTime();
                    oneinfo.callDuration = query.value(index_duration).toInt();
@@ -1393,51 +1393,7 @@ CommRecordInfoList CCommRecordTable::getListBySql(QString strSql)
     }
 }
 
-CommRecordTopList CCommRecordTable::getListTop()
-{
-    CommRecordTopList tempList = CommRecordTopList();
-
-    if(tempList.count()!=0)
-    {
-         tempList.clear();
-    }
-    if(openDatabase())
-    {
-        QSqlQuery query(db);
-
-        QString strSQL = "select max(startTime) as m_startTime,telenumber from communicate_record ";
-                strSQL += "group by telenumber ";
-                strSQL += "order by max(startTime) DESC";
-
-        if(query.exec(strSQL))
-        {
-               QSqlRecord columns = query.record();
-
-               int index_telenum = columns.indexOf("telenumber");
-               int index_startTime = columns.indexOf("m_startTime");
-
-
-               while(query.next())
-               {
-                   CommRecordTopInfo oneinfo;
-                   oneinfo.telenum = query.value(index_telenum).toString();
-                   oneinfo.startTime = query.value(index_startTime).toDateTime();
-
-                   tempList.append(oneinfo);
-
-               }
-        }
-        return tempList;
-    }
-    else
-    {
-      //  QMessageBox::warning(this,QObject::tr("warning"),QObject::tr("can't open database!"),QMessageBox::Ok);
-        qDebug()<<"can't open database!";
-        return tempList;
-    }
-}
-
-Operation_Result CCommRecordTable::addOneRecord(CommRecordInfo RecordToStore)
+Operation_Result CChinesePinyinTable::addOneRecord(pyhz_tab RecordToStore)
 {
     Operation_Result value_ret = AddFailed;
 
@@ -1463,7 +1419,7 @@ Operation_Result CCommRecordTable::addOneRecord(CommRecordInfo RecordToStore)
             if(query.exec(strSQL))
             {
                 value_ret = AddSuccess;
-                m_CommRecordInfoList.append(RecordToStore);
+                m_pyhz_tabList.append(RecordToStore);
             }
             else
             {
