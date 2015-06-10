@@ -61,9 +61,9 @@
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>130</y>
+      <y>100</y>
       <width>421</width>
-      <height>361</height>
+      <height>391</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -135,7 +135,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>321</width>
+        <width>291</width>
         <height>331</height>
        </rect>
       </property>
@@ -148,8 +148,8 @@
      <widget class="QPushButton" name="pBtnDail">
       <property name="geometry">
        <rect>
-        <x>330</x>
-        <y>250</y>
+        <x>310</x>
+        <y>200</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -161,14 +161,14 @@
      <widget class="QPushButton" name="pBtnEdit_Add">
       <property name="geometry">
        <rect>
-        <x>330</x>
-        <y>200</y>
+        <x>310</x>
+        <y>110</y>
         <width>75</width>
         <height>23</height>
        </rect>
       </property>
       <property name="text">
-       <string>添加/编辑</string>
+       <string>添加联系人</string>
       </property>
      </widget>
     </widget>
@@ -194,6 +194,16 @@
     </property>
     <property name="text">
      <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_2">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>80</y>
+      <width>421</width>
+      <height>41</height>
+     </rect>
     </property>
    </widget>
   </widget>

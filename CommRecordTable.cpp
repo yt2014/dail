@@ -327,7 +327,7 @@ Operation_Result CCommRecordTable::DeleteOneRecord(CommRecordInfo RecordToDelete
 
 QString CCommRecordTable::ConstructRecordString(CommRecordInfo RecordToDisplay)
 {
-    QString str_record = RecordToDisplay.startTime.toString();
+    QString str_record = RecordToDisplay.startTime.toString("yyyy-MM-dd hh:mm:ss");
     QString str_duration = "";
     if(RecordToDisplay.isCallIn)
     {

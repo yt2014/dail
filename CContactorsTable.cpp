@@ -69,6 +69,39 @@ ContactorInfoList CContactorsTable::getListAllFromDatabase()
     }
 }
 
+ContactorInfoList getListBySql(QString strSql)
+{
+    ContactorInfoList listReturn = ContactorInfoList();
+    if(openDatabase())
+    {
+        QSqlQuery query(db);
+
+        if(query.exec(strSql))
+        {
+               QSqlRecord columns = query.record();
+
+               int index_Name = columns.indexOf("name");
+               int index_telenum = columns.indexOf("telenumber");
+
+               while(query.next())
+               {
+                   ContactorInfo oneinfo;
+                   oneinfo.name = query.value(index_Name).toString();
+                   oneinfo.telenum = query.value(index_telenum).toString();
+
+                   listReturn.append(oneinfo);
+
+               }
+        }
+        return listReturn;
+    }
+    else
+    {
+      //  QMessageBox::warning(this,QObject::tr("warning"),QObject::tr("can't open database!"),QMessageBox::Ok);
+        qDebug()<<"can't open database!";
+        return listReturn;
+    }
+}
 
 bool CContactorsTable::openDatabase()
 {
@@ -106,10 +139,10 @@ int CContactorsTable::isUserNameExist(ContactorInfo RecordToStore)
 
 }
 
-int CContactorsTable::isTeleNumExit(ContactorInfo oneRecord)
+int CContactorsTable::isTeleNumExit(QString strToFind)
 {
     int retVal = -1;
-    QString strToFind =  oneRecord.telenum;
+    //QString strToFind =  oneRecord.telenum;
 
     int num_records = m_ContactorInfoList.count();
     int i=0;
@@ -252,3 +285,7 @@ Operation_Result CContactorsTable::DeleteOneRecord(ContactorInfo RecordToDelete)
 
     return value_ret;
 }
+
+
+
+

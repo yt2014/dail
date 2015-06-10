@@ -28,9 +28,9 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setFont(font);
     this->setPalette(palette);
     this->setAutoFillBackground(true);
-    //this->setFixedSize(541,557);
+    this->setFixedSize(541,557);
     //this->setBaseSize(541,557);
-    this->resize( QSize( 541, 557 ));
+    //this->resize( QSize( 541, 557 ));
 
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setWindowOpacity(1);
@@ -83,8 +83,8 @@ MainWindow::MainWindow(QWidget *parent) :
     NeedDisplay_CommRecordInfoAll = true;
     m_CommRecordTree = ui->treeWidget;
     ui->treeWidget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-    ui->treeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-
+    //ui->treeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    m_CommRecordTree->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 
     m_CChinesePinyinTable = new CChinesePinyinTable();
 
@@ -122,7 +122,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // connect(maxButton, SIGNAL(clicked()), this, SLOT(winmax()));
 
 
-     ui->tabWidget->currentChanged(0);
+     ui->tabWidget->setCurrentIndex(0);
      mSystemTrayIcon = new QSystemTrayIcon(this);
      QIcon icon("tele.ico");
 
@@ -256,7 +256,9 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
                         if(j==0)
                         {
-                            QStringList strList = QStringList()<<oneFullRecord.telenum+"                                  ";
+                            QString str_SelectContactor = "select * from contactors where telenumber = \'" + oneFullRecord.telenum + "\'";
+
+                            QStringList strList = QStringList()<<oneFullRecord.telenum+" ";
                             ItemToAdd = new QTreeWidgetItem(strList);
                             m_CommRecordTree->addTopLevelItem(ItemToAdd);
 
@@ -264,12 +266,20 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
                             strList = QStringList()<<str_record;
 
-                            ItemToAdd->addChild(new QTreeWidgetItem(strList));
+                            QTreeWidgetItem * childItemToAdd = new QTreeWidgetItem(strList);
+
+                            childItemToAdd->setToolTip(0,str_record);
+
+                            ItemToAdd->addChild(childItemToAdd);
                         }
                         else
                         {
-                            QStringList strList = QStringList()<<m_CCommRecordTable->ConstructRecordString(oneFullRecord);
-                            ItemToAdd->addChild(new QTreeWidgetItem(strList));
+                            QString str_record = m_CCommRecordTable->ConstructRecordString(oneFullRecord);
+                            QStringList strList = QStringList()<<str_record;
+                            QTreeWidgetItem * childItemToAdd = new QTreeWidgetItem(strList);
+
+                            childItemToAdd->setToolTip(0,str_record);
+                            ItemToAdd->addChild(childItemToAdd);
                         }
                     }
                }

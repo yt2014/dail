@@ -29,6 +29,7 @@ public:
     void setDatabaseAlias(QString DatabaseAlias);
     void setTableName(QString TableName);
     ContactorInfoList getListAllFromDatabase();
+    ContactorInfoList getListBySql(QString strSql);
     int isUserNameExist(ContactorInfo RecordToStore);//if not exist, return value set to -1, else return value set to the index.
     int isTeleNumExit(ContactorInfo oneRecord);
     bool openDatabase();
