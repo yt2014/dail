@@ -17,12 +17,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     CContactorsTable.cpp \
     DatabaseTable.cpp \
-    CommRecordTable.cpp
+    CommRecordTable.cpp \
+    ChinesePinyinTable.cpp
 
 HEADERS  += mainwindow.h \
     CContatorsTable.h \
     DatabaseTable.h \
-    CommRecordTable.h
+    CommRecordTable.h \
+    ChinesePinyinTable.h
 
 FORMS    += mainwindow.ui
 

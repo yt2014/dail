@@ -12,3 +12,9 @@
 #ignore .autosave files
 
 *.autosave
+
+#ignore .swp
+
+*.swp
+
+*~
