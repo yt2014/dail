@@ -171,21 +171,20 @@ Operation_Result CContactorsTable::addOneRecord(ContactorInfo RecordToStore)
 
 
 
-     if(!db.isOpen())
+     if(!openDatabase())
      {
         value_ret =  DataBaseNotOpen;
      }
      else
      {
-         if(isUserNameExist(RecordToStore) != -1)
+         if(isTeleNumExit(RecordToStore.telenum) != -1)
          {
              value_ret = AddExistRecord;
          }
          else
          {
              QSqlQuery query(db);
-
-             QString strSQL = "insert into " + m_TableName + " (UserName,password,permission) values (\'"
+             QString strSQL = "insert into " + m_TableName + " (name,telenumber) values (\'"
                                                               + RecordToStore.name + "\',\'"
                                                               + RecordToStore.telenum + "\')";
             if(query.exec(strSQL))

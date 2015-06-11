@@ -45,6 +45,7 @@ private slots:
     void on_pBtnCancel_clicked();
 
     void on_pBtn_EditSave_clicked();
+    void updateRecord();
 
 private:
     Ui::MainWindow *ui;
@@ -61,6 +62,8 @@ private:
     CCommRecordTable * m_CCommRecordTable;
     bool NeedRead_CommRecordInfoAll;
     bool NeedDisplay_CommRecordInfoAll;
+    bool isAddingContactor;
+    QTreeWidgetItem * m_treeItemActive;
 
     /*tree widget value*/
     QTreeWidget * m_CommRecordTree;
@@ -69,6 +72,8 @@ private:
     CChinesePinyinTable * m_CChinesePinyinTable;
 
     void initCommRecordTab();
+
+    QTimer* m_timer;
 
 };
 
