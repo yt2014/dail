@@ -33,6 +33,16 @@ typedef struct
 typedef QList<CommRecordInfo> CommRecordInfoList;
 typedef QList<CommRecordTopInfo> CommRecordTopList;
 
+
+
+typedef struct
+{
+    QString telenum;
+    bool existInContactorTable;
+}telenumInfo;
+
+Q_DECLARE_METATYPE(telenumInfo)
+
 class CCommRecordTable:CDatabaseTable
 {
 public:

@@ -86,6 +86,10 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->treeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     m_CommRecordTree->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 
+    QStringList headers;
+    headers << QObject::tr("通话记录");
+    m_CommRecordTree->setHeaderLabels(headers);
+
     m_CChinesePinyinTable = new CChinesePinyinTable();
 
     int width = this->width();//获取界面的宽度
@@ -212,7 +216,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
                for(int i=0;i<num_ToAdd;i++)
                {
                     ContactorInfo oneRecord = m_ContactorInfoList.at(i);
-                    QString str_ToAdd = oneRecord.name +  oneRecord.telenum;
+                    QString str_ToAdd = oneRecord.name + " " + oneRecord.telenum;
                     itemToAdd = new QListWidgetItem(str_ToAdd);
 
                      ui->listWidget->insertItem(0,itemToAdd);
@@ -258,8 +262,32 @@ void MainWindow::on_tabWidget_currentChanged(int index)
                         {
                             QString str_SelectContactor = "select * from contactors where telenumber = \'" + oneFullRecord.telenum + "\'";
 
-                            QStringList strList = QStringList()<<oneFullRecord.telenum+" ";
+                            ContactorInfoList tempContactor =  m_ContactorTable->getListBySql(str_SelectContactor);
+
+                            QString strName = "";
+
+                            telenumInfo infoToAdd;
+
+                            infoToAdd.telenum = oneFullRecord.telenum;
+
+
+                            if(tempContactor.count()==0)
+                            {
+                                strName = "无题名";
+                                infoToAdd.existInContactorTable = false;
+                            }
+                            else
+                            {
+                                strName = tempContactor.at(0).name;
+                                infoToAdd.existInContactorTable = true;
+                            }
+
+                            QVariant valueToAdd;
+                            valueToAdd.setValue(infoToAdd);
+
+                            QStringList strList = QStringList()<<oneFullRecord.telenum+" "+strName;
                             ItemToAdd = new QTreeWidgetItem(strList);
+                            ItemToAdd->setData(0, Qt::UserRole,	valueToAdd);
                             m_CommRecordTree->addTopLevelItem(ItemToAdd);
 
                             QString str_record = m_CCommRecordTable->ConstructRecordString(oneFullRecord);
@@ -316,9 +344,43 @@ void MainWindow::on_pBtn_Dail_clicked()
 
     //ui->tabWidget->currentChanged(1);
     ui->tabWidget->setCurrentIndex(1);
+
 }
 
 void MainWindow::on_pBtnDail_clicked()
 {
      //m_CChinesePinyinTable->initTable();
+}
+
+void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
+{
+    QString strDisplay = QString::number(column) + " clicked";
+
+    QTreeWidgetItem *parentItem = item->parent();
+
+    telenumInfo infoFromItem;
+
+    if(parentItem)
+    {
+        //child
+        infoFromItem = parentItem->data(0,Qt::UserRole).value<telenumInfo>();
+    }
+    else
+    {
+        //parent
+        infoFromItem = item->data(0,Qt::UserRole).value<telenumInfo>();
+    }
+
+    strDisplay = infoFromItem.telenum;
+
+    if(infoFromItem.existInContactorTable)
+    {
+       ui->pBtnEdit_Add->setEnabled(false);
+    }
+    else
+    {
+        ui->pBtnEdit_Add->setEnabled(true);
+    }
+
+    ui->label_Telenumber->setText(strDisplay);
 }

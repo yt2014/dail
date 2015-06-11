@@ -38,6 +38,8 @@ private slots:
 
     void on_pBtnDail_clicked();
 
+    void on_treeWidget_itemClicked(QTreeWidgetItem *item, int column);
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon * mSystemTrayIcon;    

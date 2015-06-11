@@ -69,7 +69,7 @@ ContactorInfoList CContactorsTable::getListAllFromDatabase()
     }
 }
 
-ContactorInfoList getListBySql(QString strSql)
+ContactorInfoList CContactorsTable::getListBySql(QString strSql)
 {
     ContactorInfoList listReturn = ContactorInfoList();
     if(openDatabase())
