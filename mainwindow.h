@@ -40,6 +40,12 @@ private slots:
 
     void on_treeWidget_itemClicked(QTreeWidgetItem *item, int column);
 
+    void on_pBtnEdit_Add_clicked();
+
+    void on_pBtnCancel_clicked();
+
+    void on_pBtn_EditSave_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon * mSystemTrayIcon;    
@@ -61,6 +67,8 @@ private:
 
     /*chinese pinyin*/
     CChinesePinyinTable * m_CChinesePinyinTable;
+
+    void initCommRecordTab();
 
 };
 

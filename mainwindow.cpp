@@ -76,21 +76,8 @@ MainWindow::MainWindow(QWidget *parent) :
     NeedRead_ContactorsInfoAll = false;
     NeedDisplay_ContactorsInfoAll = true;
 
+    initCommRecordTab();
 
-    m_CCommRecordTable = new CCommRecordTable();
-    m_CommRecordInfoList = m_CCommRecordTable->getListAllFromDatabase();
-    NeedRead_CommRecordInfoAll = true;
-    NeedDisplay_CommRecordInfoAll = true;
-    m_CommRecordTree = ui->treeWidget;
-    ui->treeWidget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-    //ui->treeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    m_CommRecordTree->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-
-    QStringList headers;
-    headers << QObject::tr("通话记录");
-    m_CommRecordTree->setHeaderLabels(headers);
-
-    m_CChinesePinyinTable = new CChinesePinyinTable();
 
     int width = this->width();//获取界面的宽度
 
@@ -383,4 +370,62 @@ void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
     }
 
     ui->label_Telenumber->setText(strDisplay);
+}
+
+void MainWindow::initCommRecordTab()
+{
+    ui->labelInputName->hide();
+    ui->lineEdit_InputName->hide();
+    ui->pBtn_EditSave->hide();
+    ui->pBtnCancel->hide();
+
+    m_CCommRecordTable = new CCommRecordTable();
+    m_CommRecordInfoList = m_CCommRecordTable->getListAllFromDatabase();
+    NeedRead_CommRecordInfoAll = true;
+    NeedDisplay_CommRecordInfoAll = true;
+    m_CommRecordTree = ui->treeWidget;
+    ui->treeWidget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+    //ui->treeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    m_CommRecordTree->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+
+    QStringList headers;
+    headers << QObject::tr("通话记录");
+    m_CommRecordTree->setHeaderLabels(headers);
+
+    m_CChinesePinyinTable = new CChinesePinyinTable();
+}
+
+
+void MainWindow::on_pBtnEdit_Add_clicked()
+{
+    ui->labelInputName->show();
+    ui->lineEdit_InputName->show();
+    ui->pBtn_EditSave->show();
+    ui->pBtnCancel->show();
+
+    ui->pBtn_EditSave->setText("添加");
+
+    ui->pBtnEdit_Add->hide();
+    ui->pBtnDail->hide();
+
+    ui->treeWidget->setEnabled(false);
+}
+
+void MainWindow::on_pBtnCancel_clicked()
+{
+    ui->labelInputName->hide();
+    ui->lineEdit_InputName->hide();
+    ui->pBtn_EditSave->hide();
+    ui->pBtnCancel->hide();
+
+    ui->pBtnEdit_Add->show();
+    ui->pBtnDail->show();
+
+    ui->treeWidget->setEnabled(true);
+}
+
+void MainWindow::on_pBtn_EditSave_clicked()
+{
+
+    ui->pBtn_EditSave->setText("确定");
 }
