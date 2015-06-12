@@ -6,6 +6,7 @@ CContactorsTable::CContactorsTable(QString DatabaseAlias,QString TableName)
     m_DatabaseAlias = DatabaseAlias;
     m_TableName = TableName;
     m_ContactorInfoList = ContactorInfoList();
+    m_CChinesePinyinTable = new CChinesePinyinTable();
 }
 
 CContactorsTable::~CContactorsTable()
@@ -13,6 +14,11 @@ CContactorsTable::~CContactorsTable()
     if(m_ContactorInfoList.count()!=0)
     {
        m_ContactorInfoList.clear();
+    }
+
+    if(m_CChinesePinyinTable)
+    {
+        delete m_CChinesePinyinTable;
     }
 
     if(db.isOpen())
@@ -285,6 +291,75 @@ Operation_Result CContactorsTable::DeleteOneRecord(ContactorInfo RecordToDelete)
     return value_ret;
 }
 
+Operation_Result CContactorsTable::InsertPinyinForRecord(ContactorInfo RecordToStore)
+{
+    QString name = RecordToStore.name;
 
+    int num = name.length();
+    QString strSql_Pinyin;
+    QString strSql_Contactor;
+    QString strPinyinToInsert = "";
+    QString strShortPinyinToInsert = "";
+    pyhz_tabList listGet;
+    for(int i=0;i<num;i++)
+    {
+
+        strSql_Pinyin = "select * from pinyin_ChineseCharactor where ChineseCharactor like \'%" + QString(name.at(i)) + "\%'";
+        listGet.clear();
+
+        listGet = m_CChinesePinyinTable->getListBySql(strSql_Pinyin);
+        if(!listGet.count())
+        {
+            strPinyinToInsert += listGet.at(0).py;
+            strShortPinyinToInsert += strPinyinToInsert.at(0);
+        }
+        else
+        {
+            strPinyinToInsert += name.at(i);
+            strShortPinyinToInsert += strPinyinToInsert;
+        }
+    }
+    listGet.clear();
+
+
+    strSql_Contactor = "insert into contactors (pinyin,ShortPinyin) values (\'"
+                        + strPinyinToInsert + "\',\'"
+                        + strShortPinyinToInsert + "\') where telenumber = \'"
+                        + RecordToStore.telenum + "\'";
+
+
+    Operation_Result value_ret = AddFailed;
+
+
+
+     if(!openDatabase())
+     {
+        value_ret =  DataBaseNotOpen;
+     }
+     else
+     {
+         if(isTeleNumExit(RecordToStore.telenum) != -1)
+         {
+             value_ret = AddExistRecord;
+         }
+         else
+         {
+             QSqlQuery query(db);
+
+            if(query.exec(strSql_Contactor))
+            {
+                value_ret = AddSuccess;
+            }
+            else
+            {
+                value_ret = AddFailed;
+            }
+
+         }
+
+     }
+
+     return value_ret;
+}
 
 

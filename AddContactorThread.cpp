@@ -42,7 +42,10 @@ void AddContactorThread::run()
      if(tempList.count()!=0)
      {
          infoToAdd = tempList.takeAt(0);
-         m_ContactorTable->addOneRecord(infoToAdd);
+         m_ContactorTable->InsertPinyinForRecord(infoToAdd);
+         mutex.lock();
+         ContactorlistToAdd.removeAt(0);
+         mutex.unlock();
      }
 
  }

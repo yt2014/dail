@@ -2,6 +2,7 @@
 #define CCONTATORSTABLE_H
 
 #include "DatabaseTable.h"
+#include "ChinesePinyinTable.h"
 #include <QSql>
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -38,11 +39,13 @@ public:
     Operation_Result addOneRecord(ContactorInfo RecordToStore);
     Operation_Result UpdateOneRecord(ContactorInfo RecordToUpdate);
     Operation_Result DeleteOneRecord(ContactorInfo RecordToDelete);
+    Operation_Result InsertPinyinForRecord(ContactorInfo RecordToStore);
 private:
     QString m_DatabaseAlias;
     QString m_TableName;
     ContactorInfoList m_ContactorInfoList;
     QSqlDatabase db;
+    CChinesePinyinTable* m_CChinesePinyinTable;
 };
 
 

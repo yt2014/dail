@@ -1349,7 +1349,7 @@ pyhz_tabList CChinesePinyinTable::getListBySql(QString strSql)
 {
     pyhz_tabList tempList = pyhz_tabList();
 
-    /*if(tempList.count()!=0)
+    if(tempList.count()!=0)
     {
          tempList.clear();
     }
@@ -1365,17 +1365,15 @@ pyhz_tabList CChinesePinyinTable::getListBySql(QString strSql)
                int index_pinyinshengdiao = columns.indexOf("pinyin_shengdiao");
                int index_shengdiao = columns.indexOf("shengdiao");
                int index_ChineseCharactor   = columns.indexOf("ChineseCharactor");
-               int index_FirstAlphabet = columns.indexOf("First_Alphabet");
+
 
                while(query.next())
                {
                    pyhz_tab oneinfo;
                    oneinfo.py= query.value(index_pinyin).toString();
-                   oneinfo.startTime = query.value(index_startTime).toDateTime();
-                   oneinfo.callDuration = query.value(index_duration).toInt();
-                   oneinfo.isCallIn = query.value(index_CallIn).toBool();
-                   oneinfo.isCallConnected = query.value(index_CallConnected).toBool();
-                   oneinfo.ringTimes = query.value(index_RingTimes).toInt();
+                   oneinfo.py_shengdiao = query.value(index_pinyinshengdiao).toString();
+                   oneinfo.shengdiao = query.value(index_shengdiao).toInt();
+                   oneinfo.hz = query.value(index_ChineseCharactor).toString();
 
                    tempList.append(oneinfo);
 
@@ -1388,7 +1386,7 @@ pyhz_tabList CChinesePinyinTable::getListBySql(QString strSql)
       //  QMessageBox::warning(this,QObject::tr("warning"),QObject::tr("can't open database!"),QMessageBox::Ok);
         qDebug()<<"can't open database!";
         return tempList;
-    }*/
+    }
     return tempList;
 }
 

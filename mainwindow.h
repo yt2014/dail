@@ -7,7 +7,7 @@
 #include "CommRecordTable.h"
 #include "ChinesePinyinTable.h"
 #include <QTreeWidget>
-
+#include "AddContactorThread.h"
 
 namespace Ui {
 class MainWindow;
@@ -74,6 +74,8 @@ private:
     void initCommRecordTab();
 
     QTimer* m_timer;
+
+    AddContactorThread ThreadAdding;
 
 };
 

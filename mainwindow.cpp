@@ -6,8 +6,12 @@
 #include <QSqlDatabase>
 #include <QCloseEvent>
 #include <QTimer>
+#include <QMutex>
 
 #pragma warning(disable: 4819)
+
+extern QMutex mutex;
+extern ContactorInfoList ContactorlistToAdd;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -122,6 +126,8 @@ MainWindow::MainWindow(QWidget *parent) :
       mSystemTrayIcon->setIcon(icon);
 
       connect(mSystemTrayIcon,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),this,SLOT(ReShowFromTray(QSystemTrayIcon::ActivationReason)));
+
+      ThreadAdding.start();
 }
 
 /*void MainWindow::showMe(){
@@ -155,6 +161,7 @@ MainWindow::~MainWindow()
     delete m_ContactorTable;
     delete m_CCommRecordTable;
     delete m_CChinesePinyinTable;
+    ThreadAdding.stop();
     delete ui;
 
 }
@@ -466,6 +473,9 @@ void MainWindow::on_pBtn_EditSave_clicked()
            if( AddResult == AddSuccess)
            {
                QString strResult = "添加成功";
+               mutex.lock();
+               ContactorlistToAdd.append(infoToAdd);
+               mutex.unlock();
                ui->label_Telenumber->setText(strResult);
 
            }
