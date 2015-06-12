@@ -18,13 +18,15 @@ SOURCES += main.cpp\
     CContactorsTable.cpp \
     DatabaseTable.cpp \
     CommRecordTable.cpp \
-    ChinesePinyinTable.cpp
+    ChinesePinyinTable.cpp \
+    AddContactorThread.cpp
 
 HEADERS  += mainwindow.h \
     CContatorsTable.h \
     DatabaseTable.h \
     CommRecordTable.h \
-    ChinesePinyinTable.h
+    ChinesePinyinTable.h \
+    AddContactorThread.h
 
 FORMS    += mainwindow.ui
 

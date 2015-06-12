@@ -20,6 +20,8 @@ typedef struct
 
 typedef QList<ContactorInfo> ContactorInfoList;
 
+extern ContactorInfoList ContactorlistToAdd;
+
 
 class CContactorsTable:CDatabaseTable
 {
