@@ -305,46 +305,45 @@ Operation_Result CContactorsTable::InsertPinyinForRecord(ContactorInfo RecordToS
     {
 
         strSql_Pinyin = "select * from pinyin_ChineseCharactor where ChineseCharactor like \'%" + QString(name.at(i)) + "\%'";
+        qDebug()<<strSql_Pinyin;
+
         listGet.clear();
 
         listGet = m_CChinesePinyinTable->getListBySql(strSql_Pinyin);
-        if(!listGet.count())
+        qDebug()<<QString::number(listGet.count());
+
+        if(listGet.count()!=0)
         {
             strPinyinToInsert += listGet.at(0).py;
-            strShortPinyinToInsert += strPinyinToInsert.at(0);
+            strShortPinyinToInsert += listGet.at(0).py.at(0);
         }
         else
         {
             strPinyinToInsert += name.at(i);
-            strShortPinyinToInsert += strPinyinToInsert;
+            strShortPinyinToInsert += name.at(i);
         }
     }
     listGet.clear();
 
 
-    strSql_Contactor = "insert into contactors (pinyin,ShortPinyin) values (\'"
-                        + strPinyinToInsert + "\',\'"
-                        + strShortPinyinToInsert + "\') where telenumber = \'"
+    strSql_Contactor = "update contactors set pinyin = \'"
+                        +strPinyinToInsert + "\',ShortPinyin = \'"
+                        +strShortPinyinToInsert + "\' where telenumber = \'"
                         + RecordToStore.telenum + "\'";
 
 
     Operation_Result value_ret = AddFailed;
-
+    qDebug()<<strSql_Contactor;
 
 
      if(!openDatabase())
      {
+        qDebug()<<"database not open";
         value_ret =  DataBaseNotOpen;
      }
      else
      {
-         if(isTeleNumExit(RecordToStore.telenum) != -1)
-         {
-             value_ret = AddExistRecord;
-         }
-         else
-         {
-             QSqlQuery query(db);
+            QSqlQuery query(db);
 
             if(query.exec(strSql_Contactor))
             {
@@ -355,7 +354,12 @@ Operation_Result CContactorsTable::InsertPinyinForRecord(ContactorInfo RecordToS
                 value_ret = AddFailed;
             }
 
-         }
+            qDebug()<<QString::number(value_ret);
+
+
+            // qDebug()<<"telenumber exist";
+         //    value_ret = AddExistRecord;
+
 
      }
 

@@ -348,6 +348,10 @@ void MainWindow::on_pBtn_Dail_clicked()
 void MainWindow::on_pBtnDail_clicked()
 {
      //m_CChinesePinyinTable->initTable();
+   /* ContactorInfo recordToUpdate;
+    recordToUpdate.name = "ty张三";
+    recordToUpdate.telenum = "12612812911";
+    m_ContactorTable->InsertPinyinForRecord(recordToUpdate);*/
 }
 
 void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
@@ -481,7 +485,7 @@ void MainWindow::on_pBtn_EditSave_clicked()
            }
            else
            {
-               QString strResult = "add result is " + QString::number(AddResult);
+               QString strResult = "adding result is " + QString::number(AddResult);
                ui->label_Telenumber->setText(strResult);
            }
        }
