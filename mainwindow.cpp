@@ -566,7 +566,7 @@ void MainWindow::RefreshContent(int index)
         qDebug()<<"MainWindow::RefreshContent comm";
         ui->treeWidget->clear();
         int num_ToAdd = m_topFreshCommRecordList.count();
-
+        qDebug()<<"record number in comm record table: " + QString::number(num_ToAdd);
         QString str_sql_begin = "select * from communicate_record where telenumber = \'";
         QString str_sql_end = "\' order by startTime DESC";
         QString str_sql;
@@ -642,6 +642,7 @@ void MainWindow::RefreshContent(int index)
         }
 
         num_ToAdd = m_ContactorFreshList.count();
+        qDebug()<<"record number in contactor table: " + QString::number(num_ToAdd);
         for(int i=0;i<num_ToAdd;i++)
         {
 
@@ -649,6 +650,7 @@ void MainWindow::RefreshContent(int index)
             if(index!=-1)
             {
               // m_CommRecordTree->topLevelItem(index);
+               qDebug()<<"record of contactor exist in comm record";
             }
             else
             {

@@ -68,7 +68,7 @@ void CDynamicSelectThread::SelectRecords()
         else if(index==1)
         {
             /*get the top communication list and corresponding contactor list*/
-            QString strSql = "select * from communicate_record where telenumber like \'%"
+            QString strSql = "select * from contactors where name like \'%"
                              + KeyWord + "%\' or pinyin like \'%"
                              + KeyWord + "%\' or ShortPinyin like \'%"
                              + KeyWord + "%\'";
