@@ -168,6 +168,46 @@ CommRecordTopList CCommRecordTable::getListTop()
     }
 }
 
+CommRecordTopList CCommRecordTable::getListTopBySql(QString strSql)
+{
+    CommRecordTopList tempList = CommRecordTopList();
+
+    if(tempList.count()!=0)
+    {
+         tempList.clear();
+    }
+    if(openDatabase())
+    {
+        QSqlQuery query(db);
+
+        if(query.exec(strSql))
+        {
+               QSqlRecord columns = query.record();
+
+               int index_telenum = columns.indexOf("telenumber");
+               int index_startTime = columns.indexOf("m_startTime");
+
+
+               while(query.next())
+               {
+                   CommRecordTopInfo oneinfo;
+                   oneinfo.telenum = query.value(index_telenum).toString();
+                   oneinfo.startTime = query.value(index_startTime).toDateTime();
+
+                   tempList.append(oneinfo);
+
+               }
+        }
+        return tempList;
+    }
+    else
+    {
+      //  QMessageBox::warning(this,QObject::tr("warning"),QObject::tr("can't open database!"),QMessageBox::Ok);
+        qDebug()<<"can't open database!";
+        return tempList;
+    }
+}
+
 bool CCommRecordTable::openDatabase()
 {
     db = QSqlDatabase::database(m_DatabaseAlias,true);
@@ -187,7 +227,7 @@ int CCommRecordTable::isUserNameExist(CommRecordInfo RecordToStore)
     QString strToFind =  RecordToStore.telenum;
 
     int num_records = m_CommRecordInfoList.count();
-    int i=0;
+    int i=-1;
     for(i=0;i<num_records;i++)
     {
         if(m_CommRecordInfoList.at(i).telenum == strToFind)
@@ -201,8 +241,27 @@ int CCommRecordTable::isUserNameExist(CommRecordInfo RecordToStore)
     {
         return -1;
     }
-
 }
+
+int CCommRecordTable::isTeleNumExistInTopList(QString telenumber,CommRecordTopList topList)
+{
+    int num_records = topList.count();
+    int i=-1;
+    for(i=0;i<num_records;i++)
+    {
+        if(topList.at(i).telenum == telenumber)
+            break;
+    }
+    if(i<num_records)
+    {
+        return i;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
 
 Operation_Result CCommRecordTable::addOneRecord(CommRecordInfo RecordToStore)
 {

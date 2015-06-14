@@ -1450,18 +1450,26 @@ bool CChinesePinyinTable::initTable()
 
             QSqlQuery query(db);
 
+            QString strSqlDelete = "delete * from "+ m_TableName;
+
+            query.exec(strSqlDelete);
+
             for(i=0;i<num_records;i++)
             {
                   pyhz_tab tempRecord = p2h[i];
 
                   QChar firstAlphabet = tempRecord.py.at(0);
 
+                  QChar lowFirstAlphabet = firstAlphabet.toLower();
+
+                  tempRecord.py.replace(0,1,lowFirstAlphabet);
+
                   QString strSQL = "insert into " + m_TableName + " (pinyin,pinyin_shengdiao,shengdiao,ChineseCharactor,First_Alphabet) values (\'"
                                                              + tempRecord.py + "\',\'"
                                                              + tempRecord.py_shengdiao + "\',"
                                                              + QString::number(tempRecord.shengdiao) + ",\'"
                                                              + tempRecord.hz + "\',\'"
-                                                             + firstAlphabet + "\')";
+                                                             + lowFirstAlphabet + "\')";
 
                  /*QString strSQL = "insert into " + m_TableName + " (pinyin,pinyin_shengdiao) values (\'"
                                                                                + tempRecord.py + "\',\'"

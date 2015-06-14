@@ -19,14 +19,16 @@ SOURCES += main.cpp\
     DatabaseTable.cpp \
     CommRecordTable.cpp \
     ChinesePinyinTable.cpp \
-    AddContactorThread.cpp
+    AddContactorThread.cpp \
+    DynamicSelectThread.cpp
 
 HEADERS  += mainwindow.h \
     CContatorsTable.h \
     DatabaseTable.h \
     CommRecordTable.h \
     ChinesePinyinTable.h \
-    AddContactorThread.h
+    AddContactorThread.h \
+    DynamicSelectThread.h
 
 FORMS    += mainwindow.ui
 

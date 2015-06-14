@@ -53,8 +53,10 @@ public:
     CommRecordInfoList getListAllFromDatabase();
     CommRecordInfoList getListBySql(QString strSql);
     CommRecordTopList getListTop();
+    CommRecordTopList getListTopBySql(QString strSql);
     int isUserNameExist(CommRecordInfo RecordToStore);//if not exist, return value set to -1, else return value set to the index.
     bool openDatabase();
+    int isTeleNumExistInTopList(QString telenumber,CommRecordTopList topList);//if not exist, return value set to -1, else return value set to the index.
     Operation_Result addOneRecord(CommRecordInfo RecordToStore);
     Operation_Result UpdateOneRecord(CommRecordInfo RecordToUpdate);
     Operation_Result DeleteOneRecord(CommRecordInfo RecordToDelete);
