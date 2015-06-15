@@ -7,6 +7,7 @@
 #include "CommRecordTable.h"
 #include "ChinesePinyinTable.h"
 #include <QTreeWidget>
+#include <QListWidget>
 #include "AddContactorThread.h"
 #include "DynamicSelectThread.h"
 
@@ -55,6 +56,14 @@ private slots:
     void updateRecord();
 
     void on_lineEdit_2_textChanged(const QString &arg1);
+
+    void on_listWidget_itemClicked(QListWidgetItem *item);
+
+    void on_pBtn_AddContactor_clicked();
+
+    void on_pBtn_Edit_clicked();
+
+    void on_pBtn_DeleteContactor_clicked();
 
 private:
     Ui::MainWindow *ui;

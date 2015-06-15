@@ -93,7 +93,7 @@
       <property name="geometry">
        <rect>
         <x>300</x>
-        <y>80</y>
+        <y>250</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -105,8 +105,8 @@
      <widget class="QPushButton" name="pBtn_Edit">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>170</y>
+        <x>260</x>
+        <y>210</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -123,6 +123,55 @@
         <width>421</width>
         <height>61</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pBtn_AddContactor">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>0</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>添加</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pBtn_DeleteContactor">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>210</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>删除</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_InputTeleNumber">
+      <property name="geometry">
+       <rect>
+        <x>272</x>
+        <y>80</y>
+        <width>121</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_InputTeleNumber">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>60</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>请在此输入号码</string>
       </property>
      </widget>
     </widget>
@@ -275,7 +324,7 @@
      <x>0</x>
      <y>0</y>
      <width>517</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

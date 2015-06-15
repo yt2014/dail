@@ -7,6 +7,7 @@ CContactorsTable::CContactorsTable(QString DatabaseAlias,QString TableName)
     m_TableName = TableName;
     m_ContactorInfoList = ContactorInfoList();
     m_CChinesePinyinTable = new CChinesePinyinTable();
+    Operation = OperationFinished;
 }
 
 CContactorsTable::~CContactorsTable()
@@ -366,4 +367,12 @@ Operation_Result CContactorsTable::InsertPinyinForRecord(ContactorInfo RecordToS
      return value_ret;
 }
 
+void CContactorsTable::setOperation(ContactorTableOperation OperationFlag)
+{
+    Operation = OperationFlag;
+}
 
+ContactorTableOperation CContactorsTable::getOperation()
+{
+    return Operation;
+}

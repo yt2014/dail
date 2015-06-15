@@ -79,6 +79,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ContactorInfoList = m_ContactorTable->getListAllFromDatabase();
     NeedRead_ContactorsInfoAll = false;
     NeedDisplay_ContactorsInfoAll = true;
+    ui->label_InputTeleNumber->hide();
+    ui->lineEdit_InputTeleNumber->hide();
 
     initCommRecordTab();
 
@@ -121,6 +123,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
      ui->tabWidget->setCurrentIndex(0);
      RefreshContent(0,1);
+     QWidget * TabWidgetSelected = ui->tabWidget->widget(0);
+     ui->label_Telenumber->setParent(TabWidgetSelected);
+     ui->label_Telenumber->show();
+
+     connect(ui->pBtn_Edit,SIGNAL(clicked()),this,SLOT(on_pBtnEdit_Add_clicked()));
+
 
      mSystemTrayIcon = new QSystemTrayIcon(this);
      QIcon icon("tele.ico");
@@ -166,8 +174,8 @@ MainWindow::~MainWindow()
     delete m_ContactorTable;
     delete m_CCommRecordTable;
     delete m_CChinesePinyinTable;
-    ThreadAdding.stop();
-    ThreadSearching->stop();
+
+    //delete ThreadSearching;
     delete ui;
 
 }
@@ -177,6 +185,8 @@ void MainWindow::closeEvent(QCloseEvent *e)
 {
 //    e->ignore();
 //    this->hide();
+    ThreadAdding.stop();
+    ThreadSearching->stop();
 }
 
 
@@ -199,7 +209,19 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
     ui->label_indications->setText(strDisplay);
 
+    QWidget * TabWidgetSelected = ui->tabWidget->widget(index);
 
+    ui->label_Telenumber->setParent(TabWidgetSelected);
+
+    ui->labelInputName->setParent(TabWidgetSelected);
+
+    ui->lineEdit_InputName->setParent(TabWidgetSelected);
+
+    ui->pBtn_EditSave->setParent(TabWidgetSelected);
+
+    ui->pBtnCancel->setParent(TabWidgetSelected);
+
+    ui->label_Telenumber->show();
 
     switch(index)
     {
@@ -221,7 +243,6 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     case 1:
         {
 
-           CommRecordInfoList tempListOneNum;
            if(NeedRead_CommRecordInfoAll == true)
            {
 
@@ -350,6 +371,13 @@ void MainWindow::on_pBtnEdit_Add_clicked()
     ui->pBtnEdit_Add->hide();
     ui->pBtnDail->hide();
     ui->treeWidget->setEnabled(false);
+
+    ui->pBtn_Edit->hide();
+    ui->pBtn_Dailout->hide();
+    ui->listWidget->setEnabled(false);
+
+    m_ContactorTable->setOperation(AddContactor);
+
     isAddingContactor = true;
 }
 
@@ -365,91 +393,133 @@ void MainWindow::on_pBtnCancel_clicked()
     ui->pBtnEdit_Add->setEnabled(false);
 
     ui->treeWidget->setEnabled(true);
+    ui->pBtn_Edit->show();
+    ui->pBtn_Dailout->show();
+    ui->listWidget->setEnabled(true);
+
+    ui->label_InputTeleNumber->hide();
+    ui->lineEdit_InputTeleNumber->hide();
 
     isAddingContactor = false;
 }
 
 void MainWindow::on_pBtn_EditSave_clicked()
 {
+    ContactorTableOperation op = m_ContactorTable->getOperation();
+    ContactorInfo infoToOperate;
+    switch(op)
+    {
+    case AddContactor:
+    {
+        /*save data to database here*/
 
-    if(isAddingContactor)
+        infoToOperate.name = ui->lineEdit_InputName->text().trimmed();
+        infoToOperate.telenum = ui->label_Telenumber->text().trimmed();
+
+        if(infoToOperate.name.isEmpty()||(infoToOperate.name==tr("请在此输入名字")))
+        {
+            ui->lineEdit_InputName->setText("请在此输入名字");
+        }
+        else
+        {
+           ui->pBtn_EditSave->setText("确定");
+
+           QRect positionBtn = ui->pBtn_EditSave->geometry();
+
+           // positionBtn.moveRight(2);
+            //positionBtn.width();
+
+           positionBtn.adjust(20,0,20,0);
+           ui->pBtn_EditSave->setGeometry(positionBtn);
+           ui->pBtnCancel->hide();
+           m_ContactorTable->setOperation(OperationFinished);
+           Operation_Result AddResult = m_ContactorTable->addOneRecord(infoToOperate);
+
+            if( AddResult == AddSuccess)
+            {
+                QString strResult = "添加成功";
+                mutex.lock();
+                ContactorlistToAdd.append(infoToOperate);
+                mutex.unlock();
+                ui->label_Telenumber->setText(strResult);
+
+            }
+            else
+            {
+                QString strResult = "adding result is " + QString::number(AddResult);
+                ui->label_Telenumber->setText(strResult);
+            }
+        }
+        /*then display the adding result*/
+
+    }
+        break;
+    case DeleteContacor:
     {
 
-       /*save data to database here*/
-       ContactorInfo infoToAdd;
-       infoToAdd.name = ui->lineEdit_InputName->text().trimmed();
-       infoToAdd.telenum = ui->label_Telenumber->text().trimmed();
+    }
+        break;
+    case ModifyContactor:
+    {
 
-       if(infoToAdd.name.isEmpty()||(infoToAdd.name==tr("请在此输入名字")))
-       {
-           ui->lineEdit_InputName->setText("请在此输入名字");
-       }
-       else
-       {
-          ui->pBtn_EditSave->setText("确定");
+    }
+        break;
+    case OperationFinished:
+    {
+        ui->pBtn_EditSave->setText("添加");
+        ui->labelInputName->hide();
+        ui->lineEdit_InputName->hide();
+        ui->pBtn_EditSave->hide();
+        ui->pBtnCancel->hide();
 
-          QRect positionBtn = ui->pBtn_EditSave->geometry();
+        QRect positionBtn = ui->pBtn_EditSave->geometry();
 
-          // positionBtn.moveRight(2);
-           //positionBtn.width();
+        positionBtn.adjust(-20,0,-20,0);
+        ui->pBtn_EditSave->setGeometry(positionBtn);
 
-          positionBtn.adjust(20,0,20,0);
-          ui->pBtn_EditSave->setGeometry(positionBtn);
-          ui->pBtnCancel->hide();
-          isAddingContactor = false;
-          Operation_Result AddResult = m_ContactorTable->addOneRecord(infoToAdd);
+        ui->pBtnEdit_Add->show();
+        ui->pBtnEdit_Add->setEnabled(false);
+        ui->pBtnDail->show();
+        ui->treeWidget->setEnabled(true);
 
-           if( AddResult == AddSuccess)
-           {
-               QString strResult = "添加成功";
-               mutex.lock();
-               ContactorlistToAdd.append(infoToAdd);
-               mutex.unlock();
-               ui->label_Telenumber->setText(strResult);
+        ui->pBtn_Edit->show();
+        ui->pBtn_Dailout->show();
+        ui->listWidget->setEnabled(true);
 
-           }
-           else
-           {
-               QString strResult = "adding result is " + QString::number(AddResult);
-               ui->label_Telenumber->setText(strResult);
-           }
-       }
-       /*then display the adding result*/
+        ui->label_Telenumber->setText("");
+
+        NeedDisplay_CommRecordInfoAll = true;
+        NeedRead_CommRecordInfoAll = true;
+        NeedDisplay_ContactorsInfoAll = true;
+        NeedRead_ContactorsInfoAll = true;
+        ui->tabWidget->setCurrentIndex(0);
+
+      /*  m_timer = new QTimer(this);
+        connect(m_timer, SIGNAL(timeout()), this, SLOT(updateRecord()));
+        m_timer->start(500);
+        */
+        //QTimer::singleShot(100, this, SLOT(updateRecord()));
+        RefreshContent(0,1);
+        RefreshContent(1,1);
+    }
+        break;
+    default:
+        break;
+
+    }
+
+
+    /*if(isAddingContactor)
+    {
+
+
     }
     else
     {
 
-       ui->pBtn_EditSave->setText("添加");
-       ui->labelInputName->hide();
-       ui->lineEdit_InputName->hide();
-       ui->pBtn_EditSave->hide();
-       ui->pBtnCancel->hide();
 
-       QRect positionBtn = ui->pBtn_EditSave->geometry();
 
-       positionBtn.adjust(-20,0,-20,0);
-       ui->pBtn_EditSave->setGeometry(positionBtn);
-
-       ui->pBtnEdit_Add->show();
-       ui->pBtnEdit_Add->setEnabled(false);
-       ui->pBtnDail->show();
-       ui->treeWidget->setEnabled(true);
-
-       ui->label_Telenumber->setText("");
-
-       NeedDisplay_CommRecordInfoAll = true;
-       NeedRead_CommRecordInfoAll = true;
-       NeedDisplay_ContactorsInfoAll = true;
-       NeedRead_ContactorsInfoAll = true;
-       ui->tabWidget->setCurrentIndex(0);
-
-     /*  m_timer = new QTimer(this);
-       connect(m_timer, SIGNAL(timeout()), this, SLOT(updateRecord()));
-       m_timer->start(500);
-       */
-       QTimer::singleShot(100, this, SLOT(updateRecord()));
-
-       }
+       }*/
 }
 
 void MainWindow::updateRecord()
@@ -490,8 +560,14 @@ void MainWindow::RefreshContent(int index,bool displayAll)
              QString str_ToAdd = oneRecord.name + " " + oneRecord.telenum;
              itemToAdd = new QListWidgetItem(str_ToAdd);
 
+             //setting the value of the item.
+             QVariant valueToSet;
+             valueToSet.setValue(oneRecord);
+             itemToAdd->setData(Qt::UserRole,valueToSet);
+
               ui->listWidget->insertItem(0,itemToAdd);
         }
+        //set the flag after adding all items.
         if(displayAll)
         {
            NeedDisplay_ContactorsInfoAll=false;
@@ -684,6 +760,101 @@ void MainWindow::on_lineEdit_2_textChanged(const QString &arg1)
 
      if(!arg1.isEmpty())
      {
+         mutex.lock();
          KeyWordToSelect.append(QString::number(indexTabWidget) + arg1);
+         mutex.unlock();
      }
+     else
+     {
+         RefreshContent(indexTabWidget,1);
+     }
+
+     ui->label_Telenumber->setText("");
+}
+
+void MainWindow::on_listWidget_itemClicked(QListWidgetItem *item)
+{
+    ContactorInfo infoClicked;
+
+    infoClicked = item->data(Qt::UserRole).value<ContactorInfo>();
+
+    ui->label_Telenumber->setText(infoClicked.telenum);
+
+}
+
+void MainWindow::on_pBtn_AddContactor_clicked()
+{
+    m_ContactorTable->setOperation(AddContactor);
+    ui->labelInputName->show();
+    ui->lineEdit_InputName->show();
+    ui->pBtn_EditSave->show();
+    ui->pBtnCancel->show();
+
+    ui->pBtn_EditSave->setText("添加");
+
+    ui->pBtnEdit_Add->hide();
+    ui->pBtnDail->hide();
+    ui->treeWidget->setEnabled(false);
+
+    ui->pBtn_Edit->hide();
+    ui->pBtn_Dailout->hide();
+    ui->listWidget->setEnabled(false);
+
+
+    ui->pBtn_AddContactor->hide();
+    ui->pBtn_DeleteContactor->hide();
+    ui->label_InputTeleNumber->show();
+    ui->lineEdit_InputTeleNumber->show();
+}
+
+void MainWindow::on_pBtn_Edit_clicked()
+{
+    m_ContactorTable->setOperation(ModifyContactor);
+    ui->labelInputName->show();
+    ui->lineEdit_InputName->show();
+    ui->pBtn_EditSave->show();
+    ui->pBtnCancel->show();
+
+    ui->pBtn_EditSave->setText("保存");
+
+    ui->pBtnEdit_Add->hide();
+    ui->pBtnDail->hide();
+    ui->treeWidget->setEnabled(false);
+
+    ui->pBtn_Edit->hide();
+    ui->pBtn_Dailout->hide();
+    ui->listWidget->setEnabled(false);
+
+
+    ui->pBtn_AddContactor->hide();
+    ui->pBtn_DeleteContactor->hide();
+    ui->label_InputTeleNumber->show();
+    ui->lineEdit_InputTeleNumber->show();
+}
+
+
+
+void MainWindow::on_pBtn_DeleteContactor_clicked()
+{
+    m_ContactorTable->setOperation(DeleteContacor);
+    ui->labelInputName->show();
+    ui->lineEdit_InputName->show();
+    ui->pBtn_EditSave->show();
+    ui->pBtnCancel->show();
+
+    ui->pBtn_EditSave->setText("删除");
+
+    ui->pBtnEdit_Add->hide();
+    ui->pBtnDail->hide();
+    ui->treeWidget->setEnabled(false);
+
+    ui->pBtn_Edit->hide();
+    ui->pBtn_Dailout->hide();
+    ui->listWidget->setEnabled(false);
+
+
+    ui->pBtn_AddContactor->hide();
+    ui->pBtn_DeleteContactor->hide();
+    ui->label_InputTeleNumber->show();
+    ui->lineEdit_InputTeleNumber->show();
 }

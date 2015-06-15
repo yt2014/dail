@@ -19,6 +19,17 @@ typedef struct
     QString telenum;
 }ContactorInfo;
 
+Q_DECLARE_METATYPE(ContactorInfo)
+
+
+typedef enum
+{
+    AddContactor,
+    DeleteContacor,
+    ModifyContactor,
+    OperationFinished
+}ContactorTableOperation;
+
 typedef QList<ContactorInfo> ContactorInfoList;
 
 extern ContactorInfoList ContactorlistToAdd;
@@ -40,12 +51,18 @@ public:
     Operation_Result UpdateOneRecord(ContactorInfo RecordToUpdate);
     Operation_Result DeleteOneRecord(ContactorInfo RecordToDelete);
     Operation_Result InsertPinyinForRecord(ContactorInfo RecordToStore);
+
+    void setOperation(ContactorTableOperation OperationFlag);
+
+    ContactorTableOperation getOperation();
 private:
     QString m_DatabaseAlias;
     QString m_TableName;
     ContactorInfoList m_ContactorInfoList;
     QSqlDatabase db;
     CChinesePinyinTable* m_CChinesePinyinTable;
+
+    ContactorTableOperation Operation;
 };
 
 
