@@ -27,7 +27,7 @@ public:
     virtual void closeEvent(QCloseEvent *e);
     virtual void changeEvent(QEvent *e);
 
-    void RefreshContent(int index);//refresh the content of tabwidget.
+    void RefreshContent(int index, bool displayAll);//refresh the content of tabwidget.
     void setFreshList(CommRecordTopList commRecordList);
     void setFreshList(ContactorInfoList contactorList);
 
@@ -67,7 +67,7 @@ private:
     bool NeedDisplay_ContactorsInfoAll;
 
     /*for communication record below values*/
-    CommRecordInfoList m_CommRecordInfoList;
+    CommRecordTopList m_CommRecordTopListAll;
     CCommRecordTable * m_CCommRecordTable;
     bool NeedRead_CommRecordInfoAll;
     bool NeedDisplay_CommRecordInfoAll;

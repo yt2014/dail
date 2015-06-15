@@ -63,7 +63,7 @@ void CDynamicSelectThread::SelectRecords()
             ContactorInfoList tempContactorList = m_ContactorTable->getListBySql(strSql);
             qDebug()<<"select result number  " + QString::number(tempContactorList.count());
             m_mainwindow->setFreshList(tempContactorList);
-            m_mainwindow->RefreshContent(0);
+            m_mainwindow->RefreshContent(0,0);
         }
         else if(index==1)
         {
@@ -83,7 +83,7 @@ void CDynamicSelectThread::SelectRecords()
             CommRecordTopList tempTopCommRecordList = m_CommRecordTable->getListTopBySql(strSql);
             qDebug()<<"comm record table select result " + QString::number(tempTopCommRecordList.count());
             m_mainwindow->setFreshList(tempTopCommRecordList);
-            m_mainwindow->RefreshContent(1);
+            m_mainwindow->RefreshContent(1,0);
 
         }
 
