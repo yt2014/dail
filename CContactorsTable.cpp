@@ -320,8 +320,8 @@ Operation_Result CContactorsTable::DeleteOneRecord(ContactorInfo RecordToDelete)
         {
             QSqlQuery query(db);
 
-            QString strSQL = "delete from " + m_TableName + " where UserName = '" + RecordToDelete.name
-                                                        +"'";
+            QString strSQL = "delete from " + m_TableName + " where telenumber = \'" + RecordToDelete.telenum
+                                                        +"\'";
            if(query.exec(strSQL))
            {
                value_ret = DeleteSuccess;
