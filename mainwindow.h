@@ -99,6 +99,9 @@ private:
     CommRecordTopList m_topFreshCommRecordList;
     ContactorInfoList m_ContactorFreshList;
     CDynamicSelectThread * ThreadSearching;
+
+    //for modify contactor info
+    ContactorInfo conInfoSelected;
 };
 
 #endif // MAINWINDOW_H

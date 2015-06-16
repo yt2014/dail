@@ -252,6 +252,53 @@ Operation_Result CContactorsTable::UpdateOneRecord(ContactorInfo RecordToUpdate)
 
     return value_ret;
 }
+
+Operation_Result CContactorsTable::UpdateOneRecord(ContactorInfo newRecord,ContactorInfo oldRecord)
+{
+    Operation_Result value_ret = UpdateFailed;
+
+    int index_to_update;
+
+    if(!db.isOpen())
+    {
+       value_ret =  DataBaseNotOpen;
+    }
+    else
+    {
+        index_to_update = isTeleNumExit(oldRecord.telenum);
+        if(index_to_update == -1)
+        {//record not exist
+            value_ret = UpdateFailed;
+            qDebug()<<"record not exist";
+        }
+        else
+        {
+            QSqlQuery query(db);
+
+            QString strSQL = "update " + m_TableName + " set telenumber = \'" + newRecord.telenum
+                                                     + "\', name = \'" + newRecord.name
+                                                     +"\' where telenumber = \'" + oldRecord.telenum
+                                                     +"\'";
+            qDebug()<<strSQL;
+
+           if(query.exec(strSQL))
+           {
+               value_ret = UpdateSuccess;
+               m_ContactorInfoList.removeAt(index_to_update);
+               m_ContactorInfoList.insert(index_to_update,newRecord);
+           }
+           else
+           {
+               value_ret = UpdateFailed;
+           }
+
+        }
+
+    }
+
+    return value_ret;
+}
+
 Operation_Result CContactorsTable::DeleteOneRecord(ContactorInfo RecordToDelete)
 {
     Operation_Result value_ret = DeleteFailed;

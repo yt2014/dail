@@ -49,6 +49,7 @@ public:
     bool openDatabase();
     Operation_Result addOneRecord(ContactorInfo RecordToStore);
     Operation_Result UpdateOneRecord(ContactorInfo RecordToUpdate);
+    Operation_Result UpdateOneRecord(ContactorInfo newRecord,ContactorInfo oldRecord);
     Operation_Result DeleteOneRecord(ContactorInfo RecordToDelete);
     Operation_Result InsertPinyinForRecord(ContactorInfo RecordToStore);
 

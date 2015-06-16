@@ -13,6 +13,19 @@
 extern QMutex mutex;
 extern ContactorInfoList ContactorlistToAdd;
 
+//positions in comm record tab
+QRect positionEditInputName;// = ui->pBtn_EditSave->geometry();
+QRect positionLabelInputName;
+QRect positionBtnCancel;
+QRect positionBtnEdit;
+
+
+//positions in contactors tab
+QRect positionEditInputName_t;// = ui->pBtn_EditSave->geometry();
+QRect positionLabelInputName_t;
+QRect positionBtnCancel_t;
+QRect positionBtnEdit_t;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -120,6 +133,15 @@ MainWindow::MainWindow(QWidget *parent) :
      connect(minButton, SIGNAL(clicked()), this, SLOT(setWindowMin()));
     // connect(maxButton, SIGNAL(clicked()), this, SLOT(winmax()));
 
+     positionEditInputName = ui->lineEdit_InputName->geometry();
+     positionLabelInputName = ui->labelInputName->geometry();
+     positionBtnCancel = ui->pBtnCancel->geometry();
+     positionBtnEdit = ui->pBtn_EditSave->geometry();
+
+     positionEditInputName_t = positionEditInputName.adjusted(-25,20,-25,20);
+     positionLabelInputName_t = positionLabelInputName.adjusted(-25,20,-25,20);
+     positionBtnCancel_t = positionBtnCancel.adjusted(-20,0,-20,0);
+     positionBtnEdit_t = positionBtnEdit.adjusted(-20,0,-20,0);
 
      ui->tabWidget->setCurrentIndex(0);
      RefreshContent(0,1);
@@ -127,7 +149,7 @@ MainWindow::MainWindow(QWidget *parent) :
      ui->label_Telenumber->setParent(TabWidgetSelected);
      ui->label_Telenumber->show();
 
-     connect(ui->pBtn_Edit,SIGNAL(clicked()),this,SLOT(on_pBtnEdit_Add_clicked()));
+     //connect(ui->pBtn_Edit,SIGNAL(clicked()),this,SLOT(on_pBtnEdit_Add_clicked()));
 
 
      mSystemTrayIcon = new QSystemTrayIcon(this);
@@ -238,6 +260,11 @@ void MainWindow::on_tabWidget_currentChanged(int index)
                RefreshContent(0,1);
           }
 
+          ui->lineEdit_InputName->setGeometry(positionEditInputName_t);
+          ui->labelInputName->setGeometry(positionLabelInputName_t);
+          ui->pBtnCancel->setGeometry(positionBtnCancel_t);
+          ui->pBtn_EditSave->setGeometry(positionBtnEdit_t);
+
     }
         break;
     case 1:
@@ -254,6 +281,11 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
                RefreshContent(1,1);
            }
+
+           ui->lineEdit_InputName->setGeometry(positionEditInputName);
+           ui->labelInputName->setGeometry(positionLabelInputName);
+           ui->pBtnCancel->setGeometry(positionBtnCancel);
+           ui->pBtn_EditSave->setGeometry(positionBtnEdit);
 
         }
         break;
@@ -399,6 +431,9 @@ void MainWindow::on_pBtnCancel_clicked()
 
     ui->label_InputTeleNumber->hide();
     ui->lineEdit_InputTeleNumber->hide();
+    ui->pBtn_AddContactor->show();
+    ui->pBtn_DeleteContactor->show();
+
 
     isAddingContactor = false;
 }
@@ -407,6 +442,10 @@ void MainWindow::on_pBtn_EditSave_clicked()
 {
     ContactorTableOperation op = m_ContactorTable->getOperation();
     ContactorInfo infoToOperate;
+    Operation_Result opResult;
+
+    int indexTab = ui->tabWidget->currentIndex();
+
     switch(op)
     {
     case AddContactor:
@@ -414,11 +453,29 @@ void MainWindow::on_pBtn_EditSave_clicked()
         /*save data to database here*/
 
         infoToOperate.name = ui->lineEdit_InputName->text().trimmed();
-        infoToOperate.telenum = ui->label_Telenumber->text().trimmed();
+        if(indexTab==1)
+        {
+           infoToOperate.telenum = ui->label_Telenumber->text().trimmed();
+        }
+        else if(indexTab==0)
+        {
+           infoToOperate.telenum = ui->lineEdit_InputTeleNumber->text().trimmed();
+        }
 
-        if(infoToOperate.name.isEmpty()||(infoToOperate.name==tr("请在此输入名字")))
+        if(  infoToOperate.name.isEmpty()
+           ||(infoToOperate.name==tr("请在此输入名字"))
+                )
         {
             ui->lineEdit_InputName->setText("请在此输入名字");
+        }
+        else if(
+                  indexTab==0
+                &&(  infoToOperate.telenum.isEmpty()
+                   ||(infoToOperate.telenum==tr("请在此输入号码"))
+                  )
+                )
+        {
+           ui->lineEdit_InputTeleNumber->setText("请在此输入号码");
         }
         else
         {
@@ -433,9 +490,9 @@ void MainWindow::on_pBtn_EditSave_clicked()
            ui->pBtn_EditSave->setGeometry(positionBtn);
            ui->pBtnCancel->hide();
            m_ContactorTable->setOperation(OperationFinished);
-           Operation_Result AddResult = m_ContactorTable->addOneRecord(infoToOperate);
+           opResult = m_ContactorTable->addOneRecord(infoToOperate);
 
-            if( AddResult == AddSuccess)
+            if( opResult == AddSuccess)
             {
                 QString strResult = "添加成功";
                 mutex.lock();
@@ -446,7 +503,7 @@ void MainWindow::on_pBtn_EditSave_clicked()
             }
             else
             {
-                QString strResult = "adding result is " + QString::number(AddResult);
+                QString strResult = "adding result is " + QString::number(opResult);
                 ui->label_Telenumber->setText(strResult);
             }
         }
@@ -456,12 +513,93 @@ void MainWindow::on_pBtn_EditSave_clicked()
         break;
     case DeleteContacor:
     {
+        infoToOperate.name = ui->labelInputName->text().trimmed();
 
+        infoToOperate.telenum = ui->label_InputTeleNumber->text().trimmed();
+
+
+           ui->pBtn_EditSave->setText("确定");
+
+           QRect positionBtn = ui->pBtn_EditSave->geometry();
+
+           // positionBtn.moveRight(2);
+            //positionBtn.width();
+
+           positionBtn.adjust(20,0,20,0);
+           ui->pBtn_EditSave->setGeometry(positionBtn);
+           ui->pBtnCancel->hide();
+           m_ContactorTable->setOperation(OperationFinished);
+           opResult = m_ContactorTable->DeleteOneRecord(infoToOperate);
+
+            if( opResult == DeleteSuccess)
+            {
+                QString strResult = "删除成功";
+
+                ui->label_Telenumber->setText(strResult);
+
+            }
+            else
+            {
+                QString strResult = "result is " + QString::number(opResult);
+                ui->label_Telenumber->setText(strResult);
+            }
+
+            ui->labelInputName->setText("输入姓名：");
+            ui->label_InputTeleNumber->setText("输入号码：");
+
+        /*then display the adding result*/
     }
         break;
     case ModifyContactor:
     {
+        infoToOperate.name = ui->lineEdit_InputName->text().trimmed();
 
+        infoToOperate.telenum = ui->lineEdit_InputTeleNumber->text().trimmed();
+
+
+        if(  infoToOperate.name.isEmpty()
+           ||(infoToOperate.name==tr("请在此输入名字"))
+                )
+        {
+            ui->lineEdit_InputName->setText("请在此输入名字");
+        }
+        else if(   infoToOperate.telenum.isEmpty()
+                 ||(infoToOperate.telenum==tr("请在此输入号码"))
+                )
+        {
+           ui->lineEdit_InputTeleNumber->setText("请在此输入号码");
+        }
+        else
+        {
+           ui->pBtn_EditSave->setText("确定");
+
+           QRect positionBtn = ui->pBtn_EditSave->geometry();
+
+           // positionBtn.moveRight(2);
+            //positionBtn.width();
+
+           positionBtn.adjust(20,0,20,0);
+           ui->pBtn_EditSave->setGeometry(positionBtn);
+           ui->pBtnCancel->hide();
+           m_ContactorTable->setOperation(OperationFinished);
+           opResult = m_ContactorTable->UpdateOneRecord(infoToOperate,conInfoSelected);
+
+            if( opResult == UpdateSuccess)
+            {
+                QString strResult = "修改成功";
+                mutex.lock();
+                ContactorlistToAdd.append(infoToOperate);
+                mutex.unlock();
+                ui->label_Telenumber->setText(strResult);
+
+            }
+            else
+            {
+                QString strResult = "result is " + QString::number(opResult);
+                ui->label_Telenumber->setText(strResult);
+            }
+        }
+        /*then display the adding result*/
     }
         break;
     case OperationFinished:
@@ -483,22 +621,31 @@ void MainWindow::on_pBtn_EditSave_clicked()
         ui->treeWidget->setEnabled(true);
 
         ui->pBtn_Edit->show();
+        ui->pBtn_Edit->setEnabled(false);
         ui->pBtn_Dailout->show();
         ui->listWidget->setEnabled(true);
+
+        ui->pBtn_DeleteContactor->show();
+        ui->pBtn_DeleteContactor->setEnabled(false);
+
+        ui->label_InputTeleNumber->hide();
+        ui->lineEdit_InputTeleNumber->hide();
+
+        ui->pBtn_AddContactor->show();
 
         ui->label_Telenumber->setText("");
 
         NeedDisplay_CommRecordInfoAll = true;
-        NeedRead_CommRecordInfoAll = true;
+        m_ContactorInfoList = m_ContactorTable->getListAllFromDatabase();
         NeedDisplay_ContactorsInfoAll = true;
-        NeedRead_ContactorsInfoAll = true;
-        ui->tabWidget->setCurrentIndex(0);
+
 
       /*  m_timer = new QTimer(this);
         connect(m_timer, SIGNAL(timeout()), this, SLOT(updateRecord()));
         m_timer->start(500);
         */
         //QTimer::singleShot(100, this, SLOT(updateRecord()));
+
         RefreshContent(0,1);
         RefreshContent(1,1);
     }
@@ -780,6 +927,11 @@ void MainWindow::on_listWidget_itemClicked(QListWidgetItem *item)
 
     ui->label_Telenumber->setText(infoClicked.telenum);
 
+    ui->pBtn_Edit->setEnabled(true);
+    ui->pBtn_DeleteContactor->setEnabled(true);
+
+    conInfoSelected = infoClicked;
+
 }
 
 void MainWindow::on_pBtn_AddContactor_clicked()
@@ -812,6 +964,7 @@ void MainWindow::on_pBtn_Edit_clicked()
     m_ContactorTable->setOperation(ModifyContactor);
     ui->labelInputName->show();
     ui->lineEdit_InputName->show();
+    ui->lineEdit_InputName->setText(conInfoSelected.name);
     ui->pBtn_EditSave->show();
     ui->pBtnCancel->show();
 
@@ -829,7 +982,10 @@ void MainWindow::on_pBtn_Edit_clicked()
     ui->pBtn_AddContactor->hide();
     ui->pBtn_DeleteContactor->hide();
     ui->label_InputTeleNumber->show();
+    ui->lineEdit_InputTeleNumber->setText(conInfoSelected.telenum);
     ui->lineEdit_InputTeleNumber->show();
+
+    ui->label_Telenumber->setText("");
 }
 
 
@@ -838,7 +994,8 @@ void MainWindow::on_pBtn_DeleteContactor_clicked()
 {
     m_ContactorTable->setOperation(DeleteContacor);
     ui->labelInputName->show();
-    ui->lineEdit_InputName->show();
+    ui->labelInputName->setText(conInfoSelected.name);
+    ui->lineEdit_InputName->hide();
     ui->pBtn_EditSave->show();
     ui->pBtnCancel->show();
 
@@ -856,5 +1013,6 @@ void MainWindow::on_pBtn_DeleteContactor_clicked()
     ui->pBtn_AddContactor->hide();
     ui->pBtn_DeleteContactor->hide();
     ui->label_InputTeleNumber->show();
-    ui->lineEdit_InputTeleNumber->show();
+    ui->label_InputTeleNumber->setText(conInfoSelected.telenum);
+    ui->lineEdit_InputTeleNumber->hide();
 }

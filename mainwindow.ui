@@ -70,7 +70,7 @@
      <bool>true</bool>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tabContactors">
      <attribute name="title">
@@ -248,7 +248,7 @@
        <rect>
         <x>300</x>
         <y>90</y>
-        <width>51</width>
+        <width>71</width>
         <height>16</height>
        </rect>
       </property>
@@ -324,7 +324,7 @@
      <x>0</x>
      <y>0</y>
      <width>517</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
