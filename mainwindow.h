@@ -10,6 +10,7 @@
 #include <QListWidget>
 #include "AddContactorThread.h"
 #include "DynamicSelectThread.h"
+#include "ModemPoolSerialPort.h"
 
 class CDynamicSelectThread;
 
@@ -102,6 +103,9 @@ private:
 
     //for modify contactor info
     ContactorInfo conInfoSelected;
+
+    //modem
+    CModemPoolSerialPort* m_Modem;
 };
 
 #endif // MAINWINDOW_H

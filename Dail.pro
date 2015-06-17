@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT += sql
+QT += serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,7 +21,8 @@ SOURCES += main.cpp\
     CommRecordTable.cpp \
     ChinesePinyinTable.cpp \
     AddContactorThread.cpp \
-    DynamicSelectThread.cpp
+    DynamicSelectThread.cpp \
+    ModemPoolSerialPort.cpp
 
 HEADERS  += mainwindow.h \
     CContatorsTable.h \
@@ -28,7 +30,8 @@ HEADERS  += mainwindow.h \
     CommRecordTable.h \
     ChinesePinyinTable.h \
     AddContactorThread.h \
-    DynamicSelectThread.h
+    DynamicSelectThread.h \
+    ModemPoolSerialPort.h
 
 FORMS    += mainwindow.ui
 

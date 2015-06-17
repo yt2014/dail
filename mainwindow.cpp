@@ -163,6 +163,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
       ThreadSearching = new CDynamicSelectThread(this);
       ThreadSearching->start();
+
+      m_Modem = CModemPoolSerialPort::getInstance();
+
 }
 
 /*void MainWindow::showMe(){
@@ -174,6 +177,7 @@ void MainWindow::setWindowMin()
 {
     ui->label_indications->setText("min button clicked");
     this->showMinimized();
+
 }
 
 void MainWindow::closeWindow()
@@ -197,6 +201,7 @@ MainWindow::~MainWindow()
     delete m_CCommRecordTable;
     delete m_CChinesePinyinTable;
 
+    delete m_Modem;
     //delete ThreadSearching;
     delete ui;
 
