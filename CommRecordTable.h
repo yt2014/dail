@@ -60,12 +60,14 @@ public:
     Operation_Result addOneRecord(CommRecordInfo RecordToStore);
     Operation_Result UpdateOneRecord(CommRecordInfo RecordToUpdate);
     Operation_Result DeleteOneRecord(CommRecordInfo RecordToDelete);
+    Operation_Result DeleteRecordsByTelenumber(CommRecordInfo RelatedRecord);
 
     QString ConstructRecordString(CommRecordInfo RecordToDisplay);
 private:
     QString m_DatabaseAlias;
     QString m_TableName;
     CommRecordInfoList m_CommRecordInfoList;
+    CommRecordTopList m_CommRecordTopList;
     QSqlDatabase db;
 };
 

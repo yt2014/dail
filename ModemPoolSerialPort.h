@@ -6,7 +6,11 @@
 #include <QString>
 
 
-class CModemPoolSerialPort:QSerialPort
+
+void delaySeconds(int n);
+void delayMilliSeconds(int n);
+
+class CModemPoolSerialPort:public QSerialPort
 {
    private: CModemPoolSerialPort();
 

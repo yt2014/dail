@@ -15,6 +15,11 @@ CCommRecordTable::~CCommRecordTable()
        m_CommRecordInfoList.clear();
     }
 
+    if(m_CommRecordTopList.count()!=0)
+    {
+        m_CommRecordTopList.clear();
+    }
+
     if(db.isOpen())
     {
         db.close();
@@ -131,6 +136,7 @@ CommRecordTopList CCommRecordTable::getListTop()
     if(tempList.count()!=0)
     {
          tempList.clear();
+         m_CommRecordTopList.clear();
     }
     if(openDatabase())
     {
@@ -158,6 +164,7 @@ CommRecordTopList CCommRecordTable::getListTop()
 
                }
         }
+        m_CommRecordTopList = tempList;
         return tempList;
     }
     else
@@ -275,28 +282,25 @@ Operation_Result CCommRecordTable::addOneRecord(CommRecordInfo RecordToStore)
      }
      else
      {
-         if(isUserNameExist(RecordToStore) != -1)
-         {
-             value_ret = AddExistRecord;
-         }
-         else
-         {
+
              QSqlQuery query(db);
 
-             QString strSQL = "insert into " + m_TableName + " (telenumber,startTime) values (\'"
-                                                              + RecordToStore.startTime.toString() + "\',\'"
-                                                              + RecordToStore.telenum + "\')";
+             QString strSQL = "insert into " + m_TableName + " (telenumber,startTime,duration,come_go,dail_on,ring_times) values (\'"
+                                                           + RecordToStore.telenum + "\',\'"
+                                                           + RecordToStore.startTime.toString("yyyy-MM-dd hh:mm:ss") + "\',"
+                                                           + QString::number(RecordToStore.callDuration) + ","
+                                                           + QString::number(RecordToStore.isCallIn) + ","
+                                                           + QString::number(RecordToStore.isCallConnected) + ","
+                                                           + QString::number(RecordToStore.ringTimes) + ")";
+            // qDebug()<<strSQL;
             if(query.exec(strSQL))
             {
                 value_ret = AddSuccess;
-                m_CommRecordInfoList.append(RecordToStore);
             }
             else
             {
                 value_ret = AddFailed;
             }
-
-         }
 
      }
 
@@ -365,8 +369,10 @@ Operation_Result CCommRecordTable::DeleteOneRecord(CommRecordInfo RecordToDelete
         {
             QSqlQuery query(db);
 
-            QString strSQL = "delete from " + m_TableName + " where UserName = '" + RecordToDelete.startTime.toString()
-                                                        +"'";
+            QString strSQL = "delete from " + m_TableName + " where telenumber = \'" + RecordToDelete.telenum
+                                                          + "\' and startTime = \'"
+                                                          + RecordToDelete.startTime.toString("yyyy-MM-dd hh:mm:ss")
+                                                          +"\'";
            if(query.exec(strSQL))
            {
                value_ret = DeleteSuccess;
@@ -383,6 +389,47 @@ Operation_Result CCommRecordTable::DeleteOneRecord(CommRecordInfo RecordToDelete
 
     return value_ret;
 }
+
+Operation_Result CCommRecordTable::DeleteRecordsByTelenumber(CommRecordInfo RecordToDelete)
+{
+    Operation_Result value_ret = DeleteFailed;
+
+    int index_to_delete;
+
+    if(!db.isOpen())
+    {
+       value_ret =  DataBaseNotOpen;
+    }
+    else
+    {
+        index_to_delete = isTeleNumExistInTopList(RecordToDelete.telenum,m_CommRecordTopList);
+        if(index_to_delete == -1)
+        {
+            value_ret = DeleteNotExistRecord;
+        }
+        else
+        {
+            QSqlQuery query(db);
+
+            QString strSQL = "delete from " + m_TableName + " where telenumber = \'" + RecordToDelete.telenum
+                                                          + "\'";
+           if(query.exec(strSQL))
+           {
+               value_ret = DeleteSuccess;
+               m_CommRecordTopList.removeAt(index_to_delete);
+           }
+           else
+           {
+               value_ret = DeleteFailed;
+           }
+
+        }
+
+    }
+
+    return value_ret;
+}
+
 
 QString CCommRecordTable::ConstructRecordString(CommRecordInfo RecordToDisplay)
 {

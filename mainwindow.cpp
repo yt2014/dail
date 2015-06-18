@@ -8,6 +8,8 @@
 #include <QTimer>
 #include <QMutex>
 
+#include <QDialog>
+
 #pragma warning(disable: 4819)
 
 extern QMutex mutex;
@@ -165,6 +167,9 @@ MainWindow::MainWindow(QWidget *parent) :
       ThreadSearching->start();
 
       m_Modem = CModemPoolSerialPort::getInstance();
+
+
+      connect(ui->pBtnShortMessage,SIGNAL(clicked()),this,SLOT(launchShorMessageForm()));
 
 }
 
@@ -336,6 +341,19 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 void MainWindow::on_pBtn_Dailout_clicked()
 {
     ui->label_indications->setText("拨号中。。。");
+    CommRecordInfo recordToAdd;
+    recordToAdd.startTime = QDateTime::currentDateTime();
+    recordToAdd.telenum = "12612812901";
+    recordToAdd.isCallConnected = true;
+    recordToAdd.isCallIn = true;
+    recordToAdd.callDuration = 3600;
+    recordToAdd.ringTimes = 0;
+
+   Operation_Result ret = m_CCommRecordTable->DeleteRecordsByTelenumber(recordToAdd);
+
+   qDebug()<<"operation result is " + QString::number(ret);
+   NeedRead_CommRecordInfoAll = true;
+
 }
 
 void MainWindow::on_pBtn_Contactors_clicked()
@@ -1060,4 +1078,20 @@ void MainWindow::on_pBtn_DeleteContactor_clicked()
 
 
     ui->label_Telenumber->setText("");
+}
+
+void MainWindow::launchShorMessageForm()
+{
+    qDebug()<<"short message clicked";
+    QDialog shortMessage;
+
+    shortMessage.setWindowTitle("John 1321341589");
+    shortMessage.setWindowIcon(QIcon(QPixmap("message.ico")));
+
+    this->hide();
+    shortMessage.show();
+    shortMessage.exec();
+
+    this->show();
+
 }

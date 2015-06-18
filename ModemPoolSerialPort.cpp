@@ -1,4 +1,5 @@
-﻿#include "ModemPoolSerialPort.h"
+#include "ModemPoolSerialPort.h"
+#include <QTime>
 #include <QDebug>
 
 CModemPoolSerialPort * CModemPoolSerialPort::_Instance = NULL;
@@ -21,11 +22,14 @@ CModemPoolSerialPort::CModemPoolSerialPort()
            QSerialPort serial;
            serial.setPort(info);
            serial.setBaudRate(QSerialPort::Baud115200);
+
+           delayMilliSeconds(50);
            if (serial.open(QIODevice::ReadWrite))
            {
                qDebug()<<"open com port successfully";
+               delayMilliSeconds(50);
+               serial.close();
            }
-
        }
 
 }
@@ -38,4 +42,27 @@ CModemPoolSerialPort *CModemPoolSerialPort::getInstance()
     }
 
     return _Instance;
+}
+
+
+void delaySeconds(int n)
+{
+    QTime startTime = QTime::currentTime();
+
+    QTime NowTime = QTime::currentTime();
+    while(startTime.secsTo(NowTime)<n)
+    {
+       NowTime = QTime::currentTime();
+    }
+}
+
+
+void delayMilliSeconds(int n)
+{
+    QTime startTime = QTime::currentTime();
+    QTime NowTime = QTime::currentTime();
+    while(startTime.msecsTo(NowTime)<n)
+    {
+         NowTime = QTime::currentTime();
+    }
 }
