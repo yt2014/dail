@@ -66,6 +66,8 @@ private slots:
 
     void on_pBtn_DeleteContactor_clicked();
 
+    void launchShorMessageForm();
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon * mSystemTrayIcon;    

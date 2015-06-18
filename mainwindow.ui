@@ -282,6 +282,19 @@
        <string>取消</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="pBtnShortMessage">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>290</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>短消息</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabRingup">
      <attribute name="title">
@@ -324,7 +337,7 @@
      <x>0</x>
      <y>0</y>
      <width>517</width>
-     <height>23</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

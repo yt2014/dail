@@ -8,6 +8,8 @@
 #include <QTimer>
 #include <QMutex>
 
+#include <QDialog>
+
 #pragma warning(disable: 4819)
 
 extern QMutex mutex;
@@ -165,6 +167,9 @@ MainWindow::MainWindow(QWidget *parent) :
       ThreadSearching->start();
 
       m_Modem = CModemPoolSerialPort::getInstance();
+
+
+      connect(ui->pBtnShortMessage,SIGNAL(clicked()),this,SLOT(launchShorMessageForm()));
 
 }
 
@@ -1073,4 +1078,18 @@ void MainWindow::on_pBtn_DeleteContactor_clicked()
 
 
     ui->label_Telenumber->setText("");
+}
+
+void MainWindow::launchShorMessageForm()
+{
+    qDebug()<<"short message clicked";
+    QDialog shortMessage;
+
+    shortMessage.setWindowTitle("John 1321341589");
+
+    this->hide();
+    shortMessage.show();
+    shortMessage.exec();
+    this->show();
+
 }
