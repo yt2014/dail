@@ -336,6 +336,19 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 void MainWindow::on_pBtn_Dailout_clicked()
 {
     ui->label_indications->setText("拨号中。。。");
+    CommRecordInfo recordToAdd;
+    recordToAdd.startTime = QDateTime::currentDateTime();
+    recordToAdd.telenum = "12612812901";
+    recordToAdd.isCallConnected = true;
+    recordToAdd.isCallIn = true;
+    recordToAdd.callDuration = 3600;
+    recordToAdd.ringTimes = 0;
+
+   Operation_Result ret = m_CCommRecordTable->DeleteRecordsByTelenumber(recordToAdd);
+
+   qDebug()<<"operation result is " + QString::number(ret);
+   NeedRead_CommRecordInfoAll = true;
+
 }
 
 void MainWindow::on_pBtn_Contactors_clicked()

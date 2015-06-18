@@ -78,7 +78,7 @@ ContactorInfoList CContactorsTable::getListAllFromDatabase()
 
 ContactorInfoList CContactorsTable::getListBySql(QString strSql)
 {
-    ContactorInfoList listReturn = ContactorInfoList();
+    ContactorInfoList listReturn;
     if(openDatabase())
     {
         QSqlQuery query(db);
