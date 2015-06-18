@@ -1,4 +1,4 @@
-#include "ModemPoolSerialPort.h"
+﻿#include "ModemPoolSerialPort.h"
 #include <QDebug>
 
 CModemPoolSerialPort * CModemPoolSerialPort::_Instance = NULL;
@@ -20,8 +20,12 @@ CModemPoolSerialPort::CModemPoolSerialPort()
            // Example use QSerialPort
            QSerialPort serial;
            serial.setPort(info);
+           serial.setBaudRate(QSerialPort::Baud115200);
            if (serial.open(QIODevice::ReadWrite))
-               serial.close();
+           {
+               qDebug()<<"open com port successfully";
+           }
+
        }
 
 }
