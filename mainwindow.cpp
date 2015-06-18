@@ -1086,10 +1086,12 @@ void MainWindow::launchShorMessageForm()
     QDialog shortMessage;
 
     shortMessage.setWindowTitle("John 1321341589");
+    shortMessage.setWindowIcon(QIcon(QPixmap("message.ico")));
 
     this->hide();
     shortMessage.show();
     shortMessage.exec();
+
     this->show();
 
 }
