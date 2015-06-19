@@ -68,6 +68,8 @@ private slots:
 
     void launchShorMessageForm();
 
+    void portsChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon * mSystemTrayIcon;    

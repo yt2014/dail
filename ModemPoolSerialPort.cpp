@@ -1,9 +1,12 @@
-#include "ModemPoolSerialPort.h"
+﻿#include "ModemPoolSerialPort.h"
 #include <QTime>
 #include <QDebug>
+#include <QMutex>
+
+extern QMutex mutex;
 
 CModemPoolSerialPort * CModemPoolSerialPort::_Instance = NULL;
-
+serialPortList ports;
 
 CModemPoolSerialPort::CModemPoolSerialPort()
 {
@@ -13,23 +16,27 @@ CModemPoolSerialPort::CModemPoolSerialPort()
     qDebug()<<"databits is "+QString::number(this->dataBits());
     qDebug()<<"baudRate is " + QString::number(this->baudRate());
 
+    ports.clear();
+
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
            qDebug() << "Name        : " << info.portName();
            qDebug() << "Description : " << info.description();
            qDebug() << "Manufacturer: " << info.manufacturer();
 
            // Example use QSerialPort
-           QSerialPort serial;
-           serial.setPort(info);
-           serial.setBaudRate(QSerialPort::Baud115200);
+           QSerialPort *serial = new QSerialPort();
+           serial->setPort(info);
+           serial->setBaudRate(QSerialPort::Baud115200);
+           ports.append(serial);
 
-           delayMilliSeconds(50);
-           if (serial.open(QIODevice::ReadWrite))
+
+           //delayMilliSeconds(1000);
+           /*if (serial.open(QIODevice::ReadWrite))
            {
                qDebug()<<"open com port successfully";
-               delayMilliSeconds(50);
+               delayMilliSeconds(1000);
                serial.close();
-           }
+           }*/
        }
 
 }
@@ -66,3 +73,15 @@ void delayMilliSeconds(int n)
          NowTime = QTime::currentTime();
     }
 }
+
+
+void CModemPoolSerialPort::close()
+{
+    mutex.lock();
+
+    QSerialPort::close();
+
+    mutex.unlock();
+
+}
+

@@ -1,4 +1,4 @@
-#ifndef MODEMPOOLSERIALPOOL
+﻿#ifndef MODEMPOOLSERIALPOOL
 #define MODEMPOOLSERIALPOOL
 
 #include <QSerialPort>
@@ -10,14 +10,22 @@
 void delaySeconds(int n);
 void delayMilliSeconds(int n);
 
+
+
+typedef QList<QSerialPort *> serialPortList;
+
+extern serialPortList ports;
+
 class CModemPoolSerialPort:public QSerialPort
 {
    private: CModemPoolSerialPort();
 
            static CModemPoolSerialPort * _Instance;
 
+
    public:
        static CModemPoolSerialPort * getInstance();
+       void close();
 
 };
 

@@ -7,6 +7,7 @@
 #include <QCloseEvent>
 #include <QTimer>
 #include <QMutex>
+#include <QComboBox>
 
 #include <QDialog>
 
@@ -207,6 +208,16 @@ MainWindow::~MainWindow()
     delete m_CChinesePinyinTable;
 
     delete m_Modem;
+    int num=ports.count();
+    for(int i=0;i<num;i++)
+    {
+        QSerialPort * serial = ports.takeAt(0);
+        if(serial!=NULL)
+        {
+           delete serial;
+           serial = NULL;
+        }
+    }
     //delete ThreadSearching;
     delete ui;
 
@@ -371,6 +382,8 @@ void MainWindow::on_pBtn_Dail_clicked()
 
 }
 
+QSerialPort * curentPort;
+
 void MainWindow::on_pBtnDail_clicked()
 {
     // m_CChinesePinyinTable->initTable();
@@ -378,6 +391,26 @@ void MainWindow::on_pBtnDail_clicked()
     recordToUpdate.name = "ty张三";
     recordToUpdate.telenum = "12612812911";
     m_ContactorTable->InsertPinyinForRecord(recordToUpdate);*/
+    ui->tabWidget->setCurrentIndex(2);
+
+    QWidget * TabWidgetSelected = ui->tabWidget->widget(2);
+
+        QComboBox * cbComs = new QComboBox(TabWidgetSelected);
+
+        int num_ports = ports.count();
+
+        for(int i=0;i<num_ports;i++)
+        {
+           cbComs->addItem(ports.at(i)->portName());
+        }
+
+        connect(cbComs,SIGNAL(currentIndexChanged(int)),this,SLOT(portsChanged(int)));
+
+        curentPort = ports.at(0);
+        curentPort->open(QIODevice::ReadWrite);
+
+        cbComs->show();
+
 }
 
 void MainWindow::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
@@ -1094,4 +1127,11 @@ void MainWindow::launchShorMessageForm()
 
     this->show();
 
+}
+
+void MainWindow::portsChanged(int index)
+{
+    curentPort->close();
+    curentPort = ports.at(index);
+    curentPort->open(QIODevice::ReadWrite);
 }
