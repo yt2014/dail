@@ -12,9 +12,9 @@ void delayMilliSeconds(int n);
 
 
 
-typedef QList<QSerialPort *> serialPortList;
+typedef QList<QSerialPortInfo> serialPortInfoList;
 
-extern serialPortList ports;
+extern serialPortInfoList portsInfo;
 
 class CModemPoolSerialPort:public QSerialPort
 {

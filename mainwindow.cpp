@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QMutex>
 #include <QComboBox>
+#include <QScrollArea>
 
 #include <QDialog>
 
@@ -208,16 +209,9 @@ MainWindow::~MainWindow()
     delete m_CChinesePinyinTable;
 
     delete m_Modem;
-    int num=ports.count();
-    for(int i=0;i<num;i++)
-    {
-        QSerialPort * serial = ports.takeAt(0);
-        if(serial!=NULL)
-        {
-           delete serial;
-           serial = NULL;
-        }
-    }
+
+    portsInfo.clear();
+
     //delete ThreadSearching;
     delete ui;
 
@@ -397,17 +391,20 @@ void MainWindow::on_pBtnDail_clicked()
 
         QComboBox * cbComs = new QComboBox(TabWidgetSelected);
 
-        int num_ports = ports.count();
+        int num_ports = portsInfo.count();
 
         for(int i=0;i<num_ports;i++)
         {
-           cbComs->addItem(ports.at(i)->portName());
+           cbComs->addItem(portsInfo.at(i).portName());
         }
 
         connect(cbComs,SIGNAL(currentIndexChanged(int)),this,SLOT(portsChanged(int)));
 
-        curentPort = ports.at(0);
-        curentPort->open(QIODevice::ReadWrite);
+        m_Modem->setPort(portsInfo.at(0));
+        if(m_Modem->open(QIODevice::ReadWrite))
+        {
+            qDebug()<<"open comm port sucessfully";
+        }
 
         cbComs->show();
 
@@ -1121,17 +1118,83 @@ void MainWindow::launchShorMessageForm()
     shortMessage.setWindowTitle("John 1321341589");
     shortMessage.setWindowIcon(QIcon(QPixmap("message.ico")));
 
+    QPalette palette;
+  //  palette.setColor(QPalette::Background, QColor(255,255,255));
+
+    shortMessage.setAutoFillBackground(true);
+    shortMessage.setPalette(palette);
+
+    shortMessage.setBaseSize(600,800);
+    QRect rectWindow(0,0,600,800);
+    shortMessage.setFixedSize(600,800);
+
+
+    QScrollArea * areaDisplayMessage = new QScrollArea(shortMessage.window());
+    palette.setColor(QPalette::Background, QColor(255,255,255));
+    areaDisplayMessage->setPalette(palette);
+
+    areaDisplayMessage->setBaseSize(600,600);
+    rectWindow = QRect(50,0,500,600);
+    areaDisplayMessage->setGeometry(rectWindow);
+
+    QFont font;
+    font.setPointSize(14);
+
+    //QLabel * text = new QLabel(shortMessage.window());
+    QLabel * text = new QLabel(areaDisplayMessage->widget());
+    palette.setColor(QPalette::Background, QColor(0xcc,0xff,0x99));
+    text->setAlignment(Qt::AlignLeft);
+    text->setAutoFillBackground(true);
+    text->setPalette(palette);
+    text->setMaximumWidth(200);
+    text->setFont(font);
+    text->setWordWrap(true);
+
+    text->setText("2015-5-10 12:13:02 \n 那天我去找你，你在哪儿？找你有急事,我看到你老爹，没有看到你");
+    text->adjustSize();
+    text->show();
+
+    QRect rect_text = text->geometry();
+
+    int wid = rect_text.width();
+    int hei = rect_text.height();
+
+
+
+
+    //int wid = rect_text.width();
+    //int hei = rect_text.height();
+
+    QLabel * text1 = new QLabel(areaDisplayMessage->window());
+    palette.setColor(QPalette::Background, QColor(0xcc,0xdd,0xff));
+    text1->setAlignment(Qt::AlignLeft);
+    text1->setAutoFillBackground(true);
+    text1->setPalette(palette);
+    text1->setMaximumWidth(200);
+    text1->setText("我在家里");
+    rect_text = text1->geometry();
+    rect_text.adjust(wid,hei,wid,hei);
+    text1->setGeometry(rect_text);
+    text1->setFont(font);
+    text1->adjustSize();
+
+
     this->hide();
     shortMessage.show();
     shortMessage.exec();
-
+    delete text;
+    delete areaDisplayMessage;
     this->show();
 
 }
 
 void MainWindow::portsChanged(int index)
 {
-    curentPort->close();
-    curentPort = ports.at(index);
-    curentPort->open(QIODevice::ReadWrite);
+    if(m_Modem->isOpen())
+    {
+        m_Modem->close();
+        qDebug()<<"com port closed";
+    }
+    m_Modem->setPort(portsInfo.at(index));
+    m_Modem->open(QIODevice::ReadWrite);
 }
