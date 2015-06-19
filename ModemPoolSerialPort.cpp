@@ -84,9 +84,18 @@ void CModemPoolSerialPort::close()
 {
     mutex.lock();
 
-    QSerialPort::close();
+    QIODevice::close();
 
     mutex.unlock();
 
 }
 
+void CModemPoolSerialPort::closeAll()
+{
+    int num = portsInfo.count();
+    for(int i=0;i<num;i++)
+    {
+        this->setPort(portsInfo.at(i));
+        this->close();
+    }
+}
