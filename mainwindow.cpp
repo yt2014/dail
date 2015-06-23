@@ -9,6 +9,7 @@
 #include <QMutex>
 #include <QComboBox>
 #include <QScrollArea>
+#include <QVBoxLayout>
 
 #include <QDialog>
 
@@ -1130,18 +1131,30 @@ void MainWindow::launchShorMessageForm()
 
 
     QScrollArea * areaDisplayMessage = new QScrollArea(shortMessage.window());
-    palette.setColor(QPalette::Background, QColor(255,255,255));
-    areaDisplayMessage->setPalette(palette);
+  // palette.setColor(QPalette::Background, QColor(255,255,255));
+   // areaDisplayMessage->setPalette(palette);
 
     areaDisplayMessage->setBaseSize(600,600);
     rectWindow = QRect(50,0,500,600);
     areaDisplayMessage->setGeometry(rectWindow);
 
+
+
+    QWidget * wgScroll = new QWidget(shortMessage.window());
+   // wgScroll->setMinimumWidth(800);
+    wgScroll->setMinimumHeight(1000);
+    wgScroll->setAutoFillBackground(true);
+    palette.setColor(QPalette::Background, QColor(255,255,0));
+    wgScroll->setPalette(palette);
+
+
+        QBoxLayout *layout = new QBoxLayout(QBoxLayout::TopToBottom);
+
     QFont font;
     font.setPointSize(14);
 
     //QLabel * text = new QLabel(shortMessage.window());
-    QLabel * text = new QLabel(areaDisplayMessage->widget());
+    QLabel * text = new QLabel(wgScroll);
     palette.setColor(QPalette::Background, QColor(0xcc,0xff,0x99));
     text->setAlignment(Qt::AlignLeft);
     text->setAutoFillBackground(true);
@@ -1165,7 +1178,7 @@ void MainWindow::launchShorMessageForm()
     //int wid = rect_text.width();
     //int hei = rect_text.height();
 
-    QLabel * text1 = new QLabel(areaDisplayMessage->window());
+    QLabel * text1 = new QLabel(wgScroll);
     palette.setColor(QPalette::Background, QColor(0xcc,0xdd,0xff));
     text1->setAlignment(Qt::AlignLeft);
     text1->setAutoFillBackground(true);
@@ -1177,13 +1190,44 @@ void MainWindow::launchShorMessageForm()
     text1->setGeometry(rect_text);
     text1->setFont(font);
     text1->adjustSize();
+    text1->show();
 
+  //  QPushButton * pbtnTest = new QPushButton();
+  //  pbtnTest->show();
+    layout->addWidget(text);
+    layout->addWidget(text1);
+
+    wgScroll->setLayout(layout);
+
+    //wgScroll->show();
+    //areaDisplayMessage->show();
+
+
+    QWidget *window = new QWidget(shortMessage.window());
+        QPushButton *button1 = new QPushButton("One");
+        QPushButton *button2 = new QPushButton("Two");
+        QPushButton *button3 = new QPushButton("Three");
+        QPushButton *button4 = new QPushButton("Four");
+        QPushButton *button5 = new QPushButton("Five");
+
+    /* QVBoxLayout*  layout = new QVBoxLayout;
+        layout->addWidget(button1);
+        layout->addWidget(button2);
+        layout->addWidget(button3);
+        layout->addWidget(button4);
+        layout->addWidget(button5);
+*/
+     //   window->setLayout(layout);
+
+        areaDisplayMessage->setWidget(wgScroll);
+       // areaDisplayMessage->setWidget(window);
+        wgScroll->show();
 
     this->hide();
     shortMessage.show();
     shortMessage.exec();
-    delete text;
-    delete areaDisplayMessage;
+  //  delete text;
+  //  delete areaDisplayMessage;
     this->show();
 
 }
