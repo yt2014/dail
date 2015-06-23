@@ -8,6 +8,7 @@
 #include "ChinesePinyinTable.h"
 #include <QTreeWidget>
 #include <QListWidget>
+#include <QPushButton>
 #include "AddContactorThread.h"
 #include "DynamicSelectThread.h"
 #include "ModemPoolSerialPort.h"
@@ -70,6 +71,8 @@ private slots:
 
     void portsChanged(int index);
 
+    void OpenClosePort();
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon * mSystemTrayIcon;    
@@ -110,6 +113,8 @@ private:
 
     //modem
     CModemPoolSerialPort* m_Modem;
+
+    QPushButton * pbtn_OpenClose;
 };
 
 #endif // MAINWINDOW_H

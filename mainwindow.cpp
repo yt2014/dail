@@ -209,6 +209,7 @@ MainWindow::~MainWindow()
     delete m_CCommRecordTable;
     delete m_CChinesePinyinTable;
 
+    m_Modem->closeAll();
     delete m_Modem;
 
     portsInfo.clear();
@@ -408,6 +409,22 @@ void MainWindow::on_pBtnDail_clicked()
         }
 
         cbComs->show();
+
+        pbtn_OpenClose = new QPushButton(TabWidgetSelected);
+
+        pbtn_OpenClose->setText("close");
+
+
+        pbtn_OpenClose->show();
+
+        QRect posCombo = cbComs->geometry();
+
+        QRect posBtn = pbtn_OpenClose->geometry();
+
+        posBtn.adjust(posCombo.width(),posCombo.height(),posCombo.width(),posCombo.height());
+
+        pbtn_OpenClose->setGeometry(posBtn);
+        connect(pbtn_OpenClose,SIGNAL(clicked()),this,SLOT(OpenClosePort()));
 
 }
 
@@ -1240,5 +1257,21 @@ void MainWindow::portsChanged(int index)
         qDebug()<<"com port closed";
     }
     m_Modem->setPort(portsInfo.at(index));
-    m_Modem->open(QIODevice::ReadWrite);
+    pbtn_OpenClose->setText("open");
+   // m_Modem->open(QIODevice::ReadWrite);
+}
+
+
+void MainWindow::OpenClosePort()
+{
+    if(pbtn_OpenClose->text()=="close")
+    {
+        pbtn_OpenClose->setText("open");
+        m_Modem->close();
+    }
+    else
+    {
+        m_Modem->open(QIODevice::ReadWrite);
+        pbtn_OpenClose->setText("close");
+    }
 }

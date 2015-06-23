@@ -27,6 +27,8 @@ class CModemPoolSerialPort:public QSerialPort
        static CModemPoolSerialPort * getInstance();
        void close();
 
+       void closeAll();
+
 };
 
 
