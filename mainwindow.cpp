@@ -10,6 +10,7 @@
 #include <QComboBox>
 #include <QScrollArea>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 
 #include <QDialog>
 
@@ -1158,10 +1159,11 @@ void MainWindow::launchShorMessageForm()
 
 
     QWidget * wgScroll = new QWidget(shortMessage.window());
-   // wgScroll->setMinimumWidth(800);
+    //rectWindow = QRect(50,0,500,600);
+    wgScroll->setMaximumWidth(500);
  //   wgScroll->setMinimumHeight(1000);
     wgScroll->setAutoFillBackground(true);
-    palette.setColor(QPalette::Background, QColor(255,255,0));
+    palette.setColor(QPalette::Background, QColor(255,255,255));
     wgScroll->setPalette(palette);
 
 
@@ -1176,7 +1178,7 @@ void MainWindow::launchShorMessageForm()
     text->setAlignment(Qt::AlignLeft);
     text->setAutoFillBackground(true);
     text->setPalette(palette);
-    text->setMaximumWidth(200);
+    text->setMaximumWidth(350);
     text->setFont(font);
     text->setWordWrap(true);
 
@@ -1200,19 +1202,35 @@ void MainWindow::launchShorMessageForm()
     text1->setAlignment(Qt::AlignLeft);
     text1->setAutoFillBackground(true);
     text1->setPalette(palette);
-    text1->setMaximumWidth(200);
-    text1->setText("我在家里");
-    rect_text = text1->geometry();
-    rect_text.adjust(wid,hei,wid,hei);
-    text1->setGeometry(rect_text);
+    text1->setMaximumWidth(350);
+    text1->setText("我在家里oytytytythnncbvhfhnnbchskfsfhkshfkafhsdakjdfhasd");
+    text1->setWordWrap(true);
     text1->setFont(font);
     text1->adjustSize();
     text1->show();
 
   //  QPushButton * pbtnTest = new QPushButton();
   //  pbtnTest->show();
-  //  layout->addWidget(text);
-  //  layout->addWidget(text1);
+  //  layout->addWidget(text,0,0);
+  //  layout->addWidget(text1,1,0,Qt::AlignRight);
+
+    QHBoxLayout *layoutline = new QHBoxLayout();
+    layoutline->addWidget(text);
+    layoutline->insertSpacing(1,150);
+    layoutline->setMargin(0);
+    layout->addLayout(layoutline,0,0);
+
+    layoutline = new QHBoxLayout();
+    layoutline->insertSpacing(0,150);
+    layoutline->addWidget(text1);
+    layoutline->setMargin(0);
+    layout->addLayout(layoutline,1,0);
+
+    layout->setMargin(0);
+
+    rect_text = text1->geometry();
+    rect_text.adjust(wid,hei,wid,hei);
+    text1->setGeometry(rect_text);
 
 
 
