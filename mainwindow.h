@@ -8,6 +8,7 @@
 #include "ChinesePinyinTable.h"
 #include <QTreeWidget>
 #include <QListWidget>
+#include <QLabel>
 #include <QPushButton>
 #include "AddContactorThread.h"
 #include "DynamicSelectThread.h"
@@ -115,6 +116,7 @@ private:
     CModemPoolSerialPort* m_Modem;
 
     QPushButton * pbtn_OpenClose;
+    QLabel * label_SIMNumber;
 };
 
 #endif // MAINWINDOW_H

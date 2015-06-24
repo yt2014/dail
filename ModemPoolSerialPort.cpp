@@ -25,8 +25,10 @@ CModemPoolSerialPort::CModemPoolSerialPort()
            qDebug() << "Description : " << info.description();
            qDebug() << "Manufacturer: " << info.manufacturer();
 
-
-           portsInfo.append(info);
+           if(info.manufacturer()=="Exar Corporation")
+           {
+               portsInfo.append(info);
+           }
 
            // Example use QSerialPort
           /* QSerialPort *serial = new QSerialPort();

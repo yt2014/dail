@@ -210,6 +210,7 @@ MainWindow::~MainWindow()
     delete m_CCommRecordTable;
     delete m_CChinesePinyinTable;
 
+   // ui->tabWidget->widget(2)->children()->clear();
     m_Modem->closeAll();
     delete m_Modem;
 
@@ -251,16 +252,29 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
     QWidget * TabWidgetSelected = ui->tabWidget->widget(index);
 
-    ui->label_Telenumber->setParent(TabWidgetSelected);
+    if((index==0)||(index==1))
+    {
+       ui->label_Telenumber->setParent(TabWidgetSelected);
 
-    ui->labelInputName->setParent(TabWidgetSelected);
+       ui->labelInputName->setParent(TabWidgetSelected);
 
-    ui->lineEdit_InputName->setParent(TabWidgetSelected);
+       ui->lineEdit_InputName->setParent(TabWidgetSelected);
 
-    ui->pBtn_EditSave->setParent(TabWidgetSelected);
+       ui->pBtn_EditSave->setParent(TabWidgetSelected);
 
-    ui->pBtnCancel->setParent(TabWidgetSelected);
+       ui->pBtnCancel->setParent(TabWidgetSelected);
 
+      QWidget * tabWidget2 = ui->tabWidget->widget(2);
+      QList<QPushButton *> allPButtons = tabWidget2->findChildren<QPushButton *>();
+      allPButtons.clear();
+
+      QList<QComboBox *> allCbBoxs = tabWidget2->findChildren<QComboBox *>();
+      allCbBoxs.clear();
+
+      QList<QLabel *> allLabels = tabWidget2->findChildren<QLabel *>();
+      allLabels.clear();
+
+    }
     ui->label_Telenumber->show();
     ui->label_Telenumber->setText("");
 
@@ -336,6 +350,78 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         }
         break;
     case 2:
+    {
+      //  QWidget * TabWidgetSelected = ui->tabWidget->widget(2);
+
+        QLabel * labelSelectSIM = new QLabel("请选择SIM进行拨号",TabWidgetSelected);
+        labelSelectSIM->adjustSize();
+        labelSelectSIM->show();
+
+        QSize sizeLabel = labelSelectSIM->size();
+
+        qDebug()<<"height is " << sizeLabel.height();
+        qDebug()<<"width is" << sizeLabel.width();
+
+        label_SIMNumber = new QLabel("SIM不可用",TabWidgetSelected);
+        label_SIMNumber->adjustSize();
+        label_SIMNumber->show();
+
+        QComboBox * cbComs = new QComboBox(TabWidgetSelected);
+
+            int num_ports = portsInfo.count();
+
+            for(int i=0;i<num_ports;i++)
+            {
+               cbComs->addItem(portsInfo.at(i).portName());
+            }
+
+            connect(cbComs,SIGNAL(currentIndexChanged(int)),this,SLOT(portsChanged(int)));
+
+            m_Modem->setPort(portsInfo.at(0));
+            if(m_Modem->open(QIODevice::ReadWrite))
+            {
+                qDebug()<<"open comm port sucessfully";
+            }
+
+            cbComs->show();
+
+            pbtn_OpenClose = new QPushButton(TabWidgetSelected);
+
+            pbtn_OpenClose->setText("close");
+
+            pbtn_OpenClose->show();
+
+            QRect posCombo = cbComs->geometry();
+
+            QRect posBtn = pbtn_OpenClose->geometry();
+
+            posBtn.adjust(posCombo.width(),0,posCombo.width(),0);
+            pbtn_OpenClose->setGeometry(posBtn);
+
+        QGridLayout * gridlayout = new QGridLayout();
+        /*gridlayout->addWidget(labelSelectSIM,0,0,1,1,Qt::AlignLeft|Qt::AlignTop);
+        gridlayout->addWidget(cbComs,1,0,1,1,Qt::AlignLeft|Qt::AlignTop);
+        gridlayout->addWidget(label_SIMNumber,1,1);
+        gridlayout->addWidget(pbtn_OpenClose,2,0);
+        */
+        QVBoxLayout * vlayout1 = new QVBoxLayout();
+        QVBoxLayout * vlayout2 = new QVBoxLayout();
+
+        vlayout1->addWidget(labelSelectSIM);
+        vlayout1->addWidget(cbComs);
+
+        vlayout2->addWidget(label_SIMNumber);
+        vlayout2->addWidget(pbtn_OpenClose);
+
+        //gridlayout->setVerticalSpacing(0);
+        gridlayout->addLayout(vlayout1,0,0);
+        gridlayout->addLayout(vlayout2,0,1);
+        gridlayout->setMargin(0);
+
+        TabWidgetSelected->setLayout(gridlayout);
+        connect(pbtn_OpenClose,SIGNAL(clicked()),this,SLOT(OpenClosePort()));
+
+    }
         break;
     case 3:
         break;
@@ -345,6 +431,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
     }
 }
+
 
 void MainWindow::on_pBtn_Dailout_clicked()
 {
@@ -389,43 +476,6 @@ void MainWindow::on_pBtnDail_clicked()
     recordToUpdate.telenum = "12612812911";
     m_ContactorTable->InsertPinyinForRecord(recordToUpdate);*/
     ui->tabWidget->setCurrentIndex(2);
-
-    QWidget * TabWidgetSelected = ui->tabWidget->widget(2);
-
-        QComboBox * cbComs = new QComboBox(TabWidgetSelected);
-
-        int num_ports = portsInfo.count();
-
-        for(int i=0;i<num_ports;i++)
-        {
-           cbComs->addItem(portsInfo.at(i).portName());
-        }
-
-        connect(cbComs,SIGNAL(currentIndexChanged(int)),this,SLOT(portsChanged(int)));
-
-        m_Modem->setPort(portsInfo.at(0));
-        if(m_Modem->open(QIODevice::ReadWrite))
-        {
-            qDebug()<<"open comm port sucessfully";
-        }
-
-        cbComs->show();
-
-        pbtn_OpenClose = new QPushButton(TabWidgetSelected);
-
-        pbtn_OpenClose->setText("close");
-
-
-        pbtn_OpenClose->show();
-
-        QRect posCombo = cbComs->geometry();
-
-        QRect posBtn = pbtn_OpenClose->geometry();
-
-        posBtn.adjust(posCombo.width(),posCombo.height(),posCombo.width(),posCombo.height());
-
-        pbtn_OpenClose->setGeometry(posBtn);
-        connect(pbtn_OpenClose,SIGNAL(clicked()),this,SLOT(OpenClosePort()));
 
 }
 
