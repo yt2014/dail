@@ -1159,13 +1159,13 @@ void MainWindow::launchShorMessageForm()
 
     QWidget * wgScroll = new QWidget(shortMessage.window());
    // wgScroll->setMinimumWidth(800);
-    wgScroll->setMinimumHeight(1000);
+ //   wgScroll->setMinimumHeight(1000);
     wgScroll->setAutoFillBackground(true);
     palette.setColor(QPalette::Background, QColor(255,255,0));
     wgScroll->setPalette(palette);
 
 
-        QBoxLayout *layout = new QBoxLayout(QBoxLayout::TopToBottom);
+        QGridLayout *layout = new QGridLayout();
 
     QFont font;
     font.setPointSize(14);
@@ -1211,23 +1211,23 @@ void MainWindow::launchShorMessageForm()
 
   //  QPushButton * pbtnTest = new QPushButton();
   //  pbtnTest->show();
-    layout->addWidget(text);
-    layout->addWidget(text1);
+  //  layout->addWidget(text);
+  //  layout->addWidget(text1);
 
-    wgScroll->setLayout(layout);
+
 
     //wgScroll->show();
     //areaDisplayMessage->show();
 
 
-    QWidget *window = new QWidget(shortMessage.window());
-        QPushButton *button1 = new QPushButton("One");
+  /*  QWidget *window = new QWidget(shortMessage.window());
+        QPushButton *button1 = new QPushButton("One",window);
         QPushButton *button2 = new QPushButton("Two");
         QPushButton *button3 = new QPushButton("Three");
         QPushButton *button4 = new QPushButton("Four");
         QPushButton *button5 = new QPushButton("Five");
 
-    /* QVBoxLayout*  layout = new QVBoxLayout;
+     QVBoxLayout*  layout = new QVBoxLayout;
         layout->addWidget(button1);
         layout->addWidget(button2);
         layout->addWidget(button3);
@@ -1236,9 +1236,13 @@ void MainWindow::launchShorMessageForm()
 */
      //   window->setLayout(layout);
 
+
+       // layout->addWidget(window);
+        wgScroll->setLayout(layout);
         areaDisplayMessage->setWidget(wgScroll);
        // areaDisplayMessage->setWidget(window);
         wgScroll->show();
+     //   window->show();
 
     this->hide();
     shortMessage.show();
