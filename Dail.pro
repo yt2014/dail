@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     ChinesePinyinTable.cpp \
     AddContactorThread.cpp \
     DynamicSelectThread.cpp \
-    ModemPoolSerialPort.cpp
+    ModemPoolSerialPort.cpp \
+    ModemPool.cpp
 
 HEADERS  += mainwindow.h \
     CContatorsTable.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     ChinesePinyinTable.h \
     AddContactorThread.h \
     DynamicSelectThread.h \
-    ModemPoolSerialPort.h
+    ModemPoolSerialPort.h \
+    ModemPool.h
 
 FORMS    += mainwindow.ui
 

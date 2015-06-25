@@ -18,17 +18,11 @@ extern serialPortInfoList portsInfo;
 
 class CModemPoolSerialPort:public QSerialPort
 {
-   private: CModemPoolSerialPort();
+   public: CModemPoolSerialPort();
+           ~CModemPoolSerialPort();
 
-           static CModemPoolSerialPort * _Instance;
-
-
-   public:
-       static CModemPoolSerialPort * getInstance();
+   public:           
        void close();
-
-       void closeAll();
-
 };
 
 

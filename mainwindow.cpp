@@ -170,6 +170,9 @@ MainWindow::MainWindow(QWidget *parent) :
       ThreadSearching = new CDynamicSelectThread(this);
       ThreadSearching->start();
 
+
+      portsInfo.clear();
+
       m_Modem = CModemPoolSerialPort::getInstance();
 
 

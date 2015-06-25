@@ -18,7 +18,7 @@ CModemPoolSerialPort::CModemPoolSerialPort()
 
     this->setBaudRate(QSerialPort::Baud115200);
 
-    portsInfo.clear();
+
 
     foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
            qDebug() << "Name        : " << info.portName();
@@ -29,21 +29,6 @@ CModemPoolSerialPort::CModemPoolSerialPort()
            {
                portsInfo.append(info);
            }
-
-           // Example use QSerialPort
-          /* QSerialPort *serial = new QSerialPort();
-           serial->setPort(info);
-           serial->setBaudRate(QSerialPort::Baud115200);
-           ports.append(serial);
-
-
-           //delayMilliSeconds(1000);
-           if (serial.open(QIODevice::ReadWrite))
-           {
-               qDebug()<<"open com port successfully";
-               delayMilliSeconds(1000);
-               serial.close();
-           }*/
        }
 
 }
