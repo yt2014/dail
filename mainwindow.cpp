@@ -170,10 +170,7 @@ MainWindow::MainWindow(QWidget *parent) :
       ThreadSearching = new CDynamicSelectThread(this);
       ThreadSearching->start();
 
-
-      portsInfo.clear();
-
-      m_Modem = CModemPoolSerialPort::getInstance();
+      m_Modem = CModemPool::getInstance();
 
 
       connect(ui->pBtnShortMessage,SIGNAL(clicked()),this,SLOT(launchShorMessageForm()));
@@ -214,10 +211,8 @@ MainWindow::~MainWindow()
     delete m_CChinesePinyinTable;
 
    // ui->tabWidget->widget(2)->children()->clear();
-    m_Modem->closeAll();
-    delete m_Modem;
-
-    portsInfo.clear();
+    m_Modem->closeAllPorts();
+    //delete m_Modem;
 
     //delete ThreadSearching;
     delete ui;
@@ -371,17 +366,17 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
         QComboBox * cbComs = new QComboBox(TabWidgetSelected);
 
-            int num_ports = portsInfo.count();
+            int num_ports = m_Modem->portsCount();
 
             for(int i=0;i<num_ports;i++)
             {
-               cbComs->addItem(portsInfo.at(i).portName());
+               cbComs->addItem(m_Modem->getPortInfo(i).portName());
             }
 
             connect(cbComs,SIGNAL(currentIndexChanged(int)),this,SLOT(portsChanged(int)));
 
-            m_Modem->setPort(portsInfo.at(0));
-            if(m_Modem->open(QIODevice::ReadWrite))
+            CModemPoolSerialPort * com1 = m_Modem->getSIMPort(0);
+            if(com1->open(QIODevice::ReadWrite))
             {
                 qDebug()<<"open comm port sucessfully";
             }
@@ -1327,34 +1322,35 @@ void MainWindow::portsChanged(int index)
     }
     m_Modem->setPort(portsInfo.at(index));
 */
-    m_Modem->open(QIODevice::ReadWrite);
-    if(m_Modem->isOpen())
+    CModemPoolSerialPort * PortSelected = m_Modem->getSIMPort(index);
+    PortSelected->open(QIODevice::ReadWrite);
+    if(PortSelected->isOpen())
     {
         qDebug()<<"comm port open";
         char * strToWrite = "AT\n";
-        m_Modem->write(strToWrite);
+        PortSelected->write(strToWrite);
 
-        m_Modem->waitForReadyRead(50);
-        QByteArray strRead = m_Modem->readAll();
+        PortSelected->waitForReadyRead(50);
+        QByteArray strRead = PortSelected->readAll();
 
         if(strRead.contains("OK"))//AT bout rate syncronized
         {
             strToWrite = "AT+CPBS=\"ON\"\n";
             qDebug()<<strToWrite;
-            m_Modem->write(strToWrite);
+            PortSelected->write(strToWrite);
 
-            m_Modem->waitForReadyRead(50);
-            strRead = m_Modem->readAll();
+            PortSelected->waitForReadyRead(50);
+            strRead = PortSelected->readAll();
             if(strRead.contains("OK"))//open tele book
             {
                strToWrite = "AT+CNUM\n";
                qDebug()<<strToWrite;
-               m_Modem->write(strToWrite);
+               PortSelected->write(strToWrite);
 
-               m_Modem->waitForReadyRead(50);
-               strRead = m_Modem->readAll();
-               m_Modem->waitForReadyRead(50);
-               strRead = m_Modem->readAll();
+               PortSelected->waitForReadyRead(50);
+               strRead = PortSelected->readAll();
+               PortSelected->waitForReadyRead(50);
+               strRead = PortSelected->readAll();
             }
         }
 
@@ -1367,14 +1363,15 @@ void MainWindow::portsChanged(int index)
 
 void MainWindow::OpenClosePort()
 {
+
     if(pbtn_OpenClose->text()=="close")
     {
         pbtn_OpenClose->setText("open");
-        m_Modem->close();
+       // m_Modem->close();
     }
     else
     {
-        m_Modem->open(QIODevice::ReadWrite);
+       // m_Modem->open(QIODevice::ReadWrite);
         pbtn_OpenClose->setText("close");
     }
 }

@@ -5,13 +5,9 @@
 
 extern QMutex mutex;
 
-CModemPoolSerialPort * CModemPoolSerialPort::_Instance = NULL;
-serialPortInfoList portsInfo;
 
 CModemPoolSerialPort::CModemPoolSerialPort()
 {
-   // this->setBaudRate();
-   // this->setDataBits();
 
     qDebug()<<"databits is "+QString::number(this->dataBits());
     qDebug()<<"baudRate is " + QString::number(this->baudRate());
@@ -20,28 +16,15 @@ CModemPoolSerialPort::CModemPoolSerialPort()
 
 
 
-    foreach (const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
-           qDebug() << "Name        : " << info.portName();
-           qDebug() << "Description : " << info.description();
-           qDebug() << "Manufacturer: " << info.manufacturer();
-
-           if(info.manufacturer()=="Exar Corporation")
-           {
-               portsInfo.append(info);
-           }
-       }
-
+   /* */
+    mutex.lock();
+    dataReceived.clear();
+    mutex.unlock();
+    simCardStatus = IDLE;
+   // QObject::connect(this,SIGNAL(readyRead()),this,SLOT(receiveData()));
+    this->start();
 }
 
-CModemPoolSerialPort *CModemPoolSerialPort::getInstance()
-{
-    if(_Instance==NULL)
-    {
-        _Instance = new CModemPoolSerialPort();
-    }
-
-    return _Instance;
-}
 
 
 void delaySeconds(int n)
@@ -71,18 +54,91 @@ void CModemPoolSerialPort::close()
 {
     mutex.lock();
 
-    QIODevice::close();
+    if(this->isOpen())
+    {
+
+       QIODevice::close();
+    }
 
     mutex.unlock();
 
+    this->stop();
+
 }
 
-void CModemPoolSerialPort::closeAll()
+
+void CModemPoolSerialPort::setSimCardStatus(SIM_status status)
 {
-    int num = portsInfo.count();
-    for(int i=0;i<num;i++)
-    {
-        this->setPort(portsInfo.at(i));
-        this->close();
-    }
+    simCardStatus = status;
 }
+
+
+void CModemPoolSerialPort::receiveData()
+{
+    QByteArray data = this->readAll();
+    mutex.lock();
+    dataReceived.append(data);
+    mutex.unlock();
+}
+
+CModemPoolSerialPort::~CModemPoolSerialPort()
+{
+    if(this->isOpen())
+        this->close();
+    if(dataReceived.count()!=0)
+    {
+        mutex.lock();
+        dataReceived.clear();
+        mutex.unlock();
+    }
+    simCardStatus = IDLE;
+}
+
+ void CModemPoolSerialPort::run()
+ {
+     while(!stopped)
+     {
+         processData();
+     }
+     stopped = false;
+ }
+
+ void CModemPoolSerialPort::stop()
+ {
+     stopped = true;
+ }
+
+
+void CModemPoolSerialPort::processData()
+{
+    QStringList tempStrList;
+    mutex.lock();
+    tempStrList =  dataReceived;
+    mutex.unlock();
+
+    if(tempStrList.count()!=0)
+    {
+        switch(simCardStatus)
+        {
+           case IDLE:
+        {
+            if(tempStrList.at(0).contains("CPBS")&&tempStrList.at(0).contains("OK"))
+            {
+                simCardStatus = READY;
+            }
+        }
+            break;
+        case READY:
+        {
+
+        }
+            break;
+        default:
+            break;
+        }
+        tempStrList.clear();
+        dataReceived.removeAt(0);
+    }
+
+}
+

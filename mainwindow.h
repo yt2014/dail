@@ -13,6 +13,7 @@
 #include "AddContactorThread.h"
 #include "DynamicSelectThread.h"
 #include "ModemPoolSerialPort.h"
+#include "ModemPool.h"
 
 class CDynamicSelectThread;
 
@@ -113,7 +114,7 @@ private:
     ContactorInfo conInfoSelected;
 
     //modem
-    CModemPoolSerialPort* m_Modem;
+    CModemPool * m_Modem;
 
     QPushButton * pbtn_OpenClose;
     QLabel * label_SIMNumber;

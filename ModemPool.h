@@ -1,4 +1,4 @@
-#ifndef MODEMPOOL_H
+﻿#ifndef MODEMPOOL_H
 #define MODEMPOOL_H
 
 #include "ModemPoolSerialPort.h"
@@ -9,7 +9,6 @@ private: CModemPool();
     static CModemPool * _instance;
     serialPortInfoList portsInfo;
     QList<CModemPoolSerialPort *> PortSIMList;
-    QList<QStringList> DataReceivedList;
 public:
     static CModemPool * getInstance();
     CModemPoolSerialPort * getSIMPort(int index);
