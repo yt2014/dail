@@ -395,30 +395,24 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
             QRect posBtn = pbtn_OpenClose->geometry();
 
-            posBtn.adjust(posCombo.width(),0,posCombo.width(),0);
+            QRect posLbSIMSel = labelSelectSIM->geometry();
+
+            QRect posLbSIMNum = label_SIMNumber->geometry();
+
+           // posCombo.adjust(0,posLbSIMSel.height(),0,posLbSIMSel.height());
+            posCombo.moveTop(posLbSIMSel.height());
+            posCombo.adjust(0,5,posLbSIMSel.width()-posCombo.width(),5);
+            cbComs->setGeometry(posCombo);
+
+            posLbSIMNum.moveTopLeft(posCombo.topRight());
+            posLbSIMNum.adjust(10,0,10,0);
+            label_SIMNumber->setGeometry(posLbSIMNum);
+           // label_SIMNumber->hide();
+
+            posBtn.moveTop(posCombo.bottom()+5);
             pbtn_OpenClose->setGeometry(posBtn);
 
-        QGridLayout * gridlayout = new QGridLayout();
-        /*gridlayout->addWidget(labelSelectSIM,0,0,1,1,Qt::AlignLeft|Qt::AlignTop);
-        gridlayout->addWidget(cbComs,1,0,1,1,Qt::AlignLeft|Qt::AlignTop);
-        gridlayout->addWidget(label_SIMNumber,1,1);
-        gridlayout->addWidget(pbtn_OpenClose,2,0);
-        */
-        QVBoxLayout * vlayout1 = new QVBoxLayout();
-        QVBoxLayout * vlayout2 = new QVBoxLayout();
 
-        vlayout1->addWidget(labelSelectSIM);
-        vlayout1->addWidget(cbComs);
-
-        vlayout2->addWidget(label_SIMNumber);
-        vlayout2->addWidget(pbtn_OpenClose);
-
-        //gridlayout->setVerticalSpacing(0);
-        gridlayout->addLayout(vlayout1,0,0);
-        gridlayout->addLayout(vlayout2,0,1);
-        gridlayout->setMargin(0);
-
-        TabWidgetSelected->setLayout(gridlayout);
         connect(pbtn_OpenClose,SIGNAL(clicked()),this,SLOT(OpenClosePort()));
 
     }
@@ -1323,12 +1317,46 @@ void MainWindow::launchShorMessageForm()
 
 void MainWindow::portsChanged(int index)
 {
-    if(m_Modem->isOpen())
+  /*  if(m_Modem->isOpen())
     {
         m_Modem->close();
         qDebug()<<"com port closed";
     }
     m_Modem->setPort(portsInfo.at(index));
+*/
+    m_Modem->open(QIODevice::ReadWrite);
+    if(m_Modem->isOpen())
+    {
+        qDebug()<<"comm port open";
+        char * strToWrite = "AT\n";
+        m_Modem->write(strToWrite);
+
+        m_Modem->waitForReadyRead(50);
+        QByteArray strRead = m_Modem->readAll();
+
+        if(strRead.contains("OK"))//AT bout rate syncronized
+        {
+            strToWrite = "AT+CPBS=\"ON\"\n";
+            qDebug()<<strToWrite;
+            m_Modem->write(strToWrite);
+
+            m_Modem->waitForReadyRead(50);
+            strRead = m_Modem->readAll();
+            if(strRead.contains("OK"))//open tele book
+            {
+               strToWrite = "AT+CNUM\n";
+               qDebug()<<strToWrite;
+               m_Modem->write(strToWrite);
+
+               m_Modem->waitForReadyRead(50);
+               strRead = m_Modem->readAll();
+               m_Modem->waitForReadyRead(50);
+               strRead = m_Modem->readAll();
+            }
+        }
+
+        qDebug()<<strRead;
+    }
     pbtn_OpenClose->setText("open");
    // m_Modem->open(QIODevice::ReadWrite);
 }
