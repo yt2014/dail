@@ -21,8 +21,9 @@ CModemPoolSerialPort::CModemPoolSerialPort()
     dataReceived.clear();
     mutex.unlock();
     simCardStatus = IDLE;
-   // QObject::connect(this,SIGNAL(readyRead()),this,SLOT(receiveData()));
-    this->start();
+    connect(this,SIGNAL(readyRead()),this,SLOT(receiveData()));
+    m_threadForSim = new CSerialPortThread(this);
+    m_threadForSim->start();
 }
 
 
@@ -62,8 +63,7 @@ void CModemPoolSerialPort::close()
 
     mutex.unlock();
 
-    this->stop();
-
+    m_threadForSim->stop();
 }
 
 
@@ -92,18 +92,19 @@ CModemPoolSerialPort::~CModemPoolSerialPort()
         mutex.unlock();
     }
     simCardStatus = IDLE;
+    m_threadForSim->stop();
 }
 
- void CModemPoolSerialPort::run()
+ void CSerialPortThread::run()
  {
      while(!stopped)
      {
-         processData();
+         m_simCardPort->processData();
      }
      stopped = false;
  }
 
- void CModemPoolSerialPort::stop()
+ void CSerialPortThread::stop()
  {
      stopped = true;
  }
@@ -118,6 +119,7 @@ void CModemPoolSerialPort::processData()
 
     if(tempStrList.count()!=0)
     {
+        qDebug()<<"received data from serial port" << tempStrList.at(0);
         switch(simCardStatus)
         {
            case IDLE:
@@ -130,15 +132,22 @@ void CModemPoolSerialPort::processData()
             break;
         case READY:
         {
-
+                /*NO CARRIER*/
+            /*+CLCC: 1,0,3,0,0,"13541137539",129*/
         }
             break;
         default:
             break;
         }
         tempStrList.clear();
+        mutex.lock();
         dataReceived.removeAt(0);
+        mutex.unlock();
     }
 
 }
 
+CSerialPortThread::CSerialPortThread(CModemPoolSerialPort*SimCardPort)
+{
+    m_simCardPort = SimCardPort;
+}

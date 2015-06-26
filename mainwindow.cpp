@@ -172,7 +172,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
       m_Modem = CModemPool::getInstance();
 
-
       connect(ui->pBtnShortMessage,SIGNAL(clicked()),this,SLOT(launchShorMessageForm()));
 
 }
@@ -376,9 +375,12 @@ void MainWindow::on_tabWidget_currentChanged(int index)
             connect(cbComs,SIGNAL(currentIndexChanged(int)),this,SLOT(portsChanged(int)));
 
             CModemPoolSerialPort * com1 = m_Modem->getSIMPort(0);
-            if(com1->open(QIODevice::ReadWrite))
+            if(com1!=NULL)
             {
-                qDebug()<<"open comm port sucessfully";
+               if(com1->open(QIODevice::ReadWrite))
+               {
+                   qDebug()<<"open comm port sucessfully";
+               }
             }
 
             cbComs->show();
@@ -1330,7 +1332,19 @@ void MainWindow::portsChanged(int index)
         char * strToWrite = "AT\n";
         PortSelected->write(strToWrite);
 
+        strToWrite = "AT+CPBS=\"ON\"\n";
+        qDebug()<<strToWrite;
+        PortSelected->write(strToWrite);
+
+
+       /* if(PortSelected->)
+        strToWrite = "AT+CNUM\n";
+        qDebug()<<strToWrite;
+        */
+        PortSelected->write(strToWrite);
+
         PortSelected->waitForReadyRead(50);
+
         QByteArray strRead = PortSelected->readAll();
 
         if(strRead.contains("OK"))//AT bout rate syncronized

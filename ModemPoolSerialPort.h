@@ -8,6 +8,8 @@
 #include <QThread>
 #include <QMutex>
 
+class CSerialPortThread;
+
 
 void delaySeconds(int n);
 void delayMilliSeconds(int n);
@@ -25,28 +27,39 @@ typedef enum
 typedef QList<QSerialPortInfo> serialPortInfoList;
 
 
-class CModemPoolSerialPort:public QSerialPort,public QThread
+class CModemPoolSerialPort:public QSerialPort
 {
     Q_OBJECT
    public: CModemPoolSerialPort();
            ~CModemPoolSerialPort();
            void setSimCardStatus(SIM_status status);
-           void stop();
-
-   public:           
-       void close();
-
-   protected:
-       void run();
+           SIM_status getSimStatus();
+   public:
+       void close(); 
        void processData();
 
-   private:
-       volatile bool stopped;
+   private:       
        QStringList dataReceived;
        SIM_status simCardStatus;
+       CSerialPortThread * m_threadForSim;
 
-  private slots:
+   private slots:
        void receiveData();
+
+};
+
+class CSerialPortThread:public QThread
+{
+    Q_OBJECT
+public:
+    CSerialPortThread(CModemPoolSerialPort*SimCardPort);
+    void stop();
+protected:
+    void run();
+private:
+    volatile bool stopped;
+    CModemPoolSerialPort * m_simCardPort;
+
 };
 
 
