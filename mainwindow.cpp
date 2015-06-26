@@ -34,6 +34,7 @@ QRect positionBtnEdit_t;
 
 int widthListWidegtCon;
 int heightListWidgetCon;
+int topListWidegtCon;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -131,7 +132,7 @@ MainWindow::MainWindow(QWidget *parent) :
      closeButton->setToolTip(tr("关闭"));
      //设置最小化、关闭按钮的样式
   //  minButton->setStyleSheet("QToolButton{background-color:transparent;}");
-     closeButton->setStyleSheet("QToolButton{background-color:transparent;}");
+   //  closeButton->setStyleSheet("QToolButton{background-color:transparent;}");
 
      minButton->setStyleSheet("QToolButton{background-color:transparent;}"
                               "QToolButton:hover{background-color:grey;}");
@@ -154,7 +155,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
      widthListWidegtCon = ui->listWidget->geometry().width();
      heightListWidgetCon = ui->listWidget->geometry().height();
-
+     topListWidegtCon = ui->listWidget->geometry().top();
      ui->tabWidget->setCurrentIndex(0);
      RefreshContent(0,1);
      QWidget * TabWidgetSelected = ui->tabWidget->widget(0);
@@ -287,6 +288,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
           QRect pos = ui->listWidget->geometry();
           pos.setWidth(widthListWidegtCon);
           pos.setHeight(heightListWidgetCon);
+          pos.setTop(topListWidegtCon);
           ui->listWidget->setGeometry(pos);
           ui->listWidget->show();
           ui->listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -302,8 +304,9 @@ void MainWindow::on_tabWidget_currentChanged(int index)
            ui->listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
            ui->listWidget->setParent(TabWidgetSelected);
            QRect pos = ui->listWidget->geometry();
-           pos.setWidth(widthListWidegtCon-150);
+           pos.setWidth(widthListWidegtCon-120);
            pos.setHeight(heightListWidgetCon-50);
+           pos.setTop(topListWidegtCon+40);
            ui->listWidget->setGeometry(pos);
            ui->listWidget->show();
            ui->listWidget->setCurrentRow(-1);
@@ -387,7 +390,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     {
       //  QWidget * TabWidgetSelected = ui->tabWidget->widget(2);
 
-        QLabel * labelSelectSIM = new QLabel("请选择SIM进行拨号",TabWidgetSelected);
+      /*  QLabel * labelSelectSIM = new QLabel("请选择SIM进行拨号",TabWidgetSelected);
         labelSelectSIM->adjustSize();
         labelSelectSIM->show();
 
@@ -450,8 +453,54 @@ void MainWindow::on_tabWidget_currentChanged(int index)
             pbtn_OpenClose->setGeometry(posBtn);
 
 
-        connect(pbtn_OpenClose,SIGNAL(clicked()),this,SLOT(OpenClosePort()));
+        connect(pbtn_OpenClose,SIGNAL(clicked()),this,SLOT(OpenClosePort()));*/
 
+        QPushButton  * pBtn_AddNumber = new QPushButton(TabWidgetSelected);
+        QPushButton  * pBtn_DelNumber = new QPushButton(TabWidgetSelected);
+
+        QPixmap addPix  = style()->standardPixmap(QStyle::SP_ArrowRight);
+        QPixmap delPix = style()->standardPixmap(QStyle::SP_ArrowLeft);
+
+        //设置最小化、关闭按钮图标
+        pBtn_AddNumber->setIcon(addPix);
+        pBtn_DelNumber->setIcon(delPix);
+        //设置最小化、关闭按钮在界面的位置
+        pBtn_AddNumber->setGeometry(widthListWidegtCon-118,heightListWidgetCon/4,20,20);
+        pBtn_DelNumber->setGeometry(widthListWidegtCon-118,heightListWidgetCon/2,20,20);
+
+        //设置鼠标移至按钮上的提示信息
+        pBtn_AddNumber->setToolTip(tr("添加"));
+        pBtn_DelNumber->setToolTip(tr("删除"));
+        //设置最小化、关闭按钮的样式
+     //  minButton->setStyleSheet("QPushButton{background-color:transparent;}");
+      //  closeButton->setStyleSheet("QPushButton{background-color:transparent;}");
+
+        pBtn_AddNumber->setStyleSheet("QPushButton{background-color:transparent;}"
+                                 "QPushButton:hover{background-color:grey;}");
+        pBtn_DelNumber->setStyleSheet("QPushButton{background-color:transparent;}"
+                                   "QPushButton:hover{background-color:grey;}");
+
+        pBtn_AddNumber->show();
+        pBtn_DelNumber->show();
+
+        QLabel * label_contactors = new QLabel(TabWidgetSelected);
+        label_contactors->setGeometry(0,topListWidegtCon,widthListWidegtCon-120,40);
+        label_contactors->setText("联系人列表:");
+        label_contactors->setAlignment(Qt::AlignCenter);
+        label_contactors->show();
+
+        QLabel * label_numsNeedProcess = new QLabel(TabWidgetSelected);
+        label_numsNeedProcess->setGeometry(widthListWidegtCon-90,topListWidegtCon,widthListWidegtCon-120,40);
+        label_numsNeedProcess->setText("待拨号码列表:");
+        label_numsNeedProcess->setObjectName("label_numsNeedProcess");
+        label_numsNeedProcess->setAlignment(Qt::AlignCenter);
+        label_numsNeedProcess->show();
+
+        QListWidget * listWidgetNumsNeedProcess = new QListWidget(TabWidgetSelected);
+        listWidgetNumsNeedProcess->setGeometry(widthListWidegtCon-90,topListWidegtCon+40,widthListWidegtCon-100,heightListWidgetCon-90);
+        listWidgetNumsNeedProcess->setObjectName("listWidgetNumsNeedProcess");
+        listWidgetNumsNeedProcess->show();
+        listWidgetNumsNeedProcess->setWindowTitle("待拨号码列表");
     }
         break;
     case 3:
