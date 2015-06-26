@@ -19,6 +19,7 @@ typedef enum
     IDLE,
     READY,
     DialingOut,
+    WaitForFeedBack,
     MessageReceived,
     ComeRing
 

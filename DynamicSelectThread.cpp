@@ -50,7 +50,7 @@ void CDynamicSelectThread::SelectRecords()
             oneChar = oneChar.toLower();
             KeyWord.replace(i,1,oneChar);
         }
-        if(index==0)
+        if((index==0)||(index==2))
         {
             /*get contactors only here*/
             QString strSql = "select * from contactors where name like \'%"
@@ -63,7 +63,7 @@ void CDynamicSelectThread::SelectRecords()
             ContactorInfoList tempContactorList = m_ContactorTable->getListBySql(strSql);
             qDebug()<<"select result number  " + QString::number(tempContactorList.count());
             m_mainwindow->setFreshList(tempContactorList);
-            m_mainwindow->RefreshContent(0,0);
+            m_mainwindow->RefreshContent(index,0);
         }
         else if(index==1)
         {

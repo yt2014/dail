@@ -9,6 +9,7 @@ private: CModemPool();
     static CModemPool * _instance;
     serialPortInfoList portsInfo;
     QList<CModemPoolSerialPort *> PortSIMList;
+    QStringList teleNumsProcessing;
 public:
     static CModemPool * getInstance();
     CModemPoolSerialPort * getSIMPort(int index);
@@ -17,6 +18,7 @@ public:
     void scanPorts();
     int portsCount();
     void closeAllPorts();
+
 };
 
 

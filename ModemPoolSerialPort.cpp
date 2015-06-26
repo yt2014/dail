@@ -119,23 +119,58 @@ void CModemPoolSerialPort::processData()
 
     if(tempStrList.count()!=0)
     {
-        qDebug()<<"received data from serial port" << tempStrList.at(0);
+        qDebug()<<"received data from serial port " << tempStrList.at(0);
         switch(simCardStatus)
         {
            case IDLE:
         {
-            if(tempStrList.at(0).contains("CPBS")&&tempStrList.at(0).contains("OK"))
+            if(tempStrList.at(0).contains("AT+CLIP")&&tempStrList.at(0).contains("OK"))
             {
                 simCardStatus = READY;
             }
+            else
+                if(tempStrList.at(0).contains("RING"))
+                {
+                    simCardStatus = ComeRing;
+                }
         }
             break;
         case READY:
         {
+            if(tempStrList.at(0).contains("ATD")&&tempStrList.at(0).contains("OK"))
+            {
+                simCardStatus = DialingOut;
+                this->write("AT+CLCC\n");
+            }
                 /*NO CARRIER*/
             /*+CLCC: 1,0,3,0,0,"13541137539",129*/
         }
             break;
+        case DialingOut:
+            if(tempStrList.at(0).contains("CLCC")&&tempStrList.at(0).contains("1,0,3,0,0"))
+            {
+                delaySeconds(1);
+                this->write("AT+CLCC\n");
+            }
+            else
+                if(tempStrList.at(0).contains("NO CARRIER"))
+                {
+                    this->write("ATH\n");
+                    simCardStatus = WaitForFeedBack;
+                }
+            break;
+        case WaitForFeedBack:
+            if(tempStrList.at(0).contains("ATH")&&tempStrList.at(0).contains("OK"))
+            {
+                simCardStatus = IDLE;
+            }
+            break;
+        case ComeRing:
+             delaySeconds(3);
+             this->write("ATH\n");
+             simCardStatus = WaitForFeedBack;
+            break;
+
         default:
             break;
         }

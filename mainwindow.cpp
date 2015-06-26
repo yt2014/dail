@@ -32,6 +32,9 @@ QRect positionLabelInputName_t;
 QRect positionBtnCancel_t;
 QRect positionBtnEdit_t;
 
+int widthListWidegtCon;
+int heightListWidgetCon;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -149,12 +152,16 @@ MainWindow::MainWindow(QWidget *parent) :
      positionBtnCancel_t = positionBtnCancel.adjusted(-20,0,-20,0);
      positionBtnEdit_t = positionBtnEdit.adjusted(-20,0,-20,0);
 
+     widthListWidegtCon = ui->listWidget->geometry().width();
+     heightListWidgetCon = ui->listWidget->geometry().height();
+
      ui->tabWidget->setCurrentIndex(0);
      RefreshContent(0,1);
      QWidget * TabWidgetSelected = ui->tabWidget->widget(0);
      ui->label_Telenumber->setParent(TabWidgetSelected);
      ui->label_Telenumber->show();
 
+     ui->listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
      //connect(ui->pBtn_Edit,SIGNAL(clicked()),this,SLOT(on_pBtnEdit_Add_clicked()));
 
 
@@ -247,6 +254,8 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
     ui->label_indications->setText(strDisplay);
 
+    ui->lineEdit_2->setText("");
+
     QWidget * TabWidgetSelected = ui->tabWidget->widget(index);
 
     if((index==0)||(index==1))
@@ -271,6 +280,34 @@ void MainWindow::on_tabWidget_currentChanged(int index)
       QList<QLabel *> allLabels = tabWidget2->findChildren<QLabel *>();
       allLabels.clear();
 
+
+      if(index==0)
+      {
+          ui->listWidget->setParent(TabWidgetSelected);
+          QRect pos = ui->listWidget->geometry();
+          pos.setWidth(widthListWidegtCon);
+          pos.setHeight(heightListWidgetCon);
+          ui->listWidget->setGeometry(pos);
+          ui->listWidget->show();
+          ui->listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+          ui->listWidget->setCurrentRow(-1);
+      }
+
+
+    }
+    else
+    {
+        if(index==2)
+        {
+           ui->listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+           ui->listWidget->setParent(TabWidgetSelected);
+           QRect pos = ui->listWidget->geometry();
+           pos.setWidth(widthListWidegtCon-150);
+           pos.setHeight(heightListWidgetCon-50);
+           ui->listWidget->setGeometry(pos);
+           ui->listWidget->show();
+           ui->listWidget->setCurrentRow(-1);
+        }
     }
     ui->label_Telenumber->show();
     ui->label_Telenumber->setText("");
@@ -839,7 +876,7 @@ void MainWindow::RefreshContent(int index,bool displayAll)
         tmpCommTopList = m_topFreshCommRecordList;
     }
 
-    if(index==0)
+    if((index==0)||(index==2))
     {
         /*refresh the contactors*/
         qDebug()<<"MainWindow::RefreshContent";
@@ -1336,12 +1373,15 @@ void MainWindow::portsChanged(int index)
         qDebug()<<strToWrite;
         PortSelected->write(strToWrite);
 
+        strToWrite = "AT+CLIP=\"ON\"\n";
+        PortSelected->write(strToWrite);
+
 
        /* if(PortSelected->)
         strToWrite = "AT+CNUM\n";
         qDebug()<<strToWrite;
         */
-        PortSelected->write(strToWrite);
+        /*PortSelected->write(strToWrite);
 
         PortSelected->waitForReadyRead(50);
 
@@ -1366,11 +1406,11 @@ void MainWindow::portsChanged(int index)
                PortSelected->waitForReadyRead(50);
                strRead = PortSelected->readAll();
             }
-        }
+        }*/
 
-        qDebug()<<strRead;
+        //qDebug()<<strRead;
     }
-    pbtn_OpenClose->setText("open");
+    //pbtn_OpenClose->setText("open");
    // m_Modem->open(QIODevice::ReadWrite);
 }
 
