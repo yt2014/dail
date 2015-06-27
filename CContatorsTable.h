@@ -56,6 +56,8 @@ public:
     void setOperation(ContactorTableOperation OperationFlag);
 
     ContactorTableOperation getOperation();
+
+    static int isTeleNumExitInList(QString strNumber,QStringList numList);
 private:
     QString m_DatabaseAlias;
     QString m_TableName;

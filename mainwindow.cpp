@@ -271,17 +271,6 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
        ui->pBtnCancel->setParent(TabWidgetSelected);
 
-      QWidget * tabWidget2 = ui->tabWidget->widget(2);
-      QList<QPushButton *> allPButtons = tabWidget2->findChildren<QPushButton *>();
-      allPButtons.clear();
-
-      QList<QComboBox *> allCbBoxs = tabWidget2->findChildren<QComboBox *>();
-      allCbBoxs.clear();
-
-      QList<QLabel *> allLabels = tabWidget2->findChildren<QLabel *>();
-      allLabels.clear();
-
-
       if(index==0)
       {
           ui->listWidget->setParent(TabWidgetSelected);
@@ -455,59 +444,74 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
         connect(pbtn_OpenClose,SIGNAL(clicked()),this,SLOT(OpenClosePort()));*/
 
-        QPushButton  * pBtn_AddNumber = new QPushButton(TabWidgetSelected);
-        QPushButton  * pBtn_DelNumber = new QPushButton(TabWidgetSelected);
+        QPushButton * pBtn = TabWidgetSelected->findChild<QPushButton  *>("pBtn_AddNumber");
+        if(pBtn==0)
+        {
+           QPushButton  * pBtn_AddNumber = new QPushButton(TabWidgetSelected);
+           pBtn_AddNumber->setObjectName("pBtn_AddNumber");
+           QPixmap addPix  = style()->standardPixmap(QStyle::SP_ArrowRight);
+           pBtn_AddNumber->setIcon(addPix);
+           pBtn_AddNumber->setGeometry(widthListWidegtCon-118,heightListWidgetCon/4,20,20);
+           pBtn_AddNumber->setToolTip(tr("添加"));
+           pBtn_AddNumber->setStyleSheet("QPushButton{background-color:transparent;}"
+                                    "QPushButton:hover{background-color:grey;}");
+            pBtn_AddNumber->show();
+            connect(pBtn_AddNumber,SIGNAL(clicked()),this,SLOT(AddNumsProcess()));
+        }
+        pBtn = TabWidgetSelected->findChild<QPushButton  *>("pBtn_DelNumber");
+        if(pBtn==0)
+        {
+            QPushButton  * pBtn_DelNumber = new QPushButton(TabWidgetSelected);
+            pBtn_DelNumber->setObjectName("pBtn_DelNumber");
+            QPixmap delPix = style()->standardPixmap(QStyle::SP_ArrowLeft);
 
-        QPixmap addPix  = style()->standardPixmap(QStyle::SP_ArrowRight);
-        QPixmap delPix = style()->standardPixmap(QStyle::SP_ArrowLeft);
+            pBtn_DelNumber->setIcon(delPix);
 
-        //设置最小化、关闭按钮图标
-        pBtn_AddNumber->setIcon(addPix);
-        pBtn_DelNumber->setIcon(delPix);
-        //设置最小化、关闭按钮在界面的位置
-        pBtn_AddNumber->setGeometry(widthListWidegtCon-118,heightListWidgetCon/4,20,20);
-        pBtn_DelNumber->setGeometry(widthListWidegtCon-118,heightListWidgetCon/2,20,20);
+            pBtn_DelNumber->setGeometry(widthListWidegtCon-118,heightListWidgetCon/2,20,20);
+            pBtn_DelNumber->setToolTip(tr("删除"));
+            pBtn_DelNumber->setStyleSheet("QPushButton{background-color:transparent;}"
+                                       "QPushButton:hover{background-color:grey;}");
 
-        //设置鼠标移至按钮上的提示信息
-        pBtn_AddNumber->setToolTip(tr("添加"));
-        pBtn_DelNumber->setToolTip(tr("删除"));
-        //设置最小化、关闭按钮的样式
-     //  minButton->setStyleSheet("QPushButton{background-color:transparent;}");
-      //  closeButton->setStyleSheet("QPushButton{background-color:transparent;}");
+            pBtn_DelNumber->show();
 
-        pBtn_AddNumber->setStyleSheet("QPushButton{background-color:transparent;}"
-                                 "QPushButton:hover{background-color:grey;}");
-        pBtn_DelNumber->setStyleSheet("QPushButton{background-color:transparent;}"
-                                   "QPushButton:hover{background-color:grey;}");
+            connect(pBtn_DelNumber,SIGNAL(clicked()),this,SLOT(DelNumsProcess()));
+        }
+        QLabel *label = TabWidgetSelected->findChild<QLabel *>("label_contactors");
 
-        pBtn_AddNumber->show();
-        pBtn_DelNumber->show();
+        if(label==0)
+        {
+           QLabel * label_contactors = new QLabel(TabWidgetSelected);
+           label_contactors->setObjectName("label_contactors");
+           label_contactors->setGeometry(0,topListWidegtCon,widthListWidegtCon-120,40);
+           label_contactors->setText("联系人列表:");
+           label_contactors->setAlignment(Qt::AlignCenter);
+           label_contactors->show();
+        }
 
-        connect(pBtn_AddNumber,SIGNAL(clicked()),this,SLOT(AddNumsProcess()));
-        connect(pBtn_DelNumber,SIGNAL(clicked()),this,SLOT(DelNumsProcess()));
+        QTreeWidget * tree = TabWidgetSelected->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
+        if(tree==0)
+        {
+            QTreeWidget * treeWidgetNumsNeedProcess = new QTreeWidget(TabWidgetSelected);
+            treeWidgetNumsNeedProcess->setGeometry(widthListWidegtCon-90,topListWidegtCon,widthListWidegtCon-50,heightListWidgetCon-50);
+            treeWidgetNumsNeedProcess->setObjectName("treeWidgetNumsNeedProcess");
+            QStringList headers;
+            headers.clear();
+            headers<<"已选号码"<<"状态";
+            treeWidgetNumsNeedProcess->setColumnCount(2);
+            treeWidgetNumsNeedProcess->setHeaderLabels(headers);
+            treeWidgetNumsNeedProcess->setSelectionMode(QAbstractItemView::ExtendedSelection);
+            treeWidgetNumsNeedProcess->show();
+        }
 
-        QLabel * label_contactors = new QLabel(TabWidgetSelected);
-        label_contactors->setGeometry(0,topListWidegtCon,widthListWidegtCon-120,40);
-        label_contactors->setText("联系人列表:");
-        label_contactors->setAlignment(Qt::AlignCenter);
-        label_contactors->show();
-
-       /* QLabel * label_numsNeedProcess = new QLabel(TabWidgetSelected);
-        label_numsNeedProcess->setGeometry(widthListWidegtCon-90,topListWidegtCon,widthListWidegtCon-120,40);
-        label_numsNeedProcess->setText("待拨号码列表:");
-        label_numsNeedProcess->setObjectName("label_numsNeedProcess");
-        label_numsNeedProcess->setAlignment(Qt::AlignCenter);
-        label_numsNeedProcess->show();*/
-
-        QTreeWidget * treeWidgetNumsNeedProcess = new QTreeWidget(TabWidgetSelected);
-        treeWidgetNumsNeedProcess->setGeometry(widthListWidegtCon-90,topListWidegtCon,widthListWidegtCon-50,heightListWidgetCon-50);
-        treeWidgetNumsNeedProcess->setObjectName("treeWidgetNumsNeedProcess");
-        QStringList headers;
-        headers.clear();
-        headers<<"已选号码"<<"状态";
-        treeWidgetNumsNeedProcess->setColumnCount(2);
-        treeWidgetNumsNeedProcess->setHeaderLabels(headers);
-        treeWidgetNumsNeedProcess->show();
+        pBtn = TabWidgetSelected->findChild<QPushButton  *>("pBtnStart");
+        if(pBtn==0)
+        {
+           QPushButton * pBtnStart = new QPushButton(TabWidgetSelected);
+           pBtnStart->setObjectName("pBtnStart");
+           pBtnStart->setText("开始");
+           pBtnStart->setGeometry(widthListWidegtCon-110,heightListWidgetCon-30,50,30);
+           pBtnStart->show();
+        }
 
     }
         break;
@@ -945,15 +949,22 @@ void MainWindow::RefreshContent(int index,bool displayAll)
         for(int i=0;i<num_ToAdd;i++)
         {
              ContactorInfo oneRecord = tmpContactorList.at(i);
-             QString str_ToAdd = oneRecord.name + " " + oneRecord.telenum;
-             itemToAdd = new QListWidgetItem(str_ToAdd);
+             if( (index!=2)
+                ||( (index==2)
+                  &&(numsNeedProcess.contains(oneRecord.telenum)==false)
+                  )
+              )
+             {
+                QString str_ToAdd = oneRecord.name + " " + oneRecord.telenum;
+                itemToAdd = new QListWidgetItem(str_ToAdd);
 
-             //setting the value of the item.
-             QVariant valueToSet;
-             valueToSet.setValue(oneRecord);
-             itemToAdd->setData(Qt::UserRole,valueToSet);
+                //setting the value of the item.
+                QVariant valueToSet;
+                valueToSet.setValue(oneRecord);
+                itemToAdd->setData(Qt::UserRole,valueToSet);
 
-              ui->listWidget->insertItem(0,itemToAdd);
+                ui->listWidget->insertItem(0,itemToAdd);
+             }
         }
         //set the flag after adding all items.
         if(displayAll)
@@ -1496,25 +1507,64 @@ void MainWindow::AddNumsProcess()
     ContactorInfo oneRecord;
     QVariant dataInItem;
     int numsToAdd = items.count();
+    int countBegin = numsNeedProcess.count();
+
     for(int i=0;i<numsToAdd;i++)
     {
         //and constraint here when numsNeedProcess contains the num to add.
+
        dataInItem = items.at(i)->data(Qt::UserRole);
        oneRecord = dataInItem.value<ContactorInfo>();
-       itemToAdd = new QTreeWidgetItem();
-       itemToAdd->setText(0,oneRecord.name + " " + oneRecord.telenum);
-       itemToAdd->setText(1,"待处理");
-       itemToAdd->setData(0,Qt::UserRole,dataInItem);
-       treeWidgetNumsNeedProcess->insertTopLevelItem(i,itemToAdd);
-       numsNeedProcess.append(oneRecord.telenum);
+       if(numsNeedProcess.contains(oneRecord.telenum)==false)
+       {
+          itemToAdd = new QTreeWidgetItem();
+          itemToAdd->setText(0,oneRecord.name + " " + oneRecord.telenum);
+          itemToAdd->setText(1,"待处理");
+          itemToAdd->setData(0,Qt::UserRole,dataInItem);
+          treeWidgetNumsNeedProcess->insertTopLevelItem(i+countBegin,itemToAdd);
+          numsNeedProcess.append(oneRecord.telenum);
+          ui->listWidget->removeItemWidget(items.at(i));
+          delete items.at(i);
+       }
     }
 
     treeWidgetNumsNeedProcess->show();
-
-
+    ui->listWidget->show();
 }
 
 void MainWindow::DelNumsProcess()
 {
+    QTreeWidget * treeWidgetNumsNeedProcess = ui->tabWidget->widget(2)->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
+
+    QList<QTreeWidgetItem*> items = treeWidgetNumsNeedProcess->selectedItems();
+
+
+    QListWidgetItem * itemToAdd;
+    ContactorInfo oneRecord;
+    QVariant dataInItem;
+    int numsToAdd = items.count();
+    int countBegin = ui->listWidget->count();
+
+    for(int i=0;i<numsToAdd;i++)
+    {
+        //and constraint here when numsNeedProcess contains the num to add.
+
+       dataInItem = items.at(i)->data(0,Qt::UserRole);
+       oneRecord = dataInItem.value<ContactorInfo>();
+       if(numsNeedProcess.contains(oneRecord.telenum)==true)
+       {
+          itemToAdd = new QListWidgetItem();
+          itemToAdd->setText(oneRecord.name + " " + oneRecord.telenum);
+          itemToAdd->setData(Qt::UserRole,dataInItem);
+          ui->listWidget->insertItem(i+countBegin,itemToAdd);
+          numsNeedProcess.removeOne(oneRecord.telenum);
+          treeWidgetNumsNeedProcess->removeItemWidget(items.at(i),0);
+          treeWidgetNumsNeedProcess->removeItemWidget(items.at(i),1);
+          delete items.at(i);
+       }
+    }
+
+    treeWidgetNumsNeedProcess->show();
+    ui->listWidget->show();
 
 }

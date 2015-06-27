@@ -423,3 +423,26 @@ ContactorTableOperation CContactorsTable::getOperation()
 {
     return Operation;
 }
+
+int CContactorsTable::isTeleNumExitInList(QString strNumber,QStringList numList)
+{
+    int retVal = -1;
+    //QString strToFind =  oneRecord.telenum;
+
+    int num_records = numList.count();
+    int i=0;
+    for(i=0;i<num_records;i++)
+    {
+        if(numList.at(i) == strNumber)
+            break;
+    }
+    if(i<num_records)
+    {
+        retVal = i;
+    }
+    else
+    {
+        retVal = -1;
+    }
+    return retVal;
+}
