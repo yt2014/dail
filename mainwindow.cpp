@@ -483,24 +483,32 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         pBtn_AddNumber->show();
         pBtn_DelNumber->show();
 
+        connect(pBtn_AddNumber,SIGNAL(clicked()),this,SLOT(AddNumsProcess()));
+        connect(pBtn_DelNumber,SIGNAL(clicked()),this,SLOT(DelNumsProcess()));
+
         QLabel * label_contactors = new QLabel(TabWidgetSelected);
         label_contactors->setGeometry(0,topListWidegtCon,widthListWidegtCon-120,40);
         label_contactors->setText("联系人列表:");
         label_contactors->setAlignment(Qt::AlignCenter);
         label_contactors->show();
 
-        QLabel * label_numsNeedProcess = new QLabel(TabWidgetSelected);
+       /* QLabel * label_numsNeedProcess = new QLabel(TabWidgetSelected);
         label_numsNeedProcess->setGeometry(widthListWidegtCon-90,topListWidegtCon,widthListWidegtCon-120,40);
         label_numsNeedProcess->setText("待拨号码列表:");
         label_numsNeedProcess->setObjectName("label_numsNeedProcess");
         label_numsNeedProcess->setAlignment(Qt::AlignCenter);
-        label_numsNeedProcess->show();
+        label_numsNeedProcess->show();*/
 
-        QListWidget * listWidgetNumsNeedProcess = new QListWidget(TabWidgetSelected);
-        listWidgetNumsNeedProcess->setGeometry(widthListWidegtCon-90,topListWidegtCon+40,widthListWidegtCon-100,heightListWidgetCon-90);
-        listWidgetNumsNeedProcess->setObjectName("listWidgetNumsNeedProcess");
-        listWidgetNumsNeedProcess->show();
-        listWidgetNumsNeedProcess->setWindowTitle("待拨号码列表");
+        QTreeWidget * treeWidgetNumsNeedProcess = new QTreeWidget(TabWidgetSelected);
+        treeWidgetNumsNeedProcess->setGeometry(widthListWidegtCon-90,topListWidegtCon,widthListWidegtCon-50,heightListWidgetCon-50);
+        treeWidgetNumsNeedProcess->setObjectName("treeWidgetNumsNeedProcess");
+        QStringList headers;
+        headers.clear();
+        headers<<"已选号码"<<"状态";
+        treeWidgetNumsNeedProcess->setColumnCount(2);
+        treeWidgetNumsNeedProcess->setHeaderLabels(headers);
+        treeWidgetNumsNeedProcess->show();
+
     }
         break;
     case 3:
@@ -1477,4 +1485,36 @@ void MainWindow::OpenClosePort()
        // m_Modem->open(QIODevice::ReadWrite);
         pbtn_OpenClose->setText("close");
     }
+}
+
+void MainWindow::AddNumsProcess()
+{
+    QTreeWidget * treeWidgetNumsNeedProcess = ui->tabWidget->widget(2)->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
+
+    QList<QListWidgetItem *> items = ui->listWidget->selectedItems();
+    QTreeWidgetItem * itemToAdd;
+    ContactorInfo oneRecord;
+    QVariant dataInItem;
+    int numsToAdd = items.count();
+    for(int i=0;i<numsToAdd;i++)
+    {
+        //and constraint here when numsNeedProcess contains the num to add.
+       dataInItem = items.at(i)->data(Qt::UserRole);
+       oneRecord = dataInItem.value<ContactorInfo>();
+       itemToAdd = new QTreeWidgetItem();
+       itemToAdd->setText(0,oneRecord.name + " " + oneRecord.telenum);
+       itemToAdd->setText(1,"待处理");
+       itemToAdd->setData(0,Qt::UserRole,dataInItem);
+       treeWidgetNumsNeedProcess->insertTopLevelItem(i,itemToAdd);
+       numsNeedProcess.append(oneRecord.telenum);
+    }
+
+    treeWidgetNumsNeedProcess->show();
+
+
+}
+
+void MainWindow::DelNumsProcess()
+{
+
 }

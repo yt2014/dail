@@ -3,6 +3,8 @@
 
 #include "ModemPoolSerialPort.h"
 
+extern QStringList numsNeedProcess;
+
 class CModemPool
 {
 private: CModemPool();

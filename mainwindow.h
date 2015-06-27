@@ -75,6 +75,9 @@ private slots:
 
     void OpenClosePort();
 
+    void AddNumsProcess();
+    void DelNumsProcess();
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon * mSystemTrayIcon;    

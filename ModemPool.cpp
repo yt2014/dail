@@ -3,6 +3,8 @@
 
 CModemPool * CModemPool::_instance = NULL;
 
+QStringList numsNeedProcess;
+
 CModemPool::CModemPool()
 {
     CModemPoolSerialPort * tempSIMPort;

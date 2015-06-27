@@ -5,7 +5,6 @@
 
 extern QMutex mutex;
 
-
 CModemPoolSerialPort::CModemPoolSerialPort()
 {
 
