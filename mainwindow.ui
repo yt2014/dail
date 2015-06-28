@@ -36,7 +36,7 @@
      <rect>
       <x>60</x>
       <y>40</y>
-      <width>201</width>
+      <width>131</width>
       <height>41</height>
      </rect>
     </property>
@@ -47,9 +47,9 @@
    <widget class="QPushButton" name="pBtn_Dail">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>200</x>
       <y>40</y>
-      <width>221</width>
+      <width>131</width>
       <height>41</height>
      </rect>
     </property>
@@ -337,7 +337,7 @@
      <x>0</x>
      <y>0</y>
      <width>517</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>

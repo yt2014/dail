@@ -78,6 +78,8 @@ private slots:
     void AddNumsProcess();
     void DelNumsProcess();
 
+    void endProcess();
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon * mSystemTrayIcon;    

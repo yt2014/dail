@@ -21,13 +21,24 @@ typedef enum
     DialingOut,
     WaitForFeedBack,
     MessageReceived,
+    DialFailed,
     ComeRing
 
 }SIM_status;
 
+
+typedef struct
+{
+    QString simPort;
+    SIM_status processStatus;
+    QString telenumber;
+}processInfo;
+
+typedef QList<processInfo> processInfoList;
+
 typedef QList<QSerialPortInfo> serialPortInfoList;
 
-
+extern processInfoList proInfoListFromSIMs;
 class CModemPoolSerialPort:public QSerialPort
 {
     Q_OBJECT
@@ -35,6 +46,7 @@ class CModemPoolSerialPort:public QSerialPort
            ~CModemPoolSerialPort();
            void setSimCardStatus(SIM_status status);
            SIM_status getSimStatus();
+           QString m_telenumber;
    public:
        void close(); 
        void processData();
@@ -43,6 +55,7 @@ class CModemPoolSerialPort:public QSerialPort
        QStringList dataReceived;
        SIM_status simCardStatus;
        CSerialPortThread * m_threadForSim;
+       int counterRecv;
 
    private slots:
        void receiveData();

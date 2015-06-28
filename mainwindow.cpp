@@ -162,7 +162,7 @@ MainWindow::MainWindow(QWidget *parent) :
      ui->label_Telenumber->setParent(TabWidgetSelected);
      ui->label_Telenumber->show();
 
-     ui->listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    // ui->listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
      //connect(ui->pBtn_Edit,SIGNAL(clicked()),this,SLOT(on_pBtnEdit_Add_clicked()));
 
 
@@ -180,7 +180,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
       m_Modem = CModemPool::getInstance();
 
+
+
       connect(ui->pBtnShortMessage,SIGNAL(clicked()),this,SLOT(launchShorMessageForm()));
+      connect(ui->pBtnDail,SIGNAL(clicked()),m_Modem,SLOT(preparePorts()));
+
+      ui->pBtnDail->setParent(this->window());
+
+      ui->pBtnDail->setGeometry(336,40,135,40);
+      ui->pBtnDail->show();
+     // m_Modem->setPushButton(ui->pBtnDail);
 
 }
 
@@ -501,6 +510,8 @@ void MainWindow::on_tabWidget_currentChanged(int index)
             treeWidgetNumsNeedProcess->setHeaderLabels(headers);
             treeWidgetNumsNeedProcess->setSelectionMode(QAbstractItemView::ExtendedSelection);
             treeWidgetNumsNeedProcess->show();
+
+            m_Modem->setTreeWidget(treeWidgetNumsNeedProcess);
         }
 
         pBtn = TabWidgetSelected->findChild<QPushButton  *>("pBtnStart");
@@ -511,6 +522,11 @@ void MainWindow::on_tabWidget_currentChanged(int index)
            pBtnStart->setText("开始");
            pBtnStart->setGeometry(widthListWidegtCon-110,heightListWidgetCon-30,50,30);
            pBtnStart->show();
+
+           connect(pBtnStart,SIGNAL(clicked()),m_Modem,SLOT(startProcess()));
+          // connect(pBtnStart,SIGNAL(clicked()),this,SLOT(endProcess()));
+
+           m_Modem->setPushButton(pBtnStart);
         }
 
     }
@@ -1522,7 +1538,9 @@ void MainWindow::AddNumsProcess()
           itemToAdd->setText(1,"待处理");
           itemToAdd->setData(0,Qt::UserRole,dataInItem);
           treeWidgetNumsNeedProcess->insertTopLevelItem(i+countBegin,itemToAdd);
+          mutex.lock();
           numsNeedProcess.append(oneRecord.telenum);
+          mutex.unlock();
           ui->listWidget->removeItemWidget(items.at(i));
           delete items.at(i);
        }
@@ -1557,7 +1575,9 @@ void MainWindow::DelNumsProcess()
           itemToAdd->setText(oneRecord.name + " " + oneRecord.telenum);
           itemToAdd->setData(Qt::UserRole,dataInItem);
           ui->listWidget->insertItem(i+countBegin,itemToAdd);
+          mutex.lock();
           numsNeedProcess.removeOne(oneRecord.telenum);
+          mutex.unlock();
           treeWidgetNumsNeedProcess->removeItemWidget(items.at(i),0);
           treeWidgetNumsNeedProcess->removeItemWidget(items.at(i),1);
           delete items.at(i);
@@ -1566,5 +1586,51 @@ void MainWindow::DelNumsProcess()
 
     treeWidgetNumsNeedProcess->show();
     ui->listWidget->show();
+
+}
+
+void MainWindow::endProcess()
+{
+
+    if(m_Modem->getNumClicked()==2)
+    {
+    QTreeWidget * treeWidgetNumsNeedProcess = ui->tabWidget->widget(2)->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
+
+    //QList<QTreeWidgetItem*> items = treeWidgetNumsNeedProcess->selectedItems();
+
+    QTreeWidgetItem* topLevelItem;
+
+    QListWidgetItem * itemToAdd;
+    ContactorInfo oneRecord;
+    QVariant dataInItem;
+    int numsToAdd = treeWidgetNumsNeedProcess->topLevelItemCount();
+    int countBegin = ui->listWidget->count();
+    qDebug()<<"num of items in tree "<<numsToAdd;
+    for(int i=0;i<numsToAdd;i++)
+    {
+        //and constraint here when numsNeedProcess contains the num to add.
+       topLevelItem = treeWidgetNumsNeedProcess->takeTopLevelItem(0);
+       dataInItem = topLevelItem->data(0,Qt::UserRole);
+       oneRecord = dataInItem.value<ContactorInfo>();
+       if(numsNeedProcess.contains(oneRecord.telenum)==true)
+       {
+          itemToAdd = new QListWidgetItem();
+          itemToAdd->setText(oneRecord.name + " " + oneRecord.telenum);
+          itemToAdd->setData(Qt::UserRole,dataInItem);
+          ui->listWidget->insertItem(i+countBegin,itemToAdd);
+          mutex.lock();
+          numsNeedProcess.removeOne(oneRecord.telenum);
+          mutex.unlock();
+         // treeWidgetNumsNeedProcess->removeItemWidget(items.at(i),0);
+         // treeWidgetNumsNeedProcess->removeItemWidget(items.at(i),1);
+          //delete items.at(i);
+       }
+       delete topLevelItem;
+
+    }
+
+    treeWidgetNumsNeedProcess->show();
+    ui->listWidget->show();
+    }
 
 }
