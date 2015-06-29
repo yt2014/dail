@@ -185,6 +185,16 @@ void CModemPool::startProcess()
     else if(numClicked==2)
     {
        numClicked = 0;
+
+       m_proInfoList.clear();
+       m_teleProStepList.clear();
+
+       mutex.lock();
+       numsNeedProcess.clear();
+       mutex.unlock();
+
+       qDebug()<<"emit endprocess";
+       emit endProcess();
         //setting the text to be "start"
        m_pBtn->setText("开始");
     }

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>517</width>
-    <height>522</height>
+    <width>893</width>
+    <height>672</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>牛b拨号</string>
+     <string>成都与飞科技</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pBtn_Contactors">
@@ -62,8 +62,8 @@
      <rect>
       <x>60</x>
       <y>100</y>
-      <width>421</width>
-      <height>391</height>
+      <width>681</width>
+      <height>491</height>
      </rect>
     </property>
     <property name="autoFillBackground">
@@ -81,8 +81,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>261</width>
-        <height>341</height>
+        <width>421</width>
+        <height>461</height>
        </rect>
       </property>
       <property name="autoFillBackground">
@@ -92,8 +92,8 @@
      <widget class="QPushButton" name="pBtn_Dailout">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>250</y>
+        <x>540</x>
+        <y>330</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -105,8 +105,8 @@
      <widget class="QPushButton" name="pBtn_Edit">
       <property name="geometry">
        <rect>
-        <x>260</x>
-        <y>210</y>
+        <x>470</x>
+        <y>300</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -128,8 +128,8 @@
      <widget class="QPushButton" name="pBtn_AddContactor">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>0</y>
+        <x>500</x>
+        <y>40</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -141,8 +141,8 @@
      <widget class="QPushButton" name="pBtn_DeleteContactor">
       <property name="geometry">
        <rect>
-        <x>340</x>
-        <y>210</y>
+        <x>550</x>
+        <y>300</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -154,8 +154,8 @@
      <widget class="QLineEdit" name="lineEdit_InputTeleNumber">
       <property name="geometry">
        <rect>
-        <x>272</x>
-        <y>80</y>
+        <x>482</x>
+        <y>130</y>
         <width>121</width>
         <height>20</height>
        </rect>
@@ -164,10 +164,10 @@
      <widget class="QLabel" name="label_InputTeleNumber">
       <property name="geometry">
        <rect>
-        <x>280</x>
-        <y>60</y>
-        <width>91</width>
-        <height>16</height>
+        <x>480</x>
+        <y>110</y>
+        <width>121</width>
+        <height>20</height>
        </rect>
       </property>
       <property name="text">
@@ -184,8 +184,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>291</width>
-        <height>331</height>
+        <width>421</width>
+        <height>461</height>
        </rect>
       </property>
       <column>
@@ -197,8 +197,8 @@
      <widget class="QPushButton" name="pBtnDail">
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>220</y>
+        <x>490</x>
+        <y>310</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -210,8 +210,8 @@
      <widget class="QPushButton" name="pBtnEdit_Add">
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>150</y>
+        <x>490</x>
+        <y>190</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -223,7 +223,7 @@
      <widget class="QLabel" name="label_Telenumber">
       <property name="geometry">
        <rect>
-        <x>300</x>
+        <x>480</x>
         <y>30</y>
         <width>121</width>
         <height>20</height>
@@ -236,8 +236,8 @@
      <widget class="QLineEdit" name="lineEdit_InputName">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>110</y>
+        <x>480</x>
+        <y>170</y>
         <width>113</width>
         <height>20</height>
        </rect>
@@ -246,8 +246,8 @@
      <widget class="QLabel" name="labelInputName">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>90</y>
+        <x>480</x>
+        <y>150</y>
         <width>71</width>
         <height>16</height>
        </rect>
@@ -259,8 +259,8 @@
      <widget class="QPushButton" name="pBtn_EditSave">
       <property name="geometry">
        <rect>
-        <x>300</x>
-        <y>200</y>
+        <x>480</x>
+        <y>250</y>
         <width>41</width>
         <height>23</height>
        </rect>
@@ -272,8 +272,8 @@
      <widget class="QPushButton" name="pBtnCancel">
       <property name="geometry">
        <rect>
-        <x>360</x>
-        <y>200</y>
+        <x>540</x>
+        <y>250</y>
         <width>41</width>
         <height>23</height>
        </rect>
@@ -285,8 +285,8 @@
      <widget class="QPushButton" name="pBtnShortMessage">
       <property name="geometry">
        <rect>
-        <x>310</x>
-        <y>290</y>
+        <x>490</x>
+        <y>370</y>
         <width>75</width>
         <height>23</height>
        </rect>
@@ -310,7 +310,7 @@
    <widget class="QLabel" name="label_indications">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>340</x>
       <y>10</y>
       <width>311</width>
       <height>16</height>
@@ -325,7 +325,7 @@
      <rect>
       <x>60</x>
       <y>80</y>
-      <width>421</width>
+      <width>681</width>
       <height>41</height>
      </rect>
     </property>
@@ -336,8 +336,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>517</width>
-     <height>23</height>
+     <width>893</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

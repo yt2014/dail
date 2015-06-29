@@ -63,6 +63,7 @@ public:
     void stop();
 signals:
     void needInteract();
+    void endProcess();
 private slots:
     void startProcess();
     void preparePorts();

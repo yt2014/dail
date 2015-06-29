@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     AddContactorThread.cpp \
     DynamicSelectThread.cpp \
     ModemPoolSerialPort.cpp \
-    ModemPool.cpp
+    ModemPool.cpp \
+    ShortMessageTable.cpp
 
 HEADERS  += mainwindow.h \
     CContatorsTable.h \
@@ -33,7 +34,8 @@ HEADERS  += mainwindow.h \
     AddContactorThread.h \
     DynamicSelectThread.h \
     ModemPoolSerialPort.h \
-    ModemPool.h
+    ModemPool.h \
+    ShortMessageTable.h
 
 FORMS    += mainwindow.ui
 

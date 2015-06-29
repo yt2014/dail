@@ -123,6 +123,9 @@ private:
 
     QPushButton * pbtn_OpenClose;
     QLabel * label_SIMNumber;
+
+    //adjust the position of widgets(pushbutton and labels)
+    void adjustPosition();
 };
 
 #endif // MAINWINDOW_H

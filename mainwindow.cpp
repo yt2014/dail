@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setFont(font);
     this->setPalette(palette);
     this->setAutoFillBackground(true);
-    this->setFixedSize(541,557);
+    this->setFixedSize(893,672);
     //this->setBaseSize(541,557);
     //this->resize( QSize( 541, 557 ));
 
@@ -190,6 +190,7 @@ MainWindow::MainWindow(QWidget *parent) :
       ui->pBtnDail->setGeometry(336,40,135,40);
       ui->pBtnDail->show();
      // m_Modem->setPushButton(ui->pBtnDail);
+      adjustPosition();
 
 }
 
@@ -287,7 +288,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
           pos.setWidth(widthListWidegtCon);
           pos.setHeight(heightListWidgetCon);
           pos.setTop(topListWidegtCon);
-          ui->listWidget->setGeometry(pos);
+          ui->listWidget->setGeometry(pos.left(),topListWidegtCon,widthListWidegtCon,heightListWidgetCon);
           ui->listWidget->show();
           ui->listWidget->setSelectionMode(QAbstractItemView::SingleSelection);
           ui->listWidget->setCurrentRow(-1);
@@ -302,10 +303,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
            ui->listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
            ui->listWidget->setParent(TabWidgetSelected);
            QRect pos = ui->listWidget->geometry();
-           pos.setWidth(widthListWidegtCon-120);
-           pos.setHeight(heightListWidgetCon-50);
-           pos.setTop(topListWidegtCon+40);
-           ui->listWidget->setGeometry(pos);
+           ui->listWidget->setGeometry(pos.left(),topListWidegtCon+40,widthListWidegtCon-120,heightListWidgetCon-110);
            ui->listWidget->show();
            ui->listWidget->setCurrentRow(-1);
         }
@@ -327,7 +325,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
     ui->treeWidget->setEnabled(true);
     ui->pBtn_Edit->show();
-    ui->pBtn_Dailout->show();
+   // ui->pBtn_Dailout->show();
     ui->listWidget->setEnabled(true);
 
     ui->label_InputTeleNumber->hide();
@@ -355,10 +353,10 @@ void MainWindow::on_tabWidget_currentChanged(int index)
                RefreshContent(0,1);
           }
 
-          ui->lineEdit_InputName->setGeometry(positionEditInputName_t);
+       /*   ui->lineEdit_InputName->setGeometry(positionEditInputName_t);
           ui->labelInputName->setGeometry(positionLabelInputName_t);
           ui->pBtnCancel->setGeometry(positionBtnCancel_t);
-          ui->pBtn_EditSave->setGeometry(positionBtnEdit_t);
+          ui->pBtn_EditSave->setGeometry(positionBtnEdit_t);*/
 
     }
         break;
@@ -377,10 +375,10 @@ void MainWindow::on_tabWidget_currentChanged(int index)
                RefreshContent(1,1);
            }
 
-           ui->lineEdit_InputName->setGeometry(positionEditInputName);
+         /*  ui->lineEdit_InputName->setGeometry(positionEditInputName);
            ui->labelInputName->setGeometry(positionLabelInputName);
            ui->pBtnCancel->setGeometry(positionBtnCancel);
-           ui->pBtn_EditSave->setGeometry(positionBtnEdit);
+           ui->pBtn_EditSave->setGeometry(positionBtnEdit);*/
 
         }
         break;
@@ -501,7 +499,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         if(tree==0)
         {
             QTreeWidget * treeWidgetNumsNeedProcess = new QTreeWidget(TabWidgetSelected);
-            treeWidgetNumsNeedProcess->setGeometry(widthListWidegtCon-90,topListWidegtCon,widthListWidegtCon-50,heightListWidgetCon-50);
+            treeWidgetNumsNeedProcess->setGeometry(widthListWidegtCon-90,topListWidegtCon,widthListWidegtCon-90,heightListWidgetCon-70);
             treeWidgetNumsNeedProcess->setObjectName("treeWidgetNumsNeedProcess");
             QStringList headers;
             headers.clear();
@@ -520,11 +518,12 @@ void MainWindow::on_tabWidget_currentChanged(int index)
            QPushButton * pBtnStart = new QPushButton(TabWidgetSelected);
            pBtnStart->setObjectName("pBtnStart");
            pBtnStart->setText("开始");
-           pBtnStart->setGeometry(widthListWidegtCon-110,heightListWidgetCon-30,50,30);
+           pBtnStart->setGeometry(widthListWidegtCon-110,heightListWidgetCon-60,50,30);
            pBtnStart->show();
 
            connect(pBtnStart,SIGNAL(clicked()),m_Modem,SLOT(startProcess()));
           // connect(pBtnStart,SIGNAL(clicked()),this,SLOT(endProcess()));
+           connect(m_Modem,SIGNAL(endProcess()),this,SLOT(endProcess()));
 
            m_Modem->setPushButton(pBtnStart);
         }
@@ -663,7 +662,7 @@ void MainWindow::on_pBtnEdit_Add_clicked()
     ui->treeWidget->setEnabled(false);
 
     ui->pBtn_Edit->hide();
-    ui->pBtn_Dailout->hide();
+    //ui->pBtn_Dailout->hide();
     ui->listWidget->setEnabled(false);
 
     m_ContactorTable->setOperation(AddContactor);
@@ -684,7 +683,7 @@ void MainWindow::on_pBtnCancel_clicked()
 
     ui->treeWidget->setEnabled(true);
     ui->pBtn_Edit->show();
-    ui->pBtn_Dailout->show();
+    //ui->pBtn_Dailout->show();
     ui->listWidget->setEnabled(true);
 
     ui->label_InputTeleNumber->hide();
@@ -881,7 +880,7 @@ void MainWindow::on_pBtn_EditSave_clicked()
 
         ui->pBtn_Edit->show();
         ui->pBtn_Edit->setEnabled(false);
-        ui->pBtn_Dailout->show();
+       // ui->pBtn_Dailout->show();
         ui->listWidget->setEnabled(true);
 
         ui->pBtn_DeleteContactor->show();
@@ -1217,7 +1216,7 @@ void MainWindow::on_pBtn_AddContactor_clicked()
     ui->treeWidget->setEnabled(false);
 
     ui->pBtn_Edit->hide();
-    ui->pBtn_Dailout->hide();
+    //ui->pBtn_Dailout->hide();
     ui->listWidget->setEnabled(false);
 
 
@@ -1243,7 +1242,7 @@ void MainWindow::on_pBtn_Edit_clicked()
     ui->treeWidget->setEnabled(false);
 
     ui->pBtn_Edit->hide();
-    ui->pBtn_Dailout->hide();
+    //ui->pBtn_Dailout->hide();
     ui->listWidget->setEnabled(false);
 
 
@@ -1277,7 +1276,7 @@ void MainWindow::on_pBtn_DeleteContactor_clicked()
     ui->treeWidget->setEnabled(false);
 
     ui->pBtn_Edit->hide();
-    ui->pBtn_Dailout->hide();
+    //ui->pBtn_Dailout->hide();
     ui->listWidget->setEnabled(false);
 
 
@@ -1592,8 +1591,7 @@ void MainWindow::DelNumsProcess()
 void MainWindow::endProcess()
 {
 
-    if(m_Modem->getNumClicked()==2)
-    {
+
     QTreeWidget * treeWidgetNumsNeedProcess = ui->tabWidget->widget(2)->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
 
     //QList<QTreeWidgetItem*> items = treeWidgetNumsNeedProcess->selectedItems();
@@ -1612,8 +1610,7 @@ void MainWindow::endProcess()
        topLevelItem = treeWidgetNumsNeedProcess->takeTopLevelItem(0);
        dataInItem = topLevelItem->data(0,Qt::UserRole);
        oneRecord = dataInItem.value<ContactorInfo>();
-       if(numsNeedProcess.contains(oneRecord.telenum)==true)
-       {
+
           itemToAdd = new QListWidgetItem();
           itemToAdd->setText(oneRecord.name + " " + oneRecord.telenum);
           itemToAdd->setData(Qt::UserRole,dataInItem);
@@ -1624,13 +1621,70 @@ void MainWindow::endProcess()
          // treeWidgetNumsNeedProcess->removeItemWidget(items.at(i),0);
          // treeWidgetNumsNeedProcess->removeItemWidget(items.at(i),1);
           //delete items.at(i);
-       }
+
        delete topLevelItem;
 
     }
 
     treeWidgetNumsNeedProcess->show();
     ui->listWidget->show();
-    }
+
+
+}
+
+
+void MainWindow::adjustPosition()
+{
+    //this function should be called after widthListWidegtCon is set.
+    //setting the position of tree widget for communication record.
+    QRect geoTree = ui->treeWidget->geometry();
+    geoTree.setWidth(widthListWidegtCon);
+    //get the rect of pBtn_AddContactor, and this is used for relative standard.
+    QRect posBegin = ui->pBtn_AddContactor->geometry();
+
+    int wideOfStandard = posBegin.width();
+    int heightOfStandard = posBegin.height();
+    int bottomOfStandard = posBegin.bottom();
+    int leftOfStandard = posBegin.left();
+   // int topOfStandard = posBegin.top();
+
+    //setting the position of label to display the number for both contactor and communication record.
+    ui->label_Telenumber->setGeometry(leftOfStandard-10,bottomOfStandard+20,wideOfStandard+20,heightOfStandard);
+
+    //setting the label and editline of input telenumber
+    ui->label_InputTeleNumber->setGeometry(leftOfStandard-20,bottomOfStandard+40+heightOfStandard,wideOfStandard+40,heightOfStandard);
+    QRect posNext = ui->label_InputTeleNumber->geometry();
+    posNext.adjust(0,heightOfStandard+2,0,heightOfStandard+2);
+    ui->lineEdit_InputTeleNumber->setGeometry(posNext);
+    posNext = ui->lineEdit_InputTeleNumber->geometry();
+
+    //setting the label and line edit for name
+    bottomOfStandard = posNext.bottom();
+    leftOfStandard = posNext.left();
+    wideOfStandard = posNext.width();
+    heightOfStandard = posNext.height();
+    ui->labelInputName->setGeometry(leftOfStandard,bottomOfStandard+20,wideOfStandard,heightOfStandard);
+    ui->lineEdit_InputName->setGeometry(leftOfStandard,bottomOfStandard+22+heightOfStandard,wideOfStandard,heightOfStandard);
+
+    //setting the Add button and cancel button
+    posNext = ui->lineEdit_InputName->geometry();
+    bottomOfStandard = posNext.bottom();
+    leftOfStandard = posNext.left();
+    wideOfStandard = posNext.width();
+    heightOfStandard = posNext.height();
+    QRect posSave = ui->pBtn_EditSave->geometry();
+    ui->pBtn_EditSave->setGeometry(leftOfStandard+7,bottomOfStandard+20,posSave.width(),posSave.height());
+    posSave = ui->pBtn_EditSave->geometry();
+
+    posNext = ui->pBtnCancel->geometry();
+    ui->pBtnCancel->setGeometry(posSave.right()+20,posSave.top(),posNext.width(),posNext.height());
+    posNext = ui->lineEdit_InputName->geometry();
+
+    //setting pushsbutton add to contactor in comm record interface.
+    posSave = ui->pBtnEdit_Add->geometry();
+    ui->pBtnEdit_Add->setGeometry(posNext.left()+12,posNext.top(),posSave.width(),posSave.height());
+
+    //hide the dial button on the contactor interface.
+    ui->pBtn_Dailout->hide();
 
 }
