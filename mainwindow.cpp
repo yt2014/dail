@@ -683,6 +683,7 @@ void MainWindow::on_pBtnCancel_clicked()
 
     ui->treeWidget->setEnabled(true);
     ui->pBtn_Edit->show();
+    ui->pBtn_Edit->setEnabled(false);
     //ui->pBtn_Dailout->show();
     ui->listWidget->setEnabled(true);
 
@@ -690,6 +691,7 @@ void MainWindow::on_pBtnCancel_clicked()
     ui->lineEdit_InputTeleNumber->hide();
     ui->pBtn_AddContactor->show();
     ui->pBtn_DeleteContactor->show();
+    ui->pBtn_DeleteContactor->setEnabled(false);
 
     ui->lineEdit_InputName->setEnabled(true);
     ui->lineEdit_InputTeleNumber->setEnabled(true);
@@ -831,13 +833,13 @@ void MainWindow::on_pBtn_EditSave_clicked()
         {
            ui->pBtn_EditSave->setText("确定");
 
-           QRect positionBtn = ui->pBtn_EditSave->geometry();
+           //QRect positionBtn = ui->pBtn_EditSave->geometry();
 
            // positionBtn.moveRight(2);
             //positionBtn.width();
 
-           positionBtn.adjust(20,0,20,0);
-           ui->pBtn_EditSave->setGeometry(positionBtn);
+          // positionBtn.adjust(20,0,20,0);
+         //  ui->pBtn_EditSave->setGeometry(positionBtn);
            ui->pBtnCancel->hide();
            m_ContactorTable->setOperation(OperationFinished);
            opResult = m_ContactorTable->UpdateOneRecord(infoToOperate,conInfoSelected);

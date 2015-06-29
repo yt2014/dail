@@ -136,6 +136,14 @@ void CModemPoolSerialPort::processData()
                 {
                     simCardStatus = ComeRing;
                 }
+            else if(tempStrList.at(0).contains("Call Ready")&&tempStrList.at(0).contains("SIM Card have insert"))
+                {
+                    delayMilliSeconds(500);
+                    simCardStatus = SimInserted;
+                }
+            //Call Ready
+
+           // SIM Card have insert
         }
             break;
         case READY:
@@ -236,6 +244,33 @@ void CModemPoolSerialPort::processData()
                 mutex.unlock();
                 simCardStatus = IDLE;
             }
+            break;
+        case  SimInserted:
+            if(tempStrList.at(0).contains("COPS: 0,0,")&&tempStrList.at(0).contains("OK"))
+            {
+                simCardStatus = READY;
+            }
+            else
+                if(tempStrList.at(0).contains("RING"))
+                {
+                    simCardStatus = ComeRing;
+                }
+            else if(tempStrList.at(0).contains("AT+CLIP=1")&&tempStrList.at(0).contains("OK"))
+                {
+                    delayMilliSeconds(500);
+                    simCardStatus = NeedRegist;
+                }
+        break;
+        case NeedRegist:
+            if(tempStrList.at(0).contains("COPS: 0,0,")&&tempStrList.at(0).contains("OK"))
+            {
+                simCardStatus = READY;
+            }
+            else
+                if(tempStrList.at(0).contains("RING"))
+                {
+                    simCardStatus = ComeRing;
+                }
             break;
 
         default:

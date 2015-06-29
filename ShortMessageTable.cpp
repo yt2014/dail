@@ -1,6 +1,6 @@
-#include "ShortMessageTable.h"
+﻿#include "ShortMessageTable.h"
 
-CShortMessageTable::CShortMessageTable(QString DatabaseAlias = "Dail",QString TableName = "shortMessage")
+CShortMessageTable::CShortMessageTable(QString DatabaseAlias,QString TableName)
 {
     m_DatabaseAlias = DatabaseAlias;
     m_TableName = TableName;
@@ -157,7 +157,7 @@ messageTopInfoList CShortMessageTable::getListTop()
                {
                    messageTopInfo oneinfo;
                    oneinfo.telenum = query.value(index_telenum).toString();
-                   oneinfo.telenum = query.value(index_send_recvTime).toDateTime();
+                   oneinfo.send_recvTime = query.value(index_send_recvTime).toDateTime();
 
                    tempList.append(oneinfo);
 
@@ -329,8 +329,8 @@ Operation_Result CShortMessageTable::UpdateOneRecord(messageInfo RecordToUpdate)
         {
             QSqlQuery query(db);
 
-            QString strSQL = "update " + m_TableName + " set telenumber = '" + RecordToUpdate.telenum
-                                                     +" where UserName = '" + RecordToUpdate.startTime.toString()
+            QString strSQL = "update " + m_TableName + " set telenumber = '" + RecordToUpdate.NumberRemote
+                                                     +" where UserName = '" + RecordToUpdate.send_recvTime.toString()
                                                      +"'";
            if(query.exec(strSQL))
            {

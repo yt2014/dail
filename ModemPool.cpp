@@ -391,6 +391,13 @@ void CModemPool::interact()
         case DialFailed:
             PortSIMList.at(i)->write("ATH\n");
             break;
+        case SimInserted:
+            PortSIMList.at(i)->write("AT+CLIP=1\n");
+            break;
+        case NeedRegist:
+            PortSIMList.at(i)->write("AT+COPS?\n");
+            break;
+
         default:
             break;
         }

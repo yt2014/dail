@@ -17,6 +17,9 @@ void delayMilliSeconds(int n);
 typedef enum
 {
     IDLE,
+    SimInserted,
+    NeedRegist,
+    SimNotAvailable,
     READY,
     DialingOut,
     WaitForFeedBack,
