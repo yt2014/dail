@@ -319,7 +319,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     ui->pBtnCancel->hide();
 
     ui->pBtnEdit_Add->show();
-    ui->pBtnDail->show();
+  //  ui->pBtnDail->show();
     ui->pBtnEdit_Add->setEnabled(false);
 
     ui->pBtn_DeleteContactor->setEnabled(false);
@@ -659,7 +659,7 @@ void MainWindow::on_pBtnEdit_Add_clicked()
     ui->pBtn_EditSave->setText("添加");
 
     ui->pBtnEdit_Add->hide();
-    ui->pBtnDail->hide();
+   // ui->pBtnDail->hide();
     ui->treeWidget->setEnabled(false);
 
     ui->pBtn_Edit->hide();
@@ -679,7 +679,7 @@ void MainWindow::on_pBtnCancel_clicked()
     ui->pBtnCancel->hide();
 
     ui->pBtnEdit_Add->show();
-    ui->pBtnDail->show();
+   // ui->pBtnDail->show();
     ui->pBtnEdit_Add->setEnabled(false);
 
     ui->treeWidget->setEnabled(true);
@@ -876,7 +876,7 @@ void MainWindow::on_pBtn_EditSave_clicked()
 
         ui->pBtnEdit_Add->show();
         ui->pBtnEdit_Add->setEnabled(false);
-        ui->pBtnDail->show();
+       // ui->pBtnDail->show();
         ui->treeWidget->setEnabled(true);
 
         ui->pBtn_Edit->show();
@@ -1213,7 +1213,7 @@ void MainWindow::on_pBtn_AddContactor_clicked()
     ui->pBtn_EditSave->setText("添加");
 
     ui->pBtnEdit_Add->hide();
-    ui->pBtnDail->hide();
+   // ui->pBtnDail->hide();
     ui->treeWidget->setEnabled(false);
 
     ui->pBtn_Edit->hide();
@@ -1239,7 +1239,7 @@ void MainWindow::on_pBtn_Edit_clicked()
     ui->pBtn_EditSave->setText("保存");
 
     ui->pBtnEdit_Add->hide();
-    ui->pBtnDail->hide();
+   // ui->pBtnDail->hide();
     ui->treeWidget->setEnabled(false);
 
     ui->pBtn_Edit->hide();
@@ -1273,7 +1273,7 @@ void MainWindow::on_pBtn_DeleteContactor_clicked()
     ui->pBtn_EditSave->setText("删除");
 
     ui->pBtnEdit_Add->hide();
-    ui->pBtnDail->hide();
+    //ui->pBtnDail->hide();
     ui->treeWidget->setEnabled(false);
 
     ui->pBtn_Edit->hide();
