@@ -228,7 +228,9 @@ void CModemPool::processStatusChange()
           stepsInfoOneNum.teleStep = DAILING_OUT;
           m_teleProStepList.insert(index,stepsInfoOneNum);
           m_treeWidget->topLevelItem(index)->setText(1,"拨号中。。。");
+          this->stop();
           m_treeWidget->show();
+          this->start();
        }
        else if(st==WaitForFeedBack)
        {
