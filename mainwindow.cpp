@@ -193,7 +193,7 @@ MainWindow::MainWindow(QWidget *parent) :
       ui->pBtnDail->show();
      // m_Modem->setPushButton(ui->pBtnDail);
       adjustPosition();
-
+      m_Modem->start();
 }
 
 /*void MainWindow::showMe(){
@@ -230,6 +230,8 @@ MainWindow::~MainWindow()
     delete m_CChinesePinyinTable;
 
    // ui->tabWidget->widget(2)->children()->clear();
+
+    m_Modem->stop();
     m_Modem->closeAllPorts();
     //delete m_Modem;
 

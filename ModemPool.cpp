@@ -174,8 +174,8 @@ void CModemPool::startProcess()
                PortSIMList.at(i)->write("AT+COPS?\n");
            }
        }
-       //qDebug()<<"start modem thread";
-       this->start();
+     //  qDebug()<<"start modem thread";
+      // this->start();
 
        numClicked = 1;
        //setting the text of btn to be "stop"
@@ -184,7 +184,7 @@ void CModemPool::startProcess()
     }
     else if(numClicked==1)
     {
-        this->stop();//停止拨号
+       // this->stop();//停止拨号
         numClicked = 2;
         //setting the text to be "ok"
         m_pBtn->setText("确定");
@@ -212,6 +212,7 @@ void CModemPool::startProcess()
 void CModemPool::processStatusChange()
 {
 
+   // qDebug()<<"m_modem thread is running";
     processInfoList tempInfoList;
     mutex.lock();
     tempInfoList =  proInfoListFromSIMs;
@@ -275,10 +276,11 @@ void CModemPool::processStatusChange()
        mutex.lock();
        proInfoListFromSIMs.removeAt(0);
        mutex.unlock();
+       sleep(5);
     }
     else
     {
-       delayMilliSeconds(2000);
+       sleep(4);
        emit needInteract();
     }
 
@@ -288,6 +290,7 @@ void CModemPool::run()
 {
      while(!stopped)
      {
+
          processStatusChange();
      }
      stopped = false;
@@ -295,6 +298,7 @@ void CModemPool::run()
 
 void CModemPool::stop()
 {
+   // qDebug()<<"m_modem thread stopped";
     stopped = true;
 }
 
@@ -394,16 +398,17 @@ void CModemPool::interact()
 {
 
     int i=0;
-   // qDebug()<<"number of ports "<<num;
+
 
     /*send AT+COPS?\n to all ports*/
     this->sleep(1);
     int num = PortSIMList.count();
+    // qDebug()<<"number of ports in interact "<<num;
     for(i=0;i<num;i++)
     {
 
         SIM_status st = PortSIMList.at(i)->getSimStatus();
-        qDebug()<<"in interact sim"<<i<<" status:"<<st;
+      //  qDebug()<<"in interact sim"<<i<<" status:"<<st;
 
         switch (st) {
         case IDLE:
@@ -426,7 +431,7 @@ void CModemPool::interact()
             {
                 if(isAllProcessed())
                 {
-                  this->stop();
+                 // this->stop();
                   numClicked = 2;
                     //setting the text of btn to be "OK"
                   m_pBtn->setText("确定");
