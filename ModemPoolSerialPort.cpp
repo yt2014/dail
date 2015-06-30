@@ -107,6 +107,7 @@ CModemPoolSerialPort::~CModemPoolSerialPort()
      while(!stopped)
      {
          m_simCardPort->processData();
+         sleep(1);
      }
      stopped = false;
  }

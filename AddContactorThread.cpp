@@ -17,6 +17,7 @@ void AddContactorThread::run()
      while(!stopped)
      {
          AddToContactorTable();
+         sleep(2);
      }
      stopped = false;
  }

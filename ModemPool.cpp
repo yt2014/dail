@@ -238,6 +238,7 @@ void CModemPool::processStatusChange()
           m_teleProStepList.insert(index,stepsInfoOneNum);
           m_treeWidget->topLevelItem(index)->setText(1,"拨号中。。。");
           m_treeWidget->show();
+          this->sleep(1);
        }
        else if(st==WaitForFeedBack)
        {
@@ -251,6 +252,7 @@ void CModemPool::processStatusChange()
           }
           m_treeWidget->topLevelItem(index)->setText(1,"拨号完成");
           m_treeWidget->show();
+          this->sleep(1);
 
           index = findSimPortByPortName(simPort);//index of SIMs;
           delaySeconds(1);
@@ -264,9 +266,9 @@ void CModemPool::processStatusChange()
            m_teleProStepList.insert(index,stepsInfoOneNum);
            m_treeWidget->topLevelItem(index)->setText(1,"拨号失败");
            m_treeWidget->show();
+           this->sleep(1);
 
            index = findSimPortByPortName(simPort);//index of SIMs;
-           delaySeconds(1);
            PortSIMList.at(index)->setSimCardStatus(READY);
 
        }
@@ -368,6 +370,7 @@ void CModemPool::interact()
    // qDebug()<<"number of ports "<<num;
 
     /*send AT+COPS?\n to all ports*/
+    this->sleep(1);
     for(i=0;i<num;i++)
     {
         SIM_status st = PortSIMList.at(i)->getSimStatus();
