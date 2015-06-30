@@ -107,7 +107,7 @@ CModemPoolSerialPort::~CModemPoolSerialPort()
      while(!stopped)
      {
          m_simCardPort->processData();
-         sleep(1);
+         msleep(200);
      }
      stopped = false;
  }
@@ -155,11 +155,8 @@ void CModemPoolSerialPort::processData()
             break;
         case READY:
         {
-            if(tempStrList.at(0).contains("ATD")&&tempStrList.at(0).contains("OK"))
+            if(tempStrList.at(0).contains("ATD"))
             {
-                qDebug()<<"change to dialing";
-                tempStatus = DialingOut;
-               // this->write("AT+CLCC\n");
                 processInfo infoToAdd;
                 infoToAdd.processStatus = DialingOut;
                 infoToAdd.simPort = this->portName();
@@ -167,9 +164,29 @@ void CModemPoolSerialPort::processData()
                 int indexofDot = tempStrList.at(0).indexOf(";");
                 infoToAdd.telenumber = tempStrList.at(0).mid(indexofATD+3,indexofDot-indexofATD-3);
                 m_telenumber = infoToAdd.telenumber;
-                mutex.lock();
-                proInfoListFromSIMs.append(infoToAdd);
-                mutex.unlock();
+                if(tempStrList.at(0).contains("OK"))
+                {
+                    qDebug()<<"change to dialing";
+                    tempStatus = DialingOut;
+                   // this->write("AT+CLCC\n");
+
+                    mutex.lock();
+                    proInfoListFromSIMs.append(infoToAdd);
+                    mutex.unlock();
+                }
+                else
+                {
+                    if(tempStrList.at(0).contains("ERROR"))
+                    {
+                        tempStatus = DialFailed;
+                        qDebug()<<"呼叫失败";
+                    }
+                    else
+                    {
+                       tempStatus = WaitForCommandResult;
+                       recoverStatus = DialingOut;
+                    }
+                }
             }
             else if(tempStrList.at(0).contains("ATD")&&tempStrList.at(0).contains("ERROR")
                    )
@@ -278,12 +295,25 @@ void CModemPoolSerialPort::processData()
                     tempStatus = ComeRing;
                 }
             break;
+         case WaitForCommandResult:
+            if(tempStrList.at(0).contains("OK"))
+            {
+                tempStatus = recoverStatus;
+                recoverStatus = READY;
+            }
+            else if(tempStrList.at(0).contains("ERROR"))
+            {
+                if(recoverStatus==DialingOut)
+                   tempStatus =  DialFailed;
+                recoverStatus = READY;
+            }
+            break;
 
         default:
             break;
         }
         tempStrList.clear();
-        delaySeconds(1);
+
         mutex.lock();
         dataReceived.removeAt(0);
         simCardStatus =  tempStatus;

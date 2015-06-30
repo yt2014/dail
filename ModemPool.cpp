@@ -174,7 +174,7 @@ void CModemPool::startProcess()
                PortSIMList.at(i)->write("AT+COPS?\n");
            }
        }
-
+       //qDebug()<<"start modem thread";
        this->start();
 
        numClicked = 1;
@@ -255,7 +255,6 @@ void CModemPool::processStatusChange()
           this->sleep(1);
 
           index = findSimPortByPortName(simPort);//index of SIMs;
-          delaySeconds(1);
           PortSIMList.at(index)->setSimCardStatus(READY);
 
 
@@ -344,6 +343,34 @@ int CModemPool::getNextIndexToProcess()
     return rev;
 }
 
+bool CModemPool::isAllProcessed()
+{
+    bool rev = false;
+    int num = m_teleProStepList.count();
+    qDebug()<<"in is AllProcessed "<<num;
+    int i=0;
+    for(i=0;i<num;i++)
+    {
+
+        if( (m_teleProStepList.at(i).teleStep != PROCESS_FINISHED)
+           &&(m_teleProStepList.at(i).teleStep != DIALFAILED)
+           &&(m_teleProStepList.at(i).teleStep != SEND_MESSAGE_FAIL))
+            break;
+        //if find a number with status that not ended
+    }
+    if(i<num)
+    {
+       rev = false;
+    }
+    else
+    {
+        rev = true;
+    }
+    qDebug()<<"return from AllProcessed ";
+    return rev;
+
+}
+
 void CModemPool::preparePorts()
 {
     int num = portsInfo.count();
@@ -365,16 +392,18 @@ void CModemPool::preparePorts()
 
 void CModemPool::interact()
 {
-    int num = portsInfo.count();
+
     int i=0;
    // qDebug()<<"number of ports "<<num;
 
     /*send AT+COPS?\n to all ports*/
     this->sleep(1);
+    int num = PortSIMList.count();
     for(i=0;i<num;i++)
     {
+
         SIM_status st = PortSIMList.at(i)->getSimStatus();
-        qDebug()<<"sim"<<i<<" status:"<<st;
+        qDebug()<<"in interact sim"<<i<<" status:"<<st;
 
         switch (st) {
         case IDLE:
@@ -395,10 +424,14 @@ void CModemPool::interact()
             }
             else
             {
-                this->stop();
-                numClicked = 2;
-                //setting the text of btn to be "OK"
-                m_pBtn->setText("确定");
+                if(isAllProcessed())
+                {
+                  this->stop();
+                  numClicked = 2;
+                    //setting the text of btn to be "OK"
+                  m_pBtn->setText("确定");
+                }
+
             }
         }
             break;
@@ -406,6 +439,7 @@ void CModemPool::interact()
             PortSIMList.at(i)->write("AT+CLCC\n");
             break;
         case WaitForFeedBack:
+            //qDebug()<<"send ATH";
             PortSIMList.at(i)->write("ATH\n");
             break;
         case DialFailed:

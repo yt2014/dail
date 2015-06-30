@@ -55,6 +55,7 @@ public:
     QSerialPortInfo getPortInfo(int index);
     int findSimPortByPortName(QString portName);
     int getNextIndexToProcess();
+    bool isAllProcessed();
 
     void setPushButton(QPushButton * pBtnToSet);
     void setTreeWidget(QTreeWidget *treeToSet);

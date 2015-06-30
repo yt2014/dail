@@ -22,6 +22,7 @@ typedef enum
     SimNotAvailable,
     READY,
     DialingOut,
+    WaitForCommandResult,
     WaitForFeedBack,
     MessageReceived,
     DialFailed,
@@ -57,6 +58,7 @@ class CModemPoolSerialPort:public QSerialPort
    private:       
        QStringList dataReceived;
        SIM_status simCardStatus;
+       SIM_status recoverStatus;
        CSerialPortThread * m_threadForSim;
        int counterRecv;
 
