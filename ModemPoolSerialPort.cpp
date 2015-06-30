@@ -17,9 +17,9 @@ CModemPoolSerialPort::CModemPoolSerialPort()
 
    /* */
     mutex.lock();
-    dataReceived.clear();
-    mutex.unlock();
+    dataReceived.clear();    
     simCardStatus = IDLE;
+    mutex.unlock();
     counterRecv = 0;
     connect(this,SIGNAL(readyRead()),this,SLOT(receiveData()));
     m_threadForSim = new CSerialPortThread(this);
@@ -72,7 +72,9 @@ void CModemPoolSerialPort::close()
 
 void CModemPoolSerialPort::setSimCardStatus(SIM_status status)
 {
+    mutex.lock();
     simCardStatus = status;
+    mutex.unlock();
 }
 
 
@@ -94,7 +96,9 @@ CModemPoolSerialPort::~CModemPoolSerialPort()
         dataReceived.clear();
         mutex.unlock();
     }
+    mutex.lock();
     simCardStatus = IDLE;
+    mutex.unlock();
     m_threadForSim->stop();
 }
 
@@ -116,30 +120,32 @@ CModemPoolSerialPort::~CModemPoolSerialPort()
 void CModemPoolSerialPort::processData()
 {
     QStringList tempStrList;
+    SIM_status tempStatus;
     mutex.lock();
     tempStrList =  dataReceived;
+    tempStatus = simCardStatus;
     mutex.unlock();
 
     if(tempStrList.count()!=0)
     {
         qDebug()<<"received data from serial port " << this->portName() <<" " + tempStrList.at(0);
-        switch(simCardStatus)
+        switch(tempStatus)
         {
            case IDLE:
         {
             if(tempStrList.at(0).contains("COPS: 0,0,")&&tempStrList.at(0).contains("OK"))
             {
-                simCardStatus = READY;
+                tempStatus = READY;
             }
             else
                 if(tempStrList.at(0).contains("RING"))
                 {
-                    simCardStatus = ComeRing;
+                    tempStatus = ComeRing;
                 }
             else if(tempStrList.at(0).contains("Call Ready")&&tempStrList.at(0).contains("SIM Card have insert"))
                 {
                     delayMilliSeconds(500);
-                    simCardStatus = SimInserted;
+                    tempStatus = SimInserted;
                 }
             //Call Ready
 
@@ -151,7 +157,7 @@ void CModemPoolSerialPort::processData()
             if(tempStrList.at(0).contains("ATD")&&tempStrList.at(0).contains("OK"))
             {
                 qDebug()<<"change to dialing";
-                simCardStatus = DialingOut;
+                tempStatus = DialingOut;
                // this->write("AT+CLCC\n");
                 processInfo infoToAdd;
                 infoToAdd.processStatus = DialingOut;
@@ -167,7 +173,7 @@ void CModemPoolSerialPort::processData()
             else if(tempStrList.at(0).contains("ATD")&&tempStrList.at(0).contains("ERROR")
                    )
             {
-                simCardStatus = DialFailed;
+                tempStatus = DialFailed;
                 qDebug()<<"呼叫失败";
                 int indexofATD = tempStrList.at(0).indexOf("ATD");
                 int indexofDot = tempStrList.at(0).indexOf(";");
@@ -186,7 +192,7 @@ void CModemPoolSerialPort::processData()
                 counterRecv = counterRecv+1;
                 if(counterRecv==6)
                 {
-                    simCardStatus = WaitForFeedBack;
+                    tempStatus = WaitForFeedBack;
                     counterRecv = 0;
                 }
                // this->write("AT+CLCC\n");
@@ -195,14 +201,14 @@ void CModemPoolSerialPort::processData()
                 if(tempStrList.at(0).contains("CLCC")&&tempStrList.at(0).contains("1,0,0,0,0"))
                 {
                     qDebug()<<"对方接起。。。";
-                    simCardStatus = WaitForFeedBack;
+                    tempStatus = WaitForFeedBack;
                 }
             else
                 if(tempStrList.at(0).contains("NO CARRIER"))
                 {
                    // this->write("ATH\n");
                     qDebug()<<"对方挂断。。。";
-                    simCardStatus = WaitForFeedBack;
+                    tempStatus = WaitForFeedBack;
                 }
             break;
         case WaitForFeedBack:            
@@ -215,14 +221,14 @@ void CModemPoolSerialPort::processData()
                 mutex.lock();
                 proInfoListFromSIMs.append(infoToAdd);
                 mutex.unlock();
-                simCardStatus = IDLE;
+                tempStatus = IDLE;
             }
             break;
         case ComeRing:
         {
              delaySeconds(3);
             // this->write("ATH\n");
-             simCardStatus = WaitForFeedBack;
+             tempStatus = WaitForFeedBack;
              processInfo infoToAdd;
              infoToAdd.processStatus = WaitForFeedBack;
              infoToAdd.simPort = this->portName();
@@ -242,34 +248,34 @@ void CModemPoolSerialPort::processData()
                 mutex.lock();
                 proInfoListFromSIMs.append(infoToAdd);
                 mutex.unlock();
-                simCardStatus = IDLE;
+                tempStatus = IDLE;
             }
             break;
         case  SimInserted:
             if(tempStrList.at(0).contains("COPS: 0,0,")&&tempStrList.at(0).contains("OK"))
             {
-                simCardStatus = READY;
+                tempStatus = READY;
             }
             else
                 if(tempStrList.at(0).contains("RING"))
                 {
-                    simCardStatus = ComeRing;
+                    tempStatus = ComeRing;
                 }
             else if(tempStrList.at(0).contains("AT+CLIP=1")&&tempStrList.at(0).contains("OK"))
                 {
                     delayMilliSeconds(500);
-                    simCardStatus = NeedRegist;
+                    tempStatus = NeedRegist;
                 }
         break;
         case NeedRegist:
             if(tempStrList.at(0).contains("COPS: 0,0,")&&tempStrList.at(0).contains("OK"))
             {
-                simCardStatus = READY;
+                tempStatus = READY;
             }
             else
                 if(tempStrList.at(0).contains("RING"))
                 {
-                    simCardStatus = ComeRing;
+                    tempStatus = ComeRing;
                 }
             break;
 
@@ -279,6 +285,7 @@ void CModemPoolSerialPort::processData()
         tempStrList.clear();
         mutex.lock();
         dataReceived.removeAt(0);
+        simCardStatus =  tempStatus;
         mutex.unlock();
     }
 
@@ -291,5 +298,12 @@ CSerialPortThread::CSerialPortThread(CModemPoolSerialPort*SimCardPort)
 
 SIM_status CModemPoolSerialPort::getSimStatus()
 {
-    return simCardStatus;
+    SIM_status tempStatus;
+
+    mutex.lock();
+    tempStatus = simCardStatus;
+    mutex.unlock();
+
+     return tempStatus;
+
 }

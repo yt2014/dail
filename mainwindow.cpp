@@ -1451,14 +1451,17 @@ void MainWindow::portsChanged(int index)
     if(PortSelected->isOpen())
     {
         qDebug()<<"comm port open";
-        char * strToWrite = "AT\n";
+        QByteArray ba = "AT\n";
+        char * strToWrite = ba.data();
         PortSelected->write(strToWrite);
 
-        strToWrite = "AT+CPBS=\"ON\"\n";
+        ba = "AT+CPBS=\"ON\"\n";
+        strToWrite = ba.data();
         qDebug()<<strToWrite;
         PortSelected->write(strToWrite);
 
-        strToWrite = "AT+CLIP=\"ON\"\n";
+        ba = "AT+CLIP=\"ON\"\n";
+        strToWrite = ba.data();
         PortSelected->write(strToWrite);
 
 
