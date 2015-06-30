@@ -144,7 +144,7 @@ void CModemPoolSerialPort::processData()
                 }
             else if(tempStrList.at(0).contains("Call Ready")&&tempStrList.at(0).contains("SIM Card have insert"))
                 {
-                    delayMilliSeconds(500);
+                    //delayMilliSeconds(500);
                     tempStatus = SimInserted;
                 }
             //Call Ready
@@ -263,7 +263,6 @@ void CModemPoolSerialPort::processData()
                 }
             else if(tempStrList.at(0).contains("AT+CLIP=1")&&tempStrList.at(0).contains("OK"))
                 {
-                    delayMilliSeconds(500);
                     tempStatus = NeedRegist;
                 }
         break;
@@ -283,6 +282,7 @@ void CModemPoolSerialPort::processData()
             break;
         }
         tempStrList.clear();
+        delaySeconds(1);
         mutex.lock();
         dataReceived.removeAt(0);
         simCardStatus =  tempStatus;

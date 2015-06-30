@@ -6,8 +6,10 @@
 #include <QMutex>
 #include <QTreeWidget>
 #include <QPushButton>
+#include "CommRecordTable.h"
 
 class MainWindow;
+class CCommRecordTable;
 extern QStringList numsNeedProcess;
 
 typedef enum
@@ -16,13 +18,15 @@ typedef enum
     SENDING_MESSAGE,
     DAILING_OUT,
     PROCESS_FINISHED,
-    DIALFAILED
+    DIALFAILED,
+    SEND_MESSAGE_FAIL
 }processSteps;
 
 typedef struct
 {
     QString telenumber;
     processSteps teleStep;
+    CommRecordInfo recordToStore;
 }teleProSteps;
 
 
@@ -43,6 +47,7 @@ private: CModemPool();
     volatile bool stopped;
     QPushButton * m_pBtn;
     QTreeWidget * m_treeWidget;
+    CCommRecordTable * m_CommRecordTable;
     int numClicked;
 public:
     static CModemPool * getInstance();
@@ -53,6 +58,7 @@ public:
 
     void setPushButton(QPushButton * pBtnToSet);
     void setTreeWidget(QTreeWidget *treeToSet);
+    void setCommRecordTable(CCommRecordTable * CommRecordTable);
 
     int getNumClicked();
 

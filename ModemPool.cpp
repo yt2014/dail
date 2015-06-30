@@ -43,6 +43,7 @@ CModemPool::CModemPool()
     m_pBtn = NULL;
     m_treeWidget = NULL;
     numClicked = 0;
+    m_CommRecordTable = NULL;
 }
 
 CModemPool * CModemPool::getInstance()
@@ -141,6 +142,12 @@ void CModemPool::startProcess()
         {
              oneTeleProStepInfo.telenumber = numsNeedProcess.at(i);
              oneTeleProStepInfo.teleStep = NOT_PROCESSED;
+             oneTeleProStepInfo.recordToStore.callDuration = 0;
+             oneTeleProStepInfo.recordToStore.isCallIn = false;
+             oneTeleProStepInfo.recordToStore.isCallConnected = 0;
+             oneTeleProStepInfo.recordToStore.ringTimes = 0;
+             oneTeleProStepInfo.recordToStore.startTime = QDateTime::currentDateTime();
+             oneTeleProStepInfo.recordToStore.telenum = oneTeleProStepInfo.telenumber;
              m_teleProStepList.append(oneTeleProStepInfo);
         }
 
@@ -221,25 +228,32 @@ void CModemPool::processStatusChange()
        qDebug()<<"status received is "<<st;
        QString simPort = infoFromSIMCard.simPort;
 
-       int index = numsNeedProcess.indexOf(telenumber);
+       int index = numsNeedProcess.indexOf(telenumber);//search in tele number list
        teleProSteps stepsInfoOneNum = m_teleProStepList.takeAt(index);
        if(st==DialingOut)
        {
           stepsInfoOneNum.teleStep = DAILING_OUT;
+          stepsInfoOneNum.recordToStore.startTime = QDateTime::currentDateTime();
+          stepsInfoOneNum.recordToStore.isCallIn = 0;
           m_teleProStepList.insert(index,stepsInfoOneNum);
           m_treeWidget->topLevelItem(index)->setText(1,"拨号中。。。");
-          this->stop();
           m_treeWidget->show();
-          this->start();
        }
        else if(st==WaitForFeedBack)
        {
           stepsInfoOneNum.teleStep = PROCESS_FINISHED;
+          stepsInfoOneNum.recordToStore.callDuration = stepsInfoOneNum.recordToStore.startTime.secsTo(QDateTime::currentDateTime());
+          stepsInfoOneNum.recordToStore.ringTimes = stepsInfoOneNum.recordToStore.callDuration/8;
           m_teleProStepList.insert(index,stepsInfoOneNum);
+          if(m_CommRecordTable!=NULL)
+          {
+             m_CommRecordTable->addOneRecord(stepsInfoOneNum.recordToStore);
+          }
           m_treeWidget->topLevelItem(index)->setText(1,"拨号完成");
           m_treeWidget->show();
 
           index = findSimPortByPortName(simPort);//index of SIMs;
+          delaySeconds(1);
           PortSIMList.at(index)->setSimCardStatus(READY);
 
 
@@ -252,6 +266,7 @@ void CModemPool::processStatusChange()
            m_treeWidget->show();
 
            index = findSimPortByPortName(simPort);//index of SIMs;
+           delaySeconds(1);
            PortSIMList.at(index)->setSimCardStatus(READY);
 
        }
@@ -368,7 +383,7 @@ void CModemPool::interact()
             if(indexNumToProcess!=-1)
             {
                 QString strToSend = numsNeedProcess.at(indexNumToProcess);
-                delayMilliSeconds(1000);
+                //delayMilliSeconds(1000);
                 strToSend = "ATD"+strToSend+";\n";
                 QByteArray ba = strToSend.toLatin1();
                 char* ch = ba.data();
@@ -419,4 +434,9 @@ void CModemPool::setTreeWidget(QTreeWidget *treeToSet)
 int CModemPool::getNumClicked()
 {
    return numClicked;
+}
+
+void CModemPool::setCommRecordTable(CCommRecordTable * CommRecordTable)
+{
+    m_CommRecordTable = CommRecordTable;
 }

@@ -180,8 +180,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
       m_Modem = CModemPool::getInstance();
 
-
-
+      if(m_CCommRecordTable!=NULL)
+      {
+          m_Modem->setCommRecordTable(m_CCommRecordTable);
+      }
       connect(ui->pBtnShortMessage,SIGNAL(clicked()),this,SLOT(launchShorMessageForm()));
       connect(ui->pBtnDail,SIGNAL(clicked()),m_Modem,SLOT(preparePorts()));
 
