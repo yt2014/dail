@@ -44,6 +44,7 @@ CModemPool::CModemPool()
     m_treeWidget = NULL;
     numClicked = 0;
     m_CommRecordTable = NULL;
+    isAllProcessed = true;
 }
 
 CModemPool * CModemPool::getInstance()
@@ -137,6 +138,8 @@ void CModemPool::startProcess()
         qDebug()<<"number of ports "<<num;
         qDebug()<<"num of tele "<<len;
         /*为所有需要处理的电话号码初始化状态 NOT_PROCESSED*/
+        if(len!=0)
+        {
         teleProSteps oneTeleProStepInfo;
         for(i=0;i<len;i++)
         {
@@ -174,20 +177,24 @@ void CModemPool::startProcess()
                PortSIMList.at(i)->write("AT+COPS?\n");
            }
        }
-     //  qDebug()<<"start modem thread";
-      // this->start();
+        //qDebug()<<"thread is running? "<<this->isRunning();
+       // this->start();
+       // this->run();
 
        numClicked = 1;
        //setting the text of btn to be "stop"
        //m_mainWindow->ui
        m_pBtn->setText("停止");
+       isAllProcessed = false;
+        }
     }
     else if(numClicked==1)
     {
-       // this->stop();//停止拨号
+
         numClicked = 2;
         //setting the text to be "ok"
         m_pBtn->setText("确定");
+
     }
     else if(numClicked==2)
     {
@@ -204,6 +211,7 @@ void CModemPool::startProcess()
        emit endProcess();
         //setting the text to be "start"
        m_pBtn->setText("开始");
+       isAllProcessed = true;
     }
 
 
@@ -280,7 +288,7 @@ void CModemPool::processStatusChange()
     }
     else
     {
-       sleep(4);
+        sleep(4);
        emit needInteract();
     }
 
@@ -347,7 +355,7 @@ int CModemPool::getNextIndexToProcess()
     return rev;
 }
 
-bool CModemPool::isAllProcessed()
+bool CModemPool::checkAllProcessed()
 {
     bool rev = false;
     int num = m_teleProStepList.count();
@@ -401,65 +409,76 @@ void CModemPool::interact()
 
 
     /*send AT+COPS?\n to all ports*/
-    this->sleep(1);
-    int num = PortSIMList.count();
-    // qDebug()<<"number of ports in interact "<<num;
-    for(i=0;i<num;i++)
+    if(!isAllProcessed)
     {
-
-        SIM_status st = PortSIMList.at(i)->getSimStatus();
-      //  qDebug()<<"in interact sim"<<i<<" status:"<<st;
-
-        switch (st) {
-        case IDLE:
-           // PortSIMList.at(i)->write("AT+COPS?\n");
-            break;
-        case READY:
+        int num = PortSIMList.count();
+        // qDebug()<<"number of ports in interact "<<num;
+        for(i=0;i<num;i++)
         {
-            int indexNumToProcess = getNextIndexToProcess();
-            if(indexNumToProcess!=-1)
-            {
-                QString strToSend = numsNeedProcess.at(indexNumToProcess);
-                //delayMilliSeconds(1000);
-                strToSend = "ATD"+strToSend+";\n";
-                QByteArray ba = strToSend.toLatin1();
-                char* ch = ba.data();
-                PortSIMList.at(i)->write(ch);
 
-            }
-            else
+            SIM_status st = PortSIMList.at(i)->getSimStatus();
+            //  qDebug()<<"in interact sim"<<i<<" status:"<<st;
+
+            switch (st) {
+            case IDLE:
+              // PortSIMList.at(i)->write("AT+COPS?\n");
+            break;
+            case READY:
             {
-                if(isAllProcessed())
+                int indexNumToProcess = getNextIndexToProcess();
+
+                if(indexNumToProcess!=-1)
                 {
-                 // this->stop();
-                  numClicked = 2;
-                    //setting the text of btn to be "OK"
-                  m_pBtn->setText("确定");
+                     teleProSteps stepsInfoOneNum = m_teleProStepList.takeAt(indexNumToProcess);
+                     stepsInfoOneNum.teleStep = START_PROCESS;
+                     m_teleProStepList.insert(indexNumToProcess,stepsInfoOneNum);
+                     QString strToSend = numsNeedProcess.at(indexNumToProcess);
+                     //delayMilliSeconds(1000);
+                     strToSend = "ATD"+strToSend+";\n";
+                     QByteArray ba = strToSend.toLatin1();
+                     char* ch = ba.data();
+                     PortSIMList.at(i)->write(ch);
+
                 }
+                else
+                {
+                     isAllProcessed = checkAllProcessed();
+                     if(isAllProcessed)
+                     {
 
+                         numClicked = 2;
+                         //setting the text of btn to be "OK"
+                         m_pBtn->setText("确定");
+                     }
+
+                }
             }
-        }
             break;
-        case DialingOut:
-            PortSIMList.at(i)->write("AT+CLCC\n");
-            break;
-        case WaitForFeedBack:
-            //qDebug()<<"send ATH";
-            PortSIMList.at(i)->write("ATH\n");
-            break;
-        case DialFailed:
-            PortSIMList.at(i)->write("ATH\n");
-            break;
-        case SimInserted:
-            PortSIMList.at(i)->write("AT+CLIP=1\n");
-            break;
-        case NeedRegist:
-            PortSIMList.at(i)->write("AT+COPS?\n");
-            break;
+            case DialingOut:
+                PortSIMList.at(i)->write("AT+CLCC\n");
+                break;
+            case WaitForFeedBack:
+                //qDebug()<<"send ATH";
+                PortSIMList.at(i)->write("ATH\n");
+                break;
+            case DialFailed:
+                PortSIMList.at(i)->write("ATH\n");
+                break;
+            case SimInserted:
+                PortSIMList.at(i)->write("AT+CLIP=1\n");
+                break;
+            case NeedRegist:
+                PortSIMList.at(i)->write("AT+COPS?\n");
+                break;
 
-        default:
-            break;
+           default:
+               break;
+           }
         }
+    }
+    else
+    {
+        delayMilliSeconds(1000);
     }
 }
 

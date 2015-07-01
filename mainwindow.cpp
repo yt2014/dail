@@ -528,7 +528,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
            connect(pBtnStart,SIGNAL(clicked()),m_Modem,SLOT(startProcess()));
           // connect(pBtnStart,SIGNAL(clicked()),this,SLOT(endProcess()));
            connect(m_Modem,SIGNAL(endProcess()),this,SLOT(endProcess()));
-
+           pBtnStart->setEnabled(false);
            m_Modem->setPushButton(pBtnStart);
         }
 
@@ -1556,6 +1556,20 @@ void MainWindow::AddNumsProcess()
 
     treeWidgetNumsNeedProcess->show();
     ui->listWidget->show();
+
+    QPushButton * pBtnStart;
+    if(treeWidgetNumsNeedProcess->topLevelItemCount()!=0)
+    {
+        pBtnStart =  ui->tabWidget->widget(2)->findChild<QPushButton  *>("pBtnStart");
+        pBtnStart->setEnabled(true);
+    }
+    else
+    {
+        pBtnStart =  ui->tabWidget->widget(2)->findChild<QPushButton  *>("pBtnStart");
+        pBtnStart->setEnabled(false);
+    }
+
+
 }
 
 void MainWindow::DelNumsProcess()
@@ -1594,6 +1608,18 @@ void MainWindow::DelNumsProcess()
 
     treeWidgetNumsNeedProcess->show();
     ui->listWidget->show();
+
+    QPushButton * pBtnStart;
+    if(treeWidgetNumsNeedProcess->topLevelItemCount()!=0)
+    {
+        pBtnStart = ui->tabWidget->widget(2)->findChild<QPushButton  *>("pBtnStart");
+        pBtnStart->setEnabled(true);
+    }
+    else
+    {
+        pBtnStart =  ui->tabWidget->widget(2)->findChild<QPushButton  *>("pBtnStart");
+        pBtnStart->setEnabled(false);
+    }
 
 }
 
@@ -1637,6 +1663,11 @@ void MainWindow::endProcess()
 
     treeWidgetNumsNeedProcess->show();
     ui->listWidget->show();
+
+    QPushButton * pBtnStart;
+
+    pBtnStart =  ui->tabWidget->widget(2)->findChild<QPushButton  *>("pBtnStart");
+    pBtnStart->setEnabled(false);
 
 
 }

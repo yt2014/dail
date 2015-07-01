@@ -20,7 +20,7 @@ void CDynamicSelectThread::run()
      while(!stopped)
      {
          SelectRecords();
-         this->sleep(2);
+         this->msleep(20);
      }
      stopped = false;
 }

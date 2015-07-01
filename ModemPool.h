@@ -15,6 +15,7 @@ extern QStringList numsNeedProcess;
 typedef enum
 {
     NOT_PROCESSED,
+    START_PROCESS,
     SENDING_MESSAGE,
     DAILING_OUT,
     PROCESS_FINISHED,
@@ -49,13 +50,14 @@ private: CModemPool();
     QTreeWidget * m_treeWidget;
     CCommRecordTable * m_CommRecordTable;
     int numClicked;
+    bool isAllProcessed;
 public:
     static CModemPool * getInstance();
     CModemPoolSerialPort * getSIMPort(int index);
     QSerialPortInfo getPortInfo(int index);
     int findSimPortByPortName(QString portName);
     int getNextIndexToProcess();
-    bool isAllProcessed();
+    bool checkAllProcessed();
 
     void setPushButton(QPushButton * pBtnToSet);
     void setTreeWidget(QTreeWidget *treeToSet);
