@@ -36,7 +36,6 @@ CModemPool::CModemPool()
     {
         PortSIMList.at(i)->open(QIODevice::ReadWrite);
         PortSIMList.at(i)->write("AT+CLIP=1\n");
-
     }
 
     connect(this,SIGNAL(needInteract()),this,SLOT(interact()));
@@ -229,7 +228,7 @@ void CModemPool::processStatusChange()
     if(tempInfoList.count()!=0)
     {
        qDebug()<<"received info from SIM card";
-        processInfo infoFromSIMCard = tempInfoList.at(0);
+       processInfo infoFromSIMCard = tempInfoList.at(0);
 
        QString telenumber = infoFromSIMCard.telenumber;
        SIM_status st = infoFromSIMCard.processStatus;
@@ -237,7 +236,8 @@ void CModemPool::processStatusChange()
        qDebug()<<"status received is "<<st;
        QString simPort = infoFromSIMCard.simPort;
 
-       int index = numsNeedProcess.indexOf(telenumber);//search in tele number list
+       int index = numsNeedProcess.indexOf(telenumber);//index of tele number, search in tele number list
+       int indexSim = findSimPortByPortName(simPort);
        teleProSteps stepsInfoOneNum = m_teleProStepList.takeAt(index);
        if(st==DialingOut)
        {
@@ -263,8 +263,7 @@ void CModemPool::processStatusChange()
           m_treeWidget->show();
           this->sleep(1);
 
-          index = findSimPortByPortName(simPort);//index of SIMs;
-          PortSIMList.at(index)->setSimCardStatus(READY);
+          PortSIMList.at(indexSim)->setSimCardStatus(READY);
 
 
        }

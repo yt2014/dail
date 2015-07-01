@@ -130,23 +130,28 @@ void CModemPoolSerialPort::processData()
     if(tempStrList.count()!=0)
     {
         qDebug()<<"received data from serial port " << this->portName() <<" " + tempStrList.at(0);
+        processInfo infoToAdd;
+        infoToAdd.simPort = this->portName();
+        infoToAdd.processStatus = tempStatus;
+        infoToAdd.telenumber = "";
         switch(tempStatus)
         {
            case IDLE:
         {
             if(tempStrList.at(0).contains("COPS: 0,0,")&&tempStrList.at(0).contains("OK"))
             {
-                tempStatus = READY;
+                infoToAdd.processStatus = READY;
             }
             else
                 if(tempStrList.at(0).contains("RING"))
                 {
-                    tempStatus = ComeRing;
+                    infoToAdd.processStatus = ComeRing;
+                    //get the telephone nunmber here.
                 }
             else if(tempStrList.at(0).contains("Call Ready")&&tempStrList.at(0).contains("SIM Card have insert"))
                 {
                     //delayMilliSeconds(500);
-                    tempStatus = SimInserted;
+                    infoToAdd.processStatus = SimInserted;
                 }
             //Call Ready
 
@@ -157,9 +162,9 @@ void CModemPoolSerialPort::processData()
         {
             if(tempStrList.at(0).contains("ATD"))
             {
-                processInfo infoToAdd;
+
                 infoToAdd.processStatus = DialingOut;
-                infoToAdd.simPort = this->portName();
+
                 int indexofATD = tempStrList.at(0).indexOf("ATD");
                 int indexofDot = tempStrList.at(0).indexOf(";");
                 infoToAdd.telenumber = tempStrList.at(0).mid(indexofATD+3,indexofDot-indexofATD-3);
@@ -167,23 +172,19 @@ void CModemPoolSerialPort::processData()
                 if(tempStrList.at(0).contains("OK"))
                 {
                     qDebug()<<"change to dialing";
-                    tempStatus = DialingOut;
-                   // this->write("AT+CLCC\n");
-
-                    mutex.lock();
-                    proInfoListFromSIMs.append(infoToAdd);
-                    mutex.unlock();
+                    infoToAdd.processStatus = DialingOut;
+                   // this->write("AT+CLCC\n");                    
                 }
                 else
                 {
                     if(tempStrList.at(0).contains("ERROR"))
                     {
-                        tempStatus = DialFailed;
+                        infoToAdd.processStatus = DialFailed;
                         qDebug()<<"呼叫失败";
                     }
                     else
                     {
-                       tempStatus = WaitForCommandResult;
+                       infoToAdd.processStatus = WaitForCommandResult;
                        recoverStatus = DialingOut;
                     }
                 }
@@ -191,7 +192,7 @@ void CModemPoolSerialPort::processData()
             else if(tempStrList.at(0).contains("ATD")&&tempStrList.at(0).contains("ERROR")
                    )
             {
-                tempStatus = DialFailed;
+                infoToAdd.processStatus = DialFailed;
                 qDebug()<<"呼叫失败";
                 int indexofATD = tempStrList.at(0).indexOf("ATD");
                 int indexofDot = tempStrList.at(0).indexOf(";");
@@ -210,7 +211,7 @@ void CModemPoolSerialPort::processData()
                 counterRecv = counterRecv+1;
                 if(counterRecv==6)
                 {
-                    tempStatus = WaitForFeedBack;
+                    infoToAdd.processStatus = WaitForFeedBack;
                     counterRecv = 0;
                 }
                // this->write("AT+CLCC\n");
@@ -219,92 +220,75 @@ void CModemPoolSerialPort::processData()
                 if(tempStrList.at(0).contains("CLCC")&&tempStrList.at(0).contains("1,0,0,0,0"))
                 {
                     qDebug()<<"对方接起。。。";
-                    tempStatus = WaitForFeedBack;
+                    infoToAdd.processStatus = WaitForFeedBack;
                 }
             else
                 if(tempStrList.at(0).contains("NO CARRIER"))
                 {
                    // this->write("ATH\n");
                     qDebug()<<"对方挂断。。。";
-                    tempStatus = WaitForFeedBack;
+                    infoToAdd.processStatus = WaitForFeedBack;
                 }
             break;
         case WaitForFeedBack:            
             if(tempStrList.at(0).contains("ATH")&&tempStrList.at(0).contains("OK"))
             {
-                processInfo infoToAdd;
-                infoToAdd.processStatus = WaitForFeedBack;
-                infoToAdd.simPort = this->portName();
+
+                infoToAdd.processStatus = IDLE;
                 infoToAdd.telenumber = m_telenumber;
-                mutex.lock();
-                proInfoListFromSIMs.append(infoToAdd);
-                mutex.unlock();
-                tempStatus = IDLE;
             }
             break;
         case ComeRing:
         {
              delaySeconds(3);
             // this->write("ATH\n");
-             tempStatus = WaitForFeedBack;
-             processInfo infoToAdd;
              infoToAdd.processStatus = WaitForFeedBack;
-             infoToAdd.simPort = this->portName();
              infoToAdd.telenumber = m_telenumber;
-             mutex.lock();
-             proInfoListFromSIMs.append(infoToAdd);
-             mutex.unlock();
         }
             break;
         case DialFailed:
             if(tempStrList.at(0).contains("ATH")&&tempStrList.at(0).contains("OK"))
             {
-                processInfo infoToAdd;
-                infoToAdd.processStatus = DialFailed;
-                infoToAdd.simPort = this->portName();
-                infoToAdd.telenumber = m_telenumber;
-                mutex.lock();
-                proInfoListFromSIMs.append(infoToAdd);
-                mutex.unlock();
-                tempStatus = IDLE;
+                infoToAdd.processStatus = IDLE;
+
             }
             break;
         case  SimInserted:
             if(tempStrList.at(0).contains("COPS: 0,0,")&&tempStrList.at(0).contains("OK"))
             {
-                tempStatus = READY;
+                infoToAdd.processStatus = READY;
             }
             else
                 if(tempStrList.at(0).contains("RING"))
                 {
-                    tempStatus = ComeRing;
+                    infoToAdd.processStatus = ComeRing;
                 }
             else if(tempStrList.at(0).contains("AT+CLIP=1")&&tempStrList.at(0).contains("OK"))
                 {
-                    tempStatus = NeedRegist;
+                    infoToAdd.processStatus = NeedRegist;
                 }
         break;
         case NeedRegist:
             if(tempStrList.at(0).contains("COPS: 0,0,")&&tempStrList.at(0).contains("OK"))
             {
-                tempStatus = READY;
+                infoToAdd.processStatus = READY;
             }
             else
                 if(tempStrList.at(0).contains("RING"))
                 {
-                    tempStatus = ComeRing;
+                    infoToAdd.processStatus = ComeRing;
                 }
             break;
          case WaitForCommandResult:
             if(tempStrList.at(0).contains("OK"))
             {
-                tempStatus = recoverStatus;
+                infoToAdd.processStatus = recoverStatus;
                 recoverStatus = READY;
             }
             else if(tempStrList.at(0).contains("ERROR"))
             {
                 if(recoverStatus==DialingOut)
-                   tempStatus =  DialFailed;
+                   infoToAdd.processStatus =  DialFailed;
                 recoverStatus = READY;
             }
             break;
@@ -312,6 +296,15 @@ void CModemPoolSerialPort::processData()
         default:
             break;
         }
+
+
+        if(tempStatus!=infoToAdd.processStatus)
+        {
+           mutex.lock();
+           proInfoListFromSIMs.append(infoToAdd);
+           mutex.unlock();
+        }
+
         tempStrList.clear();
 
         mutex.lock();

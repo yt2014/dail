@@ -33,7 +33,14 @@ typedef struct
 
 typedef QList<teleProSteps> teleProStepList;
 
-extern processInfoList proInfoListFromSIMs;
+extern processInfoList proInfoListFromSIMs;//new status from SIM port.
+
+typedef struct
+{
+    int indexOfSim;
+    int indexOfTel;
+    SIM_status simST;
+}decodedChangeInfo;
 
 class CModemPool:public QThread
 {
@@ -43,7 +50,7 @@ private: CModemPool();
     serialPortInfoList portsInfo;
     QList<CModemPoolSerialPort *> PortSIMList;
     QStringList teleNumsProcessing;
-    processInfoList m_proInfoList;//all sim card;
+    processInfoList m_proInfoList;//all sim card, store the last status;
     teleProStepList m_teleProStepList;//all numbers to process
     volatile bool stopped;
     QPushButton * m_pBtn;
@@ -51,6 +58,7 @@ private: CModemPool();
     CCommRecordTable * m_CommRecordTable;
     int numClicked;
     bool isAllProcessed;
+    decodedChangeInfo infoDecoded;
 public:
     static CModemPool * getInstance();
     CModemPoolSerialPort * getSIMPort(int index);
@@ -82,6 +90,7 @@ protected:
     void processStatusChange();
 
 };
+
 
 
 #endif // MODEMPOOL_H
