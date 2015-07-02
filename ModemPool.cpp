@@ -202,6 +202,36 @@ void CModemPool::startProcess()
         //setting the text to be "ok"
         m_pBtn->setText("确定");
 
+        int numOfAllSims =  PortSIMList.count();
+        int numOfSimsInPro = m_proInfoList.count();
+        int i = 0;
+        QByteArray ba;
+        char * ca;
+        for(i=0;i<numOfAllSims;i++)
+        {
+            if(i<numOfSimsInPro)
+            {
+                if(m_proInfoList.at(i).processStatus>READY)
+                {
+                    ba = "ATH\n";
+                    ca = ba.data();
+                    PortSIMList.at(i)->write(ca);
+                }
+                else
+                {
+                    ba = "AT+COPS?\n";
+                    ca = ba.data();
+                    PortSIMList.at(i)->write(ca);
+                }
+            }
+            else
+            {
+                ba = "AT+COPS?\n";
+                ca = ba.data();
+                PortSIMList.at(i)->write(ca);
+            }
+        }
+        isAllProcessed = true;
     }
     else if(numClicked==2)
     {
@@ -256,10 +286,9 @@ void CModemPool::processStatusChange()
        if(!isAllProcessed)
        {
            SIM_status tempStatus = m_proInfoList.at(indexSim).processStatus;
-           if(st>=READY)
+           if((st>READY)||((st==READY)&&(tempStatus>READY)))
            {
-               if(tempStatus>READY)
-               {
+
                   if(telenumber!="")
                   {
                       index = numsNeedProcess.indexOf(telenumber);
@@ -278,30 +307,32 @@ void CModemPool::processStatusChange()
                          index = -1;
                       }
                   }
-               }
+
            }
+
 
            if(st==DialingOut)
            {
 
-               qDebug()<<"dailing out received, index of tele "<<index;
-               /*stepsInfoOneNum = m_teleProStepList.takeAt(index);
+               qDebug()<<"dailing out received, index of tele "<<index<<" "<<telenumber;
+               stepsInfoOneNum = m_teleProStepList.takeAt(index);
                stepsInfoOneNum.teleStep = DAILING_OUT;
                stepsInfoOneNum.recordToStore.startTime = QDateTime::currentDateTime();
                stepsInfoOneNum.recordToStore.isCallIn = 0;
                m_teleProStepList.insert(index,stepsInfoOneNum);
                m_treeWidget->topLevelItem(index)->setText(1,"拨号中。。。");
                m_treeWidget->show();
-               this->sleep(1);*/
+               this->sleep(1);
                //emit needInteract();
            }
            else if(st == READY)
              {
-                 qDebug()<<"ready received, index of tele "<<index;
+                 qDebug()<<"to ready from "<<tempStatus<<"index of tele "<<index<<"num "<<telenumber;
                  if(tempStatus == WaitForFeedBack)
                  {
-                     qDebug()<<"from waitforfeedback to READY";
-                     /*stepsInfoOneNum = m_teleProStepList.takeAt(index);
+                     //qDebug()<<"from waitforfeedback to READY";
+
+                    stepsInfoOneNum = m_teleProStepList.takeAt(index);
                     stepsInfoOneNum.teleStep = PROCESS_FINISHED;
                     stepsInfoOneNum.recordToStore.callDuration = stepsInfoOneNum.recordToStore.startTime.secsTo(QDateTime::currentDateTime());
                     stepsInfoOneNum.recordToStore.ringTimes = stepsInfoOneNum.recordToStore.callDuration/8;
@@ -312,24 +343,33 @@ void CModemPool::processStatusChange()
                     }
                     m_treeWidget->topLevelItem(index)->setText(1,"拨号完成");
                     m_treeWidget->show();
-                    this->sleep(1);*/
+                    this->sleep(1);
                     //emit needInteract();
                     // PortSIMList.at(indexSim)->setSimCardStatus(READY);
 
                  }
                  else if(tempStatus==DialFailed)
                  {
-                     qDebug()<<"from DialFailed to READY";
-                     /*stepsInfoOneNum = m_teleProStepList.takeAt(index);
+                     //qDebug()<<"from DialFailed to READY";
+                     stepsInfoOneNum = m_teleProStepList.takeAt(index);
                      stepsInfoOneNum.teleStep = DIALFAILED;
                      m_teleProStepList.insert(index,stepsInfoOneNum);
                      m_treeWidget->topLevelItem(index)->setText(1,"拨号失败");
                      m_treeWidget->show();
-                     this->sleep(1);*/
+                     this->sleep(1);
 
                      //emit needInteract();
                      //index = findSimPortByPortName(simPort);//index of SIMs;
                     //PortSIMList.at(index)->setSimCardStatus(READY);
+                 }
+                 else if(tempStatus>READY)
+                 {
+                     stepsInfoOneNum = m_teleProStepList.takeAt(index);
+                     stepsInfoOneNum.teleStep = PROCESS_FINISHED;
+                     m_teleProStepList.insert(index,stepsInfoOneNum);
+                     m_treeWidget->topLevelItem(index)->setText(1,"本地中断");
+                     m_treeWidget->show();
+                     this->sleep(1);
                  }
 
              }
@@ -529,6 +569,7 @@ void CModemPool::interact()
                 }
                 else
                 {
+                     qDebug()<<"no tele to dail again";
                      isAllProcessed = checkAllProcessed();
                      if(isAllProcessed)
                      {
@@ -562,9 +603,12 @@ void CModemPool::interact()
            default:
                break;
            }
-            processInfo proInfoToInit = m_proInfoList.takeAt(index_Sim);
-            proInfoToInit.processStatus = stNew;
-            m_proInfoList.insert(index_Sim,proInfoToInit);
+            if((!isAllProcessed)&&(index_Sim<m_proInfoList.count()))
+            {
+               processInfo proInfoToInit = m_proInfoList.takeAt(index_Sim);
+               proInfoToInit.processStatus = stNew;
+               m_proInfoList.insert(index_Sim,proInfoToInit);
+            }
 }
 
 void CModemPool::setPushButton(QPushButton * pBtnToSet)

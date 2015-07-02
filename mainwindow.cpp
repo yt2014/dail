@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setFont(font);
     this->setPalette(palette);
     this->setAutoFillBackground(true);
-    this->setFixedSize(893,672);
+    this->setFixedSize(870,660);
     //this->setBaseSize(541,557);
     //this->resize( QSize( 541, 557 ));
 
@@ -191,6 +191,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
       ui->pBtnDail->setGeometry(336,40,135,40);
       ui->pBtnDail->show();
+      QRect posRelative = ui->pBtnDail->geometry();
+      ui->pBtnMessageRecord->setGeometry(posRelative.right()+4,posRelative.top(),131,40);
+
+      posRelative = ui->pBtnMessageRecord->geometry();
+      ui->pBtnSendMessage->setGeometry(posRelative.right()+4,posRelative.top(),131,40);
+
      // m_Modem->setPushButton(ui->pBtnDail);
       adjustPosition();
       m_Modem->start();

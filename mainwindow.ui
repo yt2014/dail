@@ -70,7 +70,7 @@
      <bool>true</bool>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tabContactors">
      <attribute name="title">
@@ -298,12 +298,22 @@
     </widget>
     <widget class="QWidget" name="tabRingup">
      <attribute name="title">
-      <string>来电</string>
+      <string>拨号</string>
      </attribute>
     </widget>
     <widget class="QWidget" name="tabDailout">
      <attribute name="title">
-      <string>拨号</string>
+      <string>来电</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tabShortMessageRecord">
+     <attribute name="title">
+      <string>消息记录</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tabSendShortMessage">
+     <attribute name="title">
+      <string>发消息</string>
      </attribute>
     </widget>
    </widget>
@@ -324,10 +334,39 @@
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>50</y>
+      <y>80</y>
       <width>681</width>
       <height>41</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pBtnMessageRecord">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>40</y>
+      <width>91</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>false</bool>
+    </property>
+    <property name="text">
+     <string>消息记录</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pBtnSendMessage">
+    <property name="geometry">
+     <rect>
+      <x>644</x>
+      <y>42</y>
+      <width>81</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>发送消息</string>
     </property>
    </widget>
   </widget>

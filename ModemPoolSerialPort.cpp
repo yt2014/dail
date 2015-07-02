@@ -134,6 +134,16 @@ void CModemPoolSerialPort::processData()
         infoToAdd.simPort = this->portName();
         infoToAdd.processStatus = tempStatus;
         infoToAdd.telenumber = "";
+        if(tempStrList.at(0).contains("ATH"))
+        {
+            if(tempStatus>READY)
+            {
+                infoToAdd.processStatus = READY;
+                infoToAdd.telenumber = m_telenumber;
+            }
+        }
+        else
+        {
         switch(tempStatus)
         {
            case IDLE:
@@ -197,7 +207,9 @@ void CModemPoolSerialPort::processData()
                 qDebug()<<"呼叫失败";
                 int indexofATD = tempStrList.at(0).indexOf("ATD");
                 int indexofDot = tempStrList.at(0).indexOf(";");
+
                 m_telenumber = tempStrList.at(0).mid(indexofATD+3,indexofDot-indexofATD-3);
+                infoToAdd.telenumber = m_telenumber;
             }
                 /*NO CARRIER*/
             /*+CLCC: 1,0,3,0,0,"13541137539",129*/
@@ -253,7 +265,7 @@ void CModemPoolSerialPort::processData()
             if(tempStrList.at(0).contains("ATH")&&tempStrList.at(0).contains("OK"))
             {
                 infoToAdd.processStatus = READY;
-
+                infoToAdd.telenumber = m_telenumber;
             }
             break;
         case  SimInserted:
@@ -291,13 +303,18 @@ void CModemPoolSerialPort::processData()
             else if(tempStrList.at(0).contains("ERROR"))
             {
                 if(recoverStatus==DialingOut)
+                {
                    infoToAdd.processStatus =  DialFailed;
+                   infoToAdd.telenumber = m_telenumber;
+                }
+
                 recoverStatus = READY;
             }
             break;
 
         default:
             break;
+        }
         }
 
 
