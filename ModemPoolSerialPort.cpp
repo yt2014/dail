@@ -142,6 +142,11 @@ void CModemPoolSerialPort::processData()
                 infoToAdd.telenumber = m_telenumber;
             }
         }
+        else if(tempStrList.at(0).contains("Call Ready")&&tempStrList.at(0).contains("SIM Card have insert"))
+        {
+            //delayMilliSeconds(500);
+            infoToAdd.processStatus = SimInserted;
+        }
         else
         {
         switch(tempStatus)

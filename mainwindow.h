@@ -80,6 +80,8 @@ private slots:
 
     void endProcess();
 
+    void on_pBtnMessageRecord_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSystemTrayIcon * mSystemTrayIcon;    

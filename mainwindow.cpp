@@ -279,6 +279,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
     QWidget * TabWidgetSelected = ui->tabWidget->widget(index);
 
+
     if((index==0)||(index==1))
     {
        ui->label_Telenumber->setParent(TabWidgetSelected);
@@ -316,6 +317,14 @@ void MainWindow::on_tabWidget_currentChanged(int index)
            ui->listWidget->setGeometry(pos.left(),topListWidegtCon+40,widthListWidegtCon-120,heightListWidgetCon-110);
            ui->listWidget->show();
            ui->listWidget->setCurrentRow(-1);
+
+           ui->pBtnEdit_Add->setParent(TabWidgetSelected);
+           ui->pBtnEdit_Add->show();
+        }
+        else if(index==4)
+        {
+            ui->pBtnEdit_Add->setParent(TabWidgetSelected);
+            ui->pBtnEdit_Add->show();
         }
     }
     ui->label_Telenumber->show();
@@ -1732,5 +1741,31 @@ void MainWindow::adjustPosition()
 
     //hide the dial button on the contactor interface.
     ui->pBtn_Dailout->hide();
+
+}
+
+void MainWindow::on_pBtnMessageRecord_clicked()
+{
+    ui->tabWidget->setCurrentIndex(4);
+    QWidget* tab4 = ui->tabWidget->widget(4);
+
+    QTreeWidget * tree = tab4->findChild<QTreeWidget *>("treeWidgetMessageRecord");
+    if(tree==0)
+    {
+        QTreeWidget * treeWidgetMessageRecord = new QTreeWidget(tab4);
+        treeWidgetMessageRecord->setGeometry(0,topListWidegtCon,widthListWidegtCon,heightListWidgetCon);
+        treeWidgetMessageRecord->setObjectName("treeWidgetMessageRecord");
+        QStringList headers;
+        headers.clear();
+        headers<<"号码/联系人"<<"状态";
+        treeWidgetMessageRecord->setColumnCount(2);
+        treeWidgetMessageRecord->setHeaderLabels(headers);
+       // treeWidgetNumsNeedProcess->setSelectionMode(QAbstractItemView::ExtendedSelection);
+        treeWidgetMessageRecord->show();
+
+       // m_Modem->setTreeWidget(treeWidgetMessageRecord);
+    }
+
+
 
 }
