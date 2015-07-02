@@ -129,7 +129,7 @@ void CModemPoolSerialPort::processData()
 
     if(tempStrList.count()!=0)
     {
-        qDebug()<<"received data from serial port " << this->portName() <<" " + tempStrList.at(0);
+        qDebug()<<"received " << this->portName() <<" " + tempStrList.at(0);
         processInfo infoToAdd;
         infoToAdd.simPort = this->portName();
         infoToAdd.processStatus = tempStatus;
@@ -140,6 +140,7 @@ void CModemPoolSerialPort::processData()
         {
             if(tempStrList.at(0).contains("COPS: 0,0,")&&tempStrList.at(0).contains("OK"))
             {
+
                 infoToAdd.processStatus = READY;
             }
             else
@@ -163,7 +164,7 @@ void CModemPoolSerialPort::processData()
             if(tempStrList.at(0).contains("ATD"))
             {
 
-                infoToAdd.processStatus = DialingOut;
+                //infoToAdd.processStatus = DialingOut;
 
                 int indexofATD = tempStrList.at(0).indexOf("ATD");
                 int indexofDot = tempStrList.at(0).indexOf(";");
@@ -203,8 +204,9 @@ void CModemPoolSerialPort::processData()
         }
             break;
         case DialingOut:
-            qDebug()<<"拨号中。。。";
-            if(tempStrList.at(0).contains("CLCC")&&tempStrList.at(0).contains("1,0,3,0,0"))
+            //qDebug()<<"拨号中。。。";
+            if(tempStrList.at(0).contains("CLCC")&&( tempStrList.at(0).contains("1,0,3,0,0")
+                                                   ||tempStrList.at(0).contains("1,0,2,0,0")))
             {
                // delaySeconds(1);
                 qDebug()<<"clcc received 拨号中。。。";
@@ -234,7 +236,7 @@ void CModemPoolSerialPort::processData()
             if(tempStrList.at(0).contains("ATH")&&tempStrList.at(0).contains("OK"))
             {
 
-                infoToAdd.processStatus = IDLE;
+                infoToAdd.processStatus = READY;
                 infoToAdd.telenumber = m_telenumber;
             }
             break;
@@ -243,13 +245,14 @@ void CModemPoolSerialPort::processData()
              delaySeconds(3);
             // this->write("ATH\n");
              infoToAdd.processStatus = WaitForFeedBack;
+             //calculate the tele number here
              infoToAdd.telenumber = m_telenumber;
         }
             break;
         case DialFailed:
             if(tempStrList.at(0).contains("ATH")&&tempStrList.at(0).contains("OK"))
             {
-                infoToAdd.processStatus = IDLE;
+                infoToAdd.processStatus = READY;
 
             }
             break;
@@ -304,13 +307,25 @@ void CModemPoolSerialPort::processData()
            proInfoListFromSIMs.append(infoToAdd);
            mutex.unlock();
         }
+        else
+        {
+            if(infoToAdd.processStatus==WaitForFeedBack)
+            {
+                mutex.lock();
+                proInfoListFromSIMs.append(infoToAdd);
+                mutex.unlock();
+            }
+        }
 
         tempStrList.clear();
 
         mutex.lock();
         dataReceived.removeAt(0);
-        simCardStatus =  tempStatus;
+        simCardStatus = infoToAdd.processStatus;
         mutex.unlock();
+
+        //qDebug()<<"return from port thread";
+
     }
 
 }
