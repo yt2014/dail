@@ -244,53 +244,64 @@ void CModemPool::processStatusChange()
        qDebug()<<"status received is "<<st;
        QString simPort = infoFromSIMCard.simPort;
 
-       int index;//index of tele number, search in tele number list
+       int index = -1;//index of tele number, search in tele number list
 
        int indexSim = findSimPortByPortName(simPort);
-       if(telenumber!="")
-       {
-          index = numsNeedProcess.indexOf(telenumber);
-       }
-       else
-       {
-          if((!isAllProcessed)&&(indexSim<m_proInfoList.count()))
-          {
-              qDebug()<<"num of m_proInfoList "<<m_proInfoList.count();
 
-              telenumber = m_proInfoList.at(indexSim).telenumber;
-              index = numsNeedProcess.indexOf(telenumber);
-          }
-          else
-          {
-              index = -1;
-          }
-       }
 
-       qDebug()<<"index tele "<<index<<"index sim "<<indexSim<<"all processed?"<<isAllProcessed;
-       infoDecoded.indexOfSim = indexSim;
-       infoDecoded.indexOfTel = index;
+       qDebug()<<"index sim "<<indexSim<<"all processed?"<<isAllProcessed;
+       infoDecoded.indexOfSim = indexSim;       
        infoDecoded.simST = st;
        teleProSteps stepsInfoOneNum;
        if(!isAllProcessed)
        {
+           SIM_status tempStatus = m_proInfoList.at(indexSim).processStatus;
+           if(st>=READY)
+           {
+               if(tempStatus>READY)
+               {
+                  if(telenumber!="")
+                  {
+                      index = numsNeedProcess.indexOf(telenumber);
+                  }
+                  else
+                  {
+                     if(indexSim<m_proInfoList.count())
+                     {
+                         qDebug()<<"num of m_proInfoList "<<m_proInfoList.count();
+
+                         telenumber = m_proInfoList.at(indexSim).telenumber;
+                         index = numsNeedProcess.indexOf(telenumber);
+                      }
+                      else
+                      {
+                         index = -1;
+                      }
+                  }
+               }
+           }
+
            if(st==DialingOut)
            {
-               stepsInfoOneNum = m_teleProStepList.takeAt(index);
+
+               qDebug()<<"dailing out received, index of tele "<<index;
+               /*stepsInfoOneNum = m_teleProStepList.takeAt(index);
                stepsInfoOneNum.teleStep = DAILING_OUT;
                stepsInfoOneNum.recordToStore.startTime = QDateTime::currentDateTime();
                stepsInfoOneNum.recordToStore.isCallIn = 0;
                m_teleProStepList.insert(index,stepsInfoOneNum);
                m_treeWidget->topLevelItem(index)->setText(1,"拨号中。。。");
                m_treeWidget->show();
-               this->sleep(1);
-               emit needInteract();
+               this->sleep(1);*/
+               //emit needInteract();
            }
            else if(st == READY)
              {
-                 SIM_status tempStatus = m_proInfoList.at(indexSim).processStatus;
+                 qDebug()<<"ready received, index of tele "<<index;
                  if(tempStatus == WaitForFeedBack)
                  {
-                    stepsInfoOneNum = m_teleProStepList.takeAt(index);
+                     qDebug()<<"from waitforfeedback to READY";
+                     /*stepsInfoOneNum = m_teleProStepList.takeAt(index);
                     stepsInfoOneNum.teleStep = PROCESS_FINISHED;
                     stepsInfoOneNum.recordToStore.callDuration = stepsInfoOneNum.recordToStore.startTime.secsTo(QDateTime::currentDateTime());
                     stepsInfoOneNum.recordToStore.ringTimes = stepsInfoOneNum.recordToStore.callDuration/8;
@@ -301,37 +312,31 @@ void CModemPool::processStatusChange()
                     }
                     m_treeWidget->topLevelItem(index)->setText(1,"拨号完成");
                     m_treeWidget->show();
-                    this->sleep(1);
-                    emit needInteract();
+                    this->sleep(1);*/
+                    //emit needInteract();
                     // PortSIMList.at(indexSim)->setSimCardStatus(READY);
 
                  }
                  else if(tempStatus==DialFailed)
                  {
-                     stepsInfoOneNum = m_teleProStepList.takeAt(index);
+                     qDebug()<<"from DialFailed to READY";
+                     /*stepsInfoOneNum = m_teleProStepList.takeAt(index);
                      stepsInfoOneNum.teleStep = DIALFAILED;
                      m_teleProStepList.insert(index,stepsInfoOneNum);
                      m_treeWidget->topLevelItem(index)->setText(1,"拨号失败");
                      m_treeWidget->show();
-                     this->sleep(1);
+                     this->sleep(1);*/
 
-                     emit needInteract();
+                     //emit needInteract();
                      //index = findSimPortByPortName(simPort);//index of SIMs;
                     //PortSIMList.at(index)->setSimCardStatus(READY);
                  }
-                 else
-                 {
-                    emit needInteract();
-                 }
-             }
-           //emit needInteract();
-       }
-       else
-       {
-           emit needInteract();
-       }
 
-     // emit needInteract();
+             }
+           infoDecoded.indexOfTel = index;
+       }
+       emit needInteract();
+       sleep(1);
        mutex.lock();
        proInfoListFromSIMs.removeAt(0);
        mutex.unlock();
