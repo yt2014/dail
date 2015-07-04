@@ -205,6 +205,17 @@ MainWindow::MainWindow(QWidget *parent) :
       NeedRead_ShortMessageRecordInfoAll = true;
       NeedDisplay_ShortMessageRecordInfoAll = true;
       m_messageTopInfoList.clear();
+
+     // QString str = QString().fromUcs4("0891683110802105F0240D91683145117335F90008517040801572230C4F60898153BB54EA513FFF1F​");
+     //QString str =  QString("0891683110802105F0240D91683145117335F90008517040801572230C4F60898153BB54EA513FFF1F​");
+     QString str =  QString("4F60597D");
+     QString strToDisplay = CShortMessageTable::usc4StringToNormalString(str);//codec->fromUnicode(str);//
+
+    // QString str1 = QString("你好");
+   //  QVector<uint> ucs4Vector = str1.toUcs4();
+
+  //   QString strToDisplay1 = QString::fromUcs4(ucs4Vector.data());
+     ui->label_indications->setText(strToDisplay);
 }
 
 /*void MainWindow::showMe(){

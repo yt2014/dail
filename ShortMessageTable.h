@@ -60,6 +60,9 @@ public:
     Operation_Result DeleteRecordsByTelenumber(messageInfo RelatedRecord);
 
     QString ConstructRecordString(messageInfo RecordToDisplay);
+
+    static QString stringToUCS4String(QString strNormalString);//for sending short message.
+    static QString usc4StringToNormalString(QString ucs4String);//for receive and decode short message.
 private:
     QString m_DatabaseAlias;
     QString m_TableName;

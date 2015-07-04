@@ -452,5 +452,35 @@ QString CShortMessageTable::ConstructRecordString(messageInfo RecordToDisplay)
     return str_record;
 }
 
+QString CShortMessageTable::stringToUCS4String(QString strNormalString)
+{
+    QString str = strNormalString;
+    QVector<uint> ucs4Vector = str.toUcs4();//get the ucs4 numbers string
+    int numOfucs4Vector = ucs4Vector.count();
+    QString strUCS4;
+    for(int i=0;i<numOfucs4Vector;i++)
+    {
+       strUCS4 +=  QString::number(ucs4Vector.at(i),16).toUpper();
+    }
+     //ui->label_indications->setText(strToDisplay);
+    return strUCS4;
+}
 
+QString CShortMessageTable::usc4StringToNormalString(QString ucs4String)
+{
+    QString str = ucs4String;
+    int numOfucs4Vector = ucs4String.length()/4;
+    QVector<uint> ucs4Vector;
+    uint oneUcs4;
+    bool ok;
+    for(int i=0;i<numOfucs4Vector;i++)
+    {
+       oneUcs4 = ucs4String.mid(4*i,4).toUInt(&ok,16);
+       ucs4Vector.append(oneUcs4);
+    }
+
+    QString strReturn = QString::fromUcs4(ucs4Vector.data(),numOfucs4Vector);
+
+    return strReturn;
+}
 
