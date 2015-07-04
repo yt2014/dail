@@ -200,6 +200,11 @@ MainWindow::MainWindow(QWidget *parent) :
      // m_Modem->setPushButton(ui->pBtnDail);
       adjustPosition();
       m_Modem->start();
+
+      m_ShortMessageTable = NULL;
+      NeedRead_ShortMessageRecordInfoAll = true;
+      NeedDisplay_ShortMessageRecordInfoAll = true;
+      m_messageTopInfoList.clear();
 }
 
 /*void MainWindow::showMe(){
@@ -280,7 +285,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     QWidget * TabWidgetSelected = ui->tabWidget->widget(index);
 
 
-    if((index==0)||(index==1))
+    if((index==0)||(index==1)||(index==4))
     {
        ui->label_Telenumber->setParent(TabWidgetSelected);
 
@@ -321,11 +326,13 @@ void MainWindow::on_tabWidget_currentChanged(int index)
            ui->pBtnEdit_Add->setParent(TabWidgetSelected);
            ui->pBtnEdit_Add->show();
         }
-        else if(index==4)
-        {
-            ui->pBtnEdit_Add->setParent(TabWidgetSelected);
-            ui->pBtnEdit_Add->show();
-        }
+
+    }
+
+    if((index==1)||(index==4))
+    {
+         ui->pBtnEdit_Add->setParent(TabWidgetSelected);
+         ui->pBtnEdit_Add->show();
     }
     ui->label_Telenumber->show();
     ui->label_Telenumber->setText("");
@@ -733,7 +740,7 @@ void MainWindow::on_pBtn_EditSave_clicked()
         /*save data to database here*/
 
         infoToOperate.name = ui->lineEdit_InputName->text().trimmed();
-        if(indexTab==1)
+        if((indexTab==1)||(indexTab==4))
         {
            infoToOperate.telenum = ui->label_Telenumber->text().trimmed();
         }
@@ -929,6 +936,8 @@ void MainWindow::on_pBtn_EditSave_clicked()
 
         RefreshContent(0,1);
         RefreshContent(1,1);
+        //NeedDisplay_ShortMessageRecordInfoAll = true;
+        refreshMessageDisplay(1);
     }
         break;
     default:
@@ -1094,7 +1103,9 @@ void MainWindow::RefreshContent(int index,bool displayAll)
              }
         }
 
-        if(!displayAll)
+        if(!displayAll)//display the records found through input keyword from contactor table,
+            //but not in reord comm table, this is to list all infomation found for record ui,seems
+            //no need to do so now.
         {
            num_ToAdd = tmpContactorList.count();
            qDebug()<<"record number in contactor table: " + QString::number(num_ToAdd);
@@ -1749,8 +1760,8 @@ void MainWindow::on_pBtnMessageRecord_clicked()
     ui->tabWidget->setCurrentIndex(4);
     QWidget* tab4 = ui->tabWidget->widget(4);
 
-    QTreeWidget * tree = tab4->findChild<QTreeWidget *>("treeWidgetMessageRecord");
-    if(tree==0)
+    QTreeWidget * treeWidgetMessageRecord = tab4->findChild<QTreeWidget *>("treeWidgetMessageRecord");
+    if(treeWidgetMessageRecord==0)
     {
         QTreeWidget * treeWidgetMessageRecord = new QTreeWidget(tab4);
         treeWidgetMessageRecord->setGeometry(0,topListWidegtCon,widthListWidegtCon,heightListWidgetCon);
@@ -1762,10 +1773,207 @@ void MainWindow::on_pBtnMessageRecord_clicked()
         treeWidgetMessageRecord->setHeaderLabels(headers);
        // treeWidgetNumsNeedProcess->setSelectionMode(QAbstractItemView::ExtendedSelection);
         treeWidgetMessageRecord->show();
+        treeWidgetMessageRecord->setColumnWidth(0,300);
+
+        connect(treeWidgetMessageRecord,SIGNAL(itemClicked(QTreeWidgetItem*, int)),this,SLOT(shortMessageTree_ItemClicked(QTreeWidgetItem*, int)));
 
        // m_Modem->setTreeWidget(treeWidgetMessageRecord);
     }
 
 
 
+    //read from short message table and display.
+    if(m_ShortMessageTable==NULL)
+    {
+        m_ShortMessageTable = new CShortMessageTable();
+    }
+    if(NeedRead_ShortMessageRecordInfoAll)
+    {
+        m_messageTopInfoList = m_ShortMessageTable->getListTop();
+    }
+    if(NeedDisplay_ShortMessageRecordInfoAll)
+    {
+       refreshMessageDisplay(1);
+    }
+    else
+    {
+       refreshMessageDisplay(0);
+    }
+
+}
+
+void MainWindow::refreshMessageDisplay(bool displayAll)
+{
+    messageTopInfoList tmpMessageTopInfoList;
+
+    if(displayAll)
+    {
+        tmpMessageTopInfoList = m_messageTopInfoList;
+    }
+    else
+    {
+        tmpMessageTopInfoList = m_messageFreshTopInfoList;
+    }
+
+    QWidget* tab4 = ui->tabWidget->widget(4);
+
+    QTreeWidget * treeWidgetMessageRecord = tab4->findChild<QTreeWidget *>("treeWidgetMessageRecord");
+
+    if((tmpMessageTopInfoList.count()!=0)&&(treeWidgetMessageRecord!=NULL))
+    {
+    /*refresh the communication records*/
+    qDebug()<<"messageRecord::RefreshContent";
+    treeWidgetMessageRecord->clear();
+    int num_ToAdd = tmpMessageTopInfoList.count();
+    qDebug()<<"record number to display: " + QString::number(num_ToAdd);
+    QString str_sql_begin = "select * from shortMessage where NumberRemote = \'";
+    QString str_sql_end = "\' order by send_recvTime DESC";
+    QString str_sql;
+
+    int j=0;
+    int numOneTeleNum;//number of records for one telephone number
+    QTreeWidgetItem * ItemToAdd;
+    messageInfo oneFullRecord;
+    messageInfoList tempListOneNum;
+    for(int i=0;i<num_ToAdd;i++)
+    {//this loop adding list from shortMessage table
+         messageTopInfo oneTopRecord = tmpMessageTopInfoList.at(i);
+         str_sql = str_sql_begin + oneTopRecord.telenum + str_sql_end;
+         tempListOneNum = m_ShortMessageTable->getListBySql(str_sql);
+         numOneTeleNum = tempListOneNum.count();
+
+         for(j=0;j<numOneTeleNum;j++)
+         {
+             oneFullRecord = tempListOneNum.at(j);
+
+             if(j==0)
+             {
+                 QString str_SelectContactor = "select * from contactors where telenumber = \'" + oneFullRecord.NumberRemote + "\'";
+
+                 ContactorInfoList tempContactor =  m_ContactorTable->getListBySql(str_SelectContactor);
+
+                 QString strName = "";
+
+                 telenumInfo infoToAdd;
+
+                 infoToAdd.telenum = oneFullRecord.NumberRemote;
+
+
+                 if(tempContactor.count()==0)
+                 {
+                     strName = "无题名";
+                     infoToAdd.existInContactorTable = false;
+                 }
+                 else
+                 {
+                     strName = tempContactor.at(0).name;
+                     infoToAdd.existInContactorTable = true;
+                 }
+
+                 QVariant valueToAdd;
+                 valueToAdd.setValue(infoToAdd);
+
+                 QStringList strList = QStringList()<<oneFullRecord.NumberRemote+" "+strName;
+                 ItemToAdd = new QTreeWidgetItem(strList);
+                 ItemToAdd->setData(0, Qt::UserRole,	valueToAdd);
+                 treeWidgetMessageRecord->addTopLevelItem(ItemToAdd);
+
+                 QString str_record = m_ShortMessageTable->ConstructRecordString(oneFullRecord);
+
+
+                 strList = QStringList()<<str_record;
+
+                 if(oneFullRecord.isReceived)
+                 {
+                    if(oneFullRecord.readed)
+                    {
+                       strList.append("已读");
+                    }
+                    else
+                    {
+                       strList.append("未读");
+                    }
+                 }
+                 else
+                 {
+                     strList.append("已发送");
+                 }
+
+                 QTreeWidgetItem * childItemToAdd = new QTreeWidgetItem(strList);
+
+                 childItemToAdd->setToolTip(0,str_record);
+
+                 ItemToAdd->addChild(childItemToAdd);
+             }
+             else
+             {
+                 QString str_record = m_ShortMessageTable->ConstructRecordString(oneFullRecord);
+                 QStringList strList = QStringList()<<str_record;
+                 if(oneFullRecord.isReceived)
+                 {
+                    if(oneFullRecord.readed)
+                    {
+                       strList.append("已读");
+                    }
+                    else
+                    {
+                       strList.append("未读");
+                    }
+                 }
+                 else
+                 {
+                     strList.append("已发送");
+                 }
+                 QTreeWidgetItem * childItemToAdd = new QTreeWidgetItem(strList);
+
+                 childItemToAdd->setToolTip(0,str_record);
+                 ItemToAdd->addChild(childItemToAdd);
+             }
+         }
+    }
+     if(NeedDisplay_ShortMessageRecordInfoAll)
+     {
+        NeedDisplay_ShortMessageRecordInfoAll = false;
+     }
+     else
+     {
+        NeedDisplay_ShortMessageRecordInfoAll = true;
+     }
+    }
+
+}
+
+void MainWindow::shortMessageTree_ItemClicked(QTreeWidgetItem *item, int column)
+{
+    m_treeItemActive = item;
+    QString strDisplay;// = QString::number(column) + " clicked";
+
+
+    QTreeWidgetItem *parentItem = item->parent();
+
+    telenumInfo infoFromItem;
+
+    if(parentItem)
+    {
+        //child
+        infoFromItem = parentItem->data(0,Qt::UserRole).value<telenumInfo>();
+    }
+    else
+    {
+        //parent
+        infoFromItem = item->data(0,Qt::UserRole).value<telenumInfo>();
+    }
+
+    strDisplay = infoFromItem.telenum;
+
+    if(infoFromItem.existInContactorTable)
+    {
+       ui->pBtnEdit_Add->setEnabled(false);
+    }
+    else
+    {
+        ui->pBtnEdit_Add->setEnabled(true);
+    }
+
+    ui->label_Telenumber->setText(strDisplay);
 }

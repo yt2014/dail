@@ -5,6 +5,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    //a.setStyle("macintosh");
+    QApplication::setStyle("macintosh");
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QODBC","Dail");
     db.setDatabaseName("DRIVER={Microsoft Access Driver (*.mdb)};FIL={MS Access};DBQ=dail.mdb");

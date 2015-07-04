@@ -56,6 +56,7 @@ messageInfoList CShortMessageTable::getListAllFromDatabase()
                int index_Received = columns.indexOf("Receive_Send");
                int index_context  = columns.indexOf("context");
                int index_subID = columns.indexOf("subID");
+               int index_Readed = columns.indexOf("Readed");
 
                while(query.next())
                {
@@ -66,6 +67,7 @@ messageInfoList CShortMessageTable::getListAllFromDatabase()
                    oneinfo.NumberRemote = query.value(index_numRemote).toString();
                    oneinfo.messageContext = query.value(index_context).toString();
                    oneinfo.subID = query.value(index_subID).toInt();
+                   oneinfo.readed = query.value(index_Readed).toBool();
 
                    m_messageInfoList.append(oneinfo);
 
@@ -103,6 +105,7 @@ messageInfoList CShortMessageTable::getListBySql(QString strSql)
             int index_Received = columns.indexOf("Receive_Send");
             int index_context  = columns.indexOf("context");
             int index_subID = columns.indexOf("subID");
+            int index_Readed = columns.indexOf("Readed");
 
             while(query.next())
             {
@@ -113,7 +116,7 @@ messageInfoList CShortMessageTable::getListBySql(QString strSql)
                 oneinfo.NumberRemote = query.value(index_numRemote).toString();
                 oneinfo.messageContext = query.value(index_context).toString();
                 oneinfo.subID = query.value(index_subID).toInt();
-
+                oneinfo.readed = query.value(index_Readed).toBool();
                 tempList.append(oneinfo);
 
             }
@@ -438,12 +441,12 @@ QString CShortMessageTable::ConstructRecordString(messageInfo RecordToDisplay)
 
     if(RecordToDisplay.isReceived)
     {
-        str_record += " 来自";
+        str_record += " 来自 "+RecordToDisplay.NumberRemote;
 
     }
     else
     {
-        str_record += " 发到";
+        str_record += " 发到 "+RecordToDisplay.NumberRemote;
     }
 
     return str_record;

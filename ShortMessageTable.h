@@ -1,4 +1,4 @@
-#ifndef SHORTMESSAGETABLE_H
+﻿#ifndef SHORTMESSAGETABLE_H
 #define SHORTMESSAGETABLE_H
 
 
@@ -21,6 +21,7 @@ typedef struct
     bool isReceived;
     QString messageContext;
     int subID;
+    bool readed;
 }messageInfo;
 
 

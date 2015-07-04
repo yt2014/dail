@@ -14,6 +14,7 @@
 #include "DynamicSelectThread.h"
 #include "ModemPoolSerialPort.h"
 #include "ModemPool.h"
+#include "ShortMessageTable.h"
 
 class CDynamicSelectThread;
 
@@ -81,6 +82,7 @@ private slots:
     void endProcess();
 
     void on_pBtnMessageRecord_clicked();
+    void shortMessageTree_ItemClicked(QTreeWidgetItem *item, int column);
 
 private:
     Ui::MainWindow *ui;
@@ -128,6 +130,16 @@ private:
 
     //adjust the position of widgets(pushbutton and labels)
     void adjustPosition();
+
+    //for short message record table below values
+    messageTopInfoList m_messageTopInfoList;
+    messageTopInfoList m_messageFreshTopInfoList;
+    CShortMessageTable* m_ShortMessageTable;
+    bool NeedRead_ShortMessageRecordInfoAll;
+    bool NeedDisplay_ShortMessageRecordInfoAll;
+
+    void refreshMessageDisplay(bool displayAll);
+
 };
 
 #endif // MAINWINDOW_H
