@@ -7,6 +7,7 @@ QStringList numsNeedProcess;
 processInfoList proInfoListFromSIMs; //this global list is used to synchronize the thread.
 extern QMutex mutex;
 
+
 CModemPool::CModemPool()
 {
     CModemPoolSerialPort * tempSIMPort;
@@ -44,6 +45,7 @@ CModemPool::CModemPool()
     numClicked = 0;
     m_CommRecordTable = NULL;
     isAllProcessed = true;
+    m_proType = Dial;
 }
 
 CModemPool * CModemPool::getInstance()
@@ -125,7 +127,9 @@ void CModemPool::closeAllPorts()
 
 void CModemPool::startProcess()
 {
-    if(numClicked==0)
+    if(m_proType == Dial)
+    {
+       if(numClicked==0)
     {
         m_proInfoList.clear();
         m_teleProStepList.clear();
@@ -195,7 +199,7 @@ void CModemPool::startProcess()
        isAllProcessed = false;
         }
     }
-    else if(numClicked==1)
+       else if(numClicked==1)
     {
 
         numClicked = 2;
@@ -233,7 +237,7 @@ void CModemPool::startProcess()
         }
         isAllProcessed = true;
     }
-    else if(numClicked==2)
+       else if(numClicked==2)
     {
        numClicked = 0;
 
@@ -250,7 +254,113 @@ void CModemPool::startProcess()
        m_pBtn->setText("开始");
        isAllProcessed = true;
     }
+    }
+    else if(m_proType==Message)
+    {
+        if(numClicked==0)
+        {
 
+             m_proInfoList.clear();
+             m_teleProStepList.clear();
+             int num = portsInfo.count();
+             mutex.lock();
+             int len = numsNeedProcess.count();
+             mutex.unlock();
+             int i=0;
+             qDebug()<<"number of ports "<<num;
+             qDebug()<<"num of tele "<<len;
+             /*为所有需要处理的电话号码初始化状态 NOT_PROCESSED*/
+             if(len!=0)
+             {
+             teleProSteps oneTeleProStepInfo;
+             for(i=0;i<len;i++)
+             {
+                  oneTeleProStepInfo.telenumber = numsNeedProcess.at(i);
+                  oneTeleProStepInfo.teleStep = NOT_PROCESSED;
+                  oneTeleProStepInfo.MsgRecordToStore.NumberRemote = oneTeleProStepInfo.telenumber;
+
+                  m_teleProStepList.append(oneTeleProStepInfo);
+             }
+
+             /*为所有可用的SIM卡分配需处理的电话号码，并且开始处理（拨号/发信息）*/
+             QString strDial;
+             proInfoListFromSIMs.clear();
+             processInfo proInfoToInit;
+             for(i=0;i<num;i++)
+             {
+                SIM_status st = PortSIMList.at(i)->getSimStatus();
+                proInfoToInit.simPort = PortSIMList.at(i)->portName();
+                proInfoToInit.processStatus = st;
+
+                qDebug()<<"start pro sim"<<i<<" status:"<<st;
+                if(i<len)
+                {
+                  proInfoToInit.telenumber = numsNeedProcess.at(i);
+                  m_proInfoList.append(proInfoToInit);
+                  if(st==ReadyForSendMessage)
+                  {
+                      strDial = "AT+CMGS=\""+CShortMessageTable::stringToUCS4String(numsNeedProcess.at(i)) + "\"\n";
+                      QByteArray ba = strDial.toLatin1();
+
+                      char* ch = ba.data();
+                      PortSIMList.at(i)->write(ch);
+                  }
+                  else if(st==IDLE)
+                  {
+                       PortSIMList.at(i)->write("AT+CMGF=1\n");
+                  }
+                }
+
+            }
+             //qDebug()<<"thread is running? "<<this->isRunning();
+            // this->start();
+            // this->run();
+
+            numClicked = 1;
+            //setting the text of btn to be "stop"
+            //m_mainWindow->ui
+            m_pBtn->setText("停止");
+            isAllProcessed = false;
+             }
+        }
+        else if(numClicked==1)
+        {
+            numClicked = 2;
+            //setting the text to be "ok"
+            m_pBtn->setText("确定");
+
+            int numOfAllSims =  PortSIMList.count();
+            //int numOfSimsInPro = m_proInfoList.count();
+            int i = 0;
+            QByteArray ba;
+            char * ca;
+            for(i=0;i<numOfAllSims;i++)
+            {
+
+                    ba = "AT+CMGF=1\n";
+                    ca = ba.data();
+                    PortSIMList.at(i)->write(ca);
+            }
+            isAllProcessed = true;
+        }
+        else if(numClicked==2)
+        {
+            numClicked = 0;
+
+            m_proInfoList.clear();
+            m_teleProStepList.clear();
+
+            mutex.lock();
+            numsNeedProcess.clear();
+            mutex.unlock();
+
+            qDebug()<<"emit endprocess";
+            emit endProcess();
+             //setting the text to be "start"
+            m_pBtn->setText("开始");
+            isAllProcessed = true;
+        }
+    }
 
 }
 
@@ -373,6 +483,25 @@ void CModemPool::processStatusChange()
                  }
 
              }
+           else if(st == ReadyForSendMessage)
+           {
+               qDebug()<<"to ready from "<<tempStatus<<"index of tele "<<index<<"num "<<telenumber;
+               if(tempStatus == NeedSendContext)
+               {
+                   stepsInfoOneNum = m_teleProStepList.takeAt(index);
+                   stepsInfoOneNum.teleStep = PROCESS_FINISHED;
+                   stepsInfoOneNum.MsgRecordToStore.isReceived = false;
+                   m_teleProStepList.insert(index,stepsInfoOneNum);
+                   if(m_CommRecordTable!=NULL)
+                   {
+                       m_CommRecordTable->addOneRecord(stepsInfoOneNum.recordToStore);
+                   }
+                   m_treeWidget->topLevelItem(index)->setText(1,"发送完成");
+                   m_treeWidget->show();
+                   this->sleep(1);
+
+               }
+           }
            infoDecoded.indexOfTel = index;
        }
        emit needInteract();
@@ -509,8 +638,28 @@ void CModemPool::preparePorts()
             PortSIMList.at(i)->write("AT+COPS?\n");
         }
     }
+    setProType(Dial);
 
 }
+
+ void CModemPool::preparePortsForSendingMsg()
+ {
+     int num = portsInfo.count();
+     int i=0;
+     qDebug()<<"preparePorts number of ports "<<num;
+
+     /*send AT+CMGF=1\n to all ports*/
+     for(i=0;i<num;i++)
+     {
+         SIM_status st = PortSIMList.at(i)->getSimStatus();
+         qDebug()<<"in pre msg sim"<<i<<" status:"<<st;
+         if((st==IDLE)||(st==READY))
+         {
+             PortSIMList.at(i)->write("AT+CMGF=1\n");
+         }
+     }
+     setProType(Message);
+ }
 
 void CModemPool::interact()
 {
@@ -599,7 +748,71 @@ void CModemPool::interact()
             case NeedRegist:
                 PortSIMList.at(index_Sim)->write("AT+COPS?\n");
                 break;
+            case ReadyForSendMessage:
+            {
+                qDebug()<<"ready for send message";
+                if(!isAllProcessed)
+                {
+                int indexNumToProcess = getNextIndexToProcess();
 
+                if(indexNumToProcess!=-1)
+                {
+                     teleProSteps stepsInfoOneNum = m_teleProStepList.takeAt(indexNumToProcess);
+                     stepsInfoOneNum.teleStep = START_PROCESS;
+                     m_teleProStepList.insert(indexNumToProcess,stepsInfoOneNum);
+                     QString strToSend = numsNeedProcess.at(indexNumToProcess);
+                     processInfo proInfoToInit;
+
+                     if(index_Sim<m_proInfoList.count())
+                     {
+                       proInfoToInit = m_proInfoList.takeAt(index_Sim);
+                       proInfoToInit.telenumber = strToSend;
+                       proInfoToInit.processStatus = stNew;
+                       m_proInfoList.insert(index_Sim,proInfoToInit);
+
+                     }
+                     else
+                     {
+                       proInfoToInit.simPort = PortSIMList.at(index_Sim)->portName();
+                       proInfoToInit.telenumber = strToSend;
+                       proInfoToInit.processStatus = stNew;
+                       m_proInfoList.append(proInfoToInit);
+                     }
+
+
+
+                     //delayMilliSeconds(1000);
+                     strToSend = "AT+CMGS=\""+CShortMessageTable::stringToUCS4String(strToSend)+"\"\n";
+                     QByteArray ba = strToSend.toLatin1();
+                     char* ch = ba.data();
+                     PortSIMList.at(index_Sim)->write(ch);
+                }
+                else
+                {
+                     qDebug()<<"no tele to send message again";
+                     isAllProcessed = checkAllProcessed();
+                     if(isAllProcessed)
+                     {
+
+                         numClicked = 2;
+                         //setting the text of btn to be "OK"
+                         m_pBtn->setText("确定");
+                     }
+
+                }
+                }
+            }
+                //PortSIMList.at(index_Sim)->write("AT+CMGS=\n");
+                break;
+            case NeedSendContext:
+            {
+                QString strFromText;
+                QString strToSend = CShortMessageTable::stringToUCS4String(strFromText)+"\x1a";
+                QByteArray ba = strToSend.toLatin1();
+                char* ch = ba.data();
+                PortSIMList.at(index_Sim)->write(ch);
+            }
+                break;
            default:
                break;
            }
@@ -629,4 +842,9 @@ int CModemPool::getNumClicked()
 void CModemPool::setCommRecordTable(CCommRecordTable * CommRecordTable)
 {
     m_CommRecordTable = CommRecordTable;
+}
+
+void CModemPool::setProType(processType proType)
+{
+    m_proType = proType;
 }

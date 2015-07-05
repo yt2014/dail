@@ -7,6 +7,7 @@
 #include <QTreeWidget>
 #include <QPushButton>
 #include "CommRecordTable.h"
+#include "ShortMessageTable.h"
 
 class MainWindow;
 class CCommRecordTable;
@@ -28,12 +29,19 @@ typedef struct
     QString telenumber;
     processSteps teleStep;
     CommRecordInfo recordToStore;
+    messageInfo MsgRecordToStore;
 }teleProSteps;
 
 
 typedef QList<teleProSteps> teleProStepList;
 
 extern processInfoList proInfoListFromSIMs;//new status from SIM port.
+
+typedef enum
+{
+    Message,
+    Dial
+}processType;
 
 typedef struct
 {
@@ -59,6 +67,8 @@ private: CModemPool();
     int numClicked;
     bool isAllProcessed;
     decodedChangeInfo infoDecoded;
+    processType m_proType;
+
 public:
     static CModemPool * getInstance();
     CModemPoolSerialPort * getSIMPort(int index);
@@ -70,6 +80,8 @@ public:
     void setPushButton(QPushButton * pBtnToSet);
     void setTreeWidget(QTreeWidget *treeToSet);
     void setCommRecordTable(CCommRecordTable * CommRecordTable);
+
+    void setProType(processType proType);
 
     int getNumClicked();
 
@@ -85,6 +97,7 @@ private slots:
     void startProcess();
     void preparePorts();
     void interact();
+    void preparePortsForSendingMsg();
 protected:
     void run();
     void processStatusChange();

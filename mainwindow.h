@@ -10,6 +10,7 @@
 #include <QListWidget>
 #include <QLabel>
 #include <QPushButton>
+#include <QTextEdit>
 #include "AddContactorThread.h"
 #include "DynamicSelectThread.h"
 #include "ModemPoolSerialPort.h"
@@ -83,6 +84,10 @@ private slots:
 
     void on_pBtnMessageRecord_clicked();
     void shortMessageTree_ItemClicked(QTreeWidgetItem *item, int column);
+
+    void on_pBtnSendMessage_clicked();
+
+    void teToSendTextChanged();
 
 private:
     Ui::MainWindow *ui;

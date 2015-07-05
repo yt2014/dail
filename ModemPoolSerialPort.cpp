@@ -169,6 +169,11 @@ void CModemPoolSerialPort::processData()
                     //delayMilliSeconds(500);
                     infoToAdd.processStatus = SimInserted;
                 }
+            else if(tempStrList.at(0).contains("AT+CMGF=1")&&(!tempStrList.at(0).contains("ERROR")))
+                {
+                     infoToAdd.processStatus = ReadyForSendMessage;
+                }
+
             //Call Ready
 
            // SIM Card have insert
@@ -216,6 +221,10 @@ void CModemPoolSerialPort::processData()
                 m_telenumber = tempStrList.at(0).mid(indexofATD+3,indexofDot-indexofATD-3);
                 infoToAdd.telenumber = m_telenumber;
             }
+            else if(tempStrList.at(0).contains("AT+CMGF=1")&&(!tempStrList.at(0).contains("ERROR")))
+                {
+                     infoToAdd.processStatus = ReadyForSendMessage;
+                }
                 /*NO CARRIER*/
             /*+CLCC: 1,0,3,0,0,"13541137539",129*/
         }
@@ -315,8 +324,56 @@ void CModemPoolSerialPort::processData()
 
                 recoverStatus = READY;
             }
+            else if(tempStrList.at(0).contains(">"))
+            {
+                infoToAdd.processStatus =  NeedSendContext;
+                recoverStatus = READY;
+            }
             break;
+        case ReadyForSendMessage:
+        {
+            infoToAdd.telenumber = "";
+            if(tempStrList.at(0).contains("AT+CMGS="))
+            {
+                int indexOfdot1 = tempStrList.at(0).indexOf("\"");
+                int indexOfdot2 = tempStrList.at(0).indexOf("\"",indexOfdot1);
+                m_ucs4StrGet.clear();
+                if(!tempStrList.at(0).contains(">"))
+                {
 
+                    if(indexOfdot1==-1)
+                    {
+                        infoToAdd.processStatus = WaitForCommandResult;
+                        recoverStatus = ReadyForSendMessage;
+
+                    }
+                    else if(indexOfdot2==-1)
+                    {
+                        m_ucs4StrGet += tempStrList.at(0).mid(indexOfdot1,tempStrList.at(0).length()-indexOfdot1);
+                        infoToAdd.processStatus = WaitForCommandResult;
+                        recoverStatus = ReadyForSendMessage;
+                    }
+                    else
+                    {
+                        m_ucs4StrGet += tempStrList.at(0).mid(indexOfdot1,indexOfdot2);
+                        infoToAdd.processStatus = WaitForCommandResult;
+                        recoverStatus = ReadyForSendMessage;
+                    }
+                }
+                else
+                {
+                    m_ucs4StrGet += tempStrList.at(0).mid(indexOfdot1,indexOfdot2);
+                    infoToAdd.processStatus = NeedSendContext;
+                }
+            }
+        }
+            break;
+        case NeedSendContext:
+        {
+            if(tempStrList.at(0).contains("+CMGS:"))
+              infoToAdd.processStatus = ReadyForSendMessage;
+        }
+            break;
         default:
             break;
         }

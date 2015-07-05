@@ -26,7 +26,13 @@ typedef enum
     WaitForFeedBack,
     MessageReceived,
     DialFailed,
-    ComeRing
+    ComeRing,
+    ReadyForReceiveMessage,
+    ReadyForSendMessage,
+    SendingMessage,
+    MessageSendSuccess,
+    MessageSendFailed,
+    NeedSendContext
 
 }SIM_status;
 
@@ -61,7 +67,7 @@ class CModemPoolSerialPort:public QSerialPort
        SIM_status recoverStatus;
        CSerialPortThread * m_threadForSim;
        int counterRecv;
-
+       QString m_ucs4StrGet;
    private slots:
        void receiveData();
 

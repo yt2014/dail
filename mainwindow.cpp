@@ -43,8 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     QPalette palette;
-   // palette.setColor(QPalette::Background, QColor(192,253,123));
-    palette.setBrush(QPalette::Background, QBrush(QPixmap("background.jpg")));
+    palette.setColor(QPalette::Background, QColor(0xdc,0xdc,0xdc));
+   // palette.setBrush(QPalette::Background, QBrush(QPixmap("background.jpg")));
     this->setPalette(palette);
 
     QFont font;
@@ -488,7 +488,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
         connect(pbtn_OpenClose,SIGNAL(clicked()),this,SLOT(OpenClosePort()));*/
 
-        QPushButton * pBtn = TabWidgetSelected->findChild<QPushButton  *>("pBtn_AddNumber");
+        QPushButton * pBtn = this->findChild<QPushButton  *>("pBtn_AddNumber");
         if(pBtn==0)
         {
            QPushButton  * pBtn_AddNumber = new QPushButton(TabWidgetSelected);
@@ -502,7 +502,12 @@ void MainWindow::on_tabWidget_currentChanged(int index)
             pBtn_AddNumber->show();
             connect(pBtn_AddNumber,SIGNAL(clicked()),this,SLOT(AddNumsProcess()));
         }
-        pBtn = TabWidgetSelected->findChild<QPushButton  *>("pBtn_DelNumber");
+        else
+        {
+            pBtn->setParent(TabWidgetSelected);
+            pBtn->show();
+        }
+        pBtn = this->findChild<QPushButton  *>("pBtn_DelNumber");
         if(pBtn==0)
         {
             QPushButton  * pBtn_DelNumber = new QPushButton(TabWidgetSelected);
@@ -520,7 +525,12 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
             connect(pBtn_DelNumber,SIGNAL(clicked()),this,SLOT(DelNumsProcess()));
         }
-        QLabel *label = TabWidgetSelected->findChild<QLabel *>("label_contactors");
+        else
+        {
+            pBtn->setParent(TabWidgetSelected);
+            pBtn->show();
+        }
+        QLabel *label = this->findChild<QLabel *>("label_contactors");
 
         if(label==0)
         {
@@ -531,8 +541,13 @@ void MainWindow::on_tabWidget_currentChanged(int index)
            label_contactors->setAlignment(Qt::AlignCenter);
            label_contactors->show();
         }
+        else
+        {
+            label->setParent(TabWidgetSelected);
+            label->show();
+        }
 
-        QTreeWidget * tree = TabWidgetSelected->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
+        QTreeWidget * tree = this->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
         if(tree==0)
         {
             QTreeWidget * treeWidgetNumsNeedProcess = new QTreeWidget(TabWidgetSelected);
@@ -548,8 +563,14 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
             m_Modem->setTreeWidget(treeWidgetNumsNeedProcess);
         }
+        else
+        {
+           tree->setParent(TabWidgetSelected);
+           tree->setGeometry(widthListWidegtCon-90,topListWidegtCon,widthListWidegtCon-90,heightListWidgetCon-70);
+           tree->show();
+        }
 
-        pBtn = TabWidgetSelected->findChild<QPushButton  *>("pBtnStart");
+        pBtn = this->findChild<QPushButton  *>("pBtnStart");
         if(pBtn==0)
         {
            QPushButton * pBtnStart = new QPushButton(TabWidgetSelected);
@@ -564,15 +585,156 @@ void MainWindow::on_tabWidget_currentChanged(int index)
            pBtnStart->setEnabled(false);
            m_Modem->setPushButton(pBtnStart);
         }
+        else
+        {
+            pBtn->setParent(TabWidgetSelected);
+            pBtn->show();
+
+        }
+        m_Modem->setProType(Dial);
 
     }
         break;
     case 3:
         break;
+    case 4:
+        break;
+    case 5:
+    {
+        QPushButton * pBtn = this->findChild<QPushButton  *>("pBtn_AddNumber");
+        if(pBtn==0)
+        {
+           QPushButton  * pBtn_AddNumber = new QPushButton(TabWidgetSelected);
+           pBtn_AddNumber->setObjectName("pBtn_AddNumber");
+           QPixmap addPix  = style()->standardPixmap(QStyle::SP_ArrowRight);
+           pBtn_AddNumber->setIcon(addPix);
+           pBtn_AddNumber->setGeometry(widthListWidegtCon-118,heightListWidgetCon/4,20,20);
+           pBtn_AddNumber->setToolTip(tr("添加"));
+           pBtn_AddNumber->setStyleSheet("QPushButton{background-color:transparent;}"
+                                    "QPushButton:hover{background-color:grey;}");
+            pBtn_AddNumber->show();
+            connect(pBtn_AddNumber,SIGNAL(clicked()),this,SLOT(AddNumsProcess()));
+        }
+        else
+        {
+            pBtn->setParent(TabWidgetSelected);
+            pBtn->show();
+        }
+        pBtn = this->findChild<QPushButton  *>("pBtn_DelNumber");
+        if(pBtn==0)
+        {
+            QPushButton  * pBtn_DelNumber = new QPushButton(TabWidgetSelected);
+            pBtn_DelNumber->setObjectName("pBtn_DelNumber");
+            QPixmap delPix = style()->standardPixmap(QStyle::SP_ArrowLeft);
+
+            pBtn_DelNumber->setIcon(delPix);
+
+            pBtn_DelNumber->setGeometry(widthListWidegtCon-118,heightListWidgetCon/2,20,20);
+            pBtn_DelNumber->setToolTip(tr("删除"));
+            pBtn_DelNumber->setStyleSheet("QPushButton{background-color:transparent;}"
+                                       "QPushButton:hover{background-color:grey;}");
+
+            pBtn_DelNumber->show();
+
+            connect(pBtn_DelNumber,SIGNAL(clicked()),this,SLOT(DelNumsProcess()));
+        }
+        else
+        {
+            pBtn->setParent(TabWidgetSelected);
+            pBtn->show();
+        }
+        QLabel *label = this->findChild<QLabel *>("label_contactors");
+
+        if(label==0)
+        {
+           QLabel * label_contactors = new QLabel(TabWidgetSelected);
+           label_contactors->setObjectName("label_contactors");
+           label_contactors->setGeometry(0,topListWidegtCon,widthListWidegtCon-120,40);
+           label_contactors->setText("联系人列表:");
+           label_contactors->setAlignment(Qt::AlignCenter);
+           label_contactors->show();
+        }
+        else
+        {
+            label->setParent(TabWidgetSelected);
+            label->show();
+        }
+
+        QTreeWidget * tree = this->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
+        if(tree==0)
+        {
+            QTreeWidget * treeWidgetNumsNeedProcess = new QTreeWidget(TabWidgetSelected);
+            treeWidgetNumsNeedProcess->setGeometry(widthListWidegtCon-90,topListWidegtCon,widthListWidegtCon-90,heightListWidgetCon-130);
+            treeWidgetNumsNeedProcess->setObjectName("treeWidgetNumsNeedProcess");
+            QStringList headers;
+            headers.clear();
+            headers<<"已选号码"<<"状态";
+            treeWidgetNumsNeedProcess->setColumnCount(2);
+            treeWidgetNumsNeedProcess->setHeaderLabels(headers);
+            treeWidgetNumsNeedProcess->setSelectionMode(QAbstractItemView::ExtendedSelection);
+            treeWidgetNumsNeedProcess->show();
+
+            m_Modem->setTreeWidget(treeWidgetNumsNeedProcess);
+        }
+        else
+        {
+           tree->setParent(TabWidgetSelected);
+           tree->setGeometry(widthListWidegtCon-90,topListWidegtCon,widthListWidegtCon-90,heightListWidgetCon-130);
+           tree->show();
+        }
+
+        pBtn = this->findChild<QPushButton  *>("pBtnStart");
+        if(pBtn==0)
+        {
+           QPushButton * pBtnStart = new QPushButton(TabWidgetSelected);
+           pBtnStart->setObjectName("pBtnStart");
+           pBtnStart->setText("开始");
+           pBtnStart->setGeometry(widthListWidegtCon-110,heightListWidgetCon-60,50,30);
+           pBtnStart->show();
+
+           connect(pBtnStart,SIGNAL(clicked()),m_Modem,SLOT(startProcess()));
+          // connect(pBtnStart,SIGNAL(clicked()),this,SLOT(endProcess()));
+           connect(m_Modem,SIGNAL(endProcess()),this,SLOT(endProcess()));
+           pBtnStart->setEnabled(false);
+           m_Modem->setPushButton(pBtnStart);
+        }
+        else
+        {
+            pBtn->setParent(TabWidgetSelected);
+            pBtn->show();
+
+        }
+        m_Modem->setProType(Message);
+
+
+
+        QTextEdit * teToSend = this->findChild<QTextEdit *>("teToSend");
+
+        if(teToSend==NULL)
+        {
+           teToSend = new QTextEdit(TabWidgetSelected);
+           teToSend->setObjectName("teToSend");
+           teToSend->setText("");
+           teToSend->setGeometry(200,heightListWidgetCon-120,300,50);
+           teToSend->show();
+        }
+
+        connect(teToSend,SIGNAL(textChanged()),this,SLOT(teToSendTextChanged()));
+
+        QLabel * inputMsg = this->findChild<QLabel *>("inputMsg");
+        if(inputMsg==NULL)
+        {
+            inputMsg = new QLabel(TabWidgetSelected);
+            inputMsg->setObjectName("inputMsg");
+            inputMsg->setText("输入信息:");
+            inputMsg->setGeometry(120,heightListWidgetCon-110,100,30);
+            inputMsg->show();
+        }
+
+    }
+        break;
     default:
         break;
-
-
     }
 }
 
@@ -1561,9 +1723,11 @@ void MainWindow::OpenClosePort()
 
 void MainWindow::AddNumsProcess()
 {
-    QTreeWidget * treeWidgetNumsNeedProcess = ui->tabWidget->widget(2)->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
+    QTreeWidget * treeWidgetNumsNeedProcess = this->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
 
     QList<QListWidgetItem *> items = ui->listWidget->selectedItems();
+    int indexOfTab = ui->tabWidget->currentIndex();
+
     QTreeWidgetItem * itemToAdd;
     ContactorInfo oneRecord;
     QVariant dataInItem;
@@ -1594,27 +1758,47 @@ void MainWindow::AddNumsProcess()
     treeWidgetNumsNeedProcess->show();
     ui->listWidget->show();
 
-    QPushButton * pBtnStart;
+    QPushButton * pBtnStart = this->findChild<QPushButton  *>("pBtnStart");
+    QTextEdit * teToSend = this->findChild<QTextEdit *>("teToSend");
     if(treeWidgetNumsNeedProcess->topLevelItemCount()!=0)
     {
-        pBtnStart =  ui->tabWidget->widget(2)->findChild<QPushButton  *>("pBtnStart");
-        pBtnStart->setEnabled(true);
+        if(indexOfTab==5)
+        {
+            if(teToSend!=NULL)
+            {
+                if(teToSend->document()->toPlainText().isEmpty())
+                {
+                    pBtnStart->setEnabled(false);
+                }
+                else
+                {
+                    pBtnStart->setEnabled(true);
+                }
+            }
+            else
+            {
+                 pBtnStart->setEnabled(true);
+            }
+        }
+        else
+        {
+           pBtnStart->setEnabled(true);
+        }
     }
     else
     {
-        pBtnStart =  ui->tabWidget->widget(2)->findChild<QPushButton  *>("pBtnStart");
+
         pBtnStart->setEnabled(false);
     }
-
-
 }
 
 void MainWindow::DelNumsProcess()
 {
-    QTreeWidget * treeWidgetNumsNeedProcess = ui->tabWidget->widget(2)->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
+    QTreeWidget * treeWidgetNumsNeedProcess = this->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
 
     QList<QTreeWidgetItem*> items = treeWidgetNumsNeedProcess->selectedItems();
 
+    int indexOfTab = ui->tabWidget->currentIndex();
 
     QListWidgetItem * itemToAdd;
     ContactorInfo oneRecord;
@@ -1646,15 +1830,36 @@ void MainWindow::DelNumsProcess()
     treeWidgetNumsNeedProcess->show();
     ui->listWidget->show();
 
-    QPushButton * pBtnStart;
+    QPushButton * pBtnStart= this->findChild<QPushButton  *>("pBtnStart");;
+    QTextEdit * teToSend = this->findChild<QTextEdit *>("teToSend");
     if(treeWidgetNumsNeedProcess->topLevelItemCount()!=0)
     {
-        pBtnStart = ui->tabWidget->widget(2)->findChild<QPushButton  *>("pBtnStart");
-        pBtnStart->setEnabled(true);
+        if(indexOfTab==5)
+        {
+           if(teToSend!=NULL)
+           {
+               if(teToSend->document()->toPlainText().isEmpty())
+               {
+                  pBtnStart->setEnabled(false);
+                }
+                else
+                {
+                   pBtnStart->setEnabled(true);
+                }
+            }
+            else
+           {
+               pBtnStart->setEnabled(true);
+           }
+        }
+        else
+        {
+            pBtnStart->setEnabled(true);
+        }
+
     }
     else
     {
-        pBtnStart =  ui->tabWidget->widget(2)->findChild<QPushButton  *>("pBtnStart");
         pBtnStart->setEnabled(false);
     }
 
@@ -1987,4 +2192,45 @@ void MainWindow::shortMessageTree_ItemClicked(QTreeWidgetItem *item, int column)
     }
 
     ui->label_Telenumber->setText(strDisplay);
+}
+
+void MainWindow::on_pBtnSendMessage_clicked()
+{
+    ui->tabWidget->setCurrentIndex(5);
+    QWidget* tab5 = ui->tabWidget->widget(5);
+
+    ui->listWidget->setParent(tab5);
+    ui->listWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    QRect pos = ui->listWidget->geometry();
+    ui->listWidget->setGeometry(pos.left(),topListWidegtCon+40,widthListWidegtCon-120,heightListWidgetCon-170);
+    ui->listWidget->show();
+    ui->listWidget->setCurrentRow(-1);
+
+
+}
+
+void MainWindow::teToSendTextChanged()
+{
+    QTextEdit * teToSend = this->findChild<QTextEdit *>("teToSend");
+    QPushButton * pBtnStart = this->findChild<QPushButton  *>("pBtnStart");
+    QTreeWidget * treeWidgetNumsNeedProcess = this->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
+    if(teToSend->document()->toPlainText().isEmpty())
+    {
+        if(pBtnStart!=NULL)
+        {
+            pBtnStart->setEnabled(false);
+        }
+
+    }
+    else if(treeWidgetNumsNeedProcess!=NULL)
+    {
+        if(treeWidgetNumsNeedProcess->topLevelItemCount()!=0)
+        {
+            pBtnStart->setEnabled(true);
+        }
+        else
+        {
+            pBtnStart->setEnabled(false);
+        }
+    }
 }
