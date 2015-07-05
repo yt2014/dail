@@ -68,6 +68,7 @@ private: CModemPool();
     bool isAllProcessed;
     decodedChangeInfo infoDecoded;
     processType m_proType;
+    QString m_msgToSend;
 
 public:
     static CModemPool * getInstance();
@@ -82,7 +83,7 @@ public:
     void setCommRecordTable(CCommRecordTable * CommRecordTable);
 
     void setProType(processType proType);
-
+    void setMsgToSend(QString str);
     int getNumClicked();
 
     void scanPorts();
@@ -90,6 +91,7 @@ public:
     void closeAllPorts();
     //for thread
     void stop();
+    void preparePortsForSendingMsg();
 signals:
     void needInteract();
     void endProcess();
@@ -97,7 +99,7 @@ private slots:
     void startProcess();
     void preparePorts();
     void interact();
-    void preparePortsForSendingMsg();
+
 protected:
     void run();
     void processStatusChange();

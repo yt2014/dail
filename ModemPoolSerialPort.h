@@ -32,7 +32,9 @@ typedef enum
     SendingMessage,
     MessageSendSuccess,
     MessageSendFailed,
-    NeedSendContext
+    NeedSendContext,
+    SetForSendMsgStep1,
+    SetForSendMsgStep2
 
 }SIM_status;
 

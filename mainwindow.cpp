@@ -211,10 +211,10 @@ MainWindow::MainWindow(QWidget *parent) :
      QString str =  QString("4F60597D");
      QString strToDisplay = CShortMessageTable::usc4StringToNormalString(str);//codec->fromUnicode(str);//
 
-    // QString str1 = QString("你好");
-   //  QVector<uint> ucs4Vector = str1.toUcs4();
+   //  QString str1 = QString("你123好");
+  //   QVector<uint> ucs4Vector = str1.toUcs4();
 
-  //   QString strToDisplay1 = QString::fromUcs4(ucs4Vector.data());
+  //   QString strToDisplay1 = CShortMessageTable::stringToUCS4String("你123好");
      ui->label_indications->setText(strToDisplay);
 
      mainBtnList.append(ui->pBtn_Contactors);
@@ -1879,7 +1879,7 @@ void MainWindow::endProcess()
 {
 
 
-    QTreeWidget * treeWidgetNumsNeedProcess = ui->tabWidget->widget(2)->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
+    QTreeWidget * treeWidgetNumsNeedProcess = this->findChild<QTreeWidget *>("treeWidgetNumsNeedProcess");
 
     //QList<QTreeWidgetItem*> items = treeWidgetNumsNeedProcess->selectedItems();
 
@@ -1918,7 +1918,7 @@ void MainWindow::endProcess()
 
     QPushButton * pBtnStart;
 
-    pBtnStart =  ui->tabWidget->widget(2)->findChild<QPushButton  *>("pBtnStart");
+    pBtnStart =  this->findChild<QPushButton  *>("pBtnStart");
     pBtnStart->setEnabled(false);
 
 
@@ -2216,6 +2216,7 @@ void MainWindow::on_pBtnSendMessage_clicked()
     ui->listWidget->show();
     ui->listWidget->setCurrentRow(-1);
     setColorForBtns(4);
+    m_Modem->preparePortsForSendingMsg();
 }
 
 void MainWindow::teToSendTextChanged()
@@ -2230,6 +2231,8 @@ void MainWindow::teToSendTextChanged()
             pBtnStart->setEnabled(false);
         }
 
+
+
     }
     else if(treeWidgetNumsNeedProcess!=NULL)
     {
@@ -2241,6 +2244,7 @@ void MainWindow::teToSendTextChanged()
         {
             pBtnStart->setEnabled(false);
         }
+        m_Modem->setMsgToSend(teToSend->document()->toPlainText());
     }
 }
 

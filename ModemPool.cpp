@@ -806,11 +806,24 @@ void CModemPool::interact()
                 break;
             case NeedSendContext:
             {
-                QString strFromText;
-                QString strToSend = CShortMessageTable::stringToUCS4String(strFromText)+"\x1a";
+                QString strFromText = m_msgToSend;
+                QString strToSend = CShortMessageTable::stringToUCS4String(strFromText)+"\x1a\n";
+                qDebug()<<"str to send " + strToSend;
                 QByteArray ba = strToSend.toLatin1();
                 char* ch = ba.data();
                 PortSIMList.at(index_Sim)->write(ch);
+            }
+                break;
+             case SetForSendMsgStep1:
+            {
+                delaySeconds(1);
+                PortSIMList.at(index_Sim)->write("AT+CSCS=\"UCS2\"\n");
+            }
+                break;
+            case SetForSendMsgStep2:
+            {
+                delaySeconds(1);
+                PortSIMList.at(index_Sim)->write("AT+CSMP=17,167,2,25\n");
             }
                 break;
            default:
@@ -847,4 +860,9 @@ void CModemPool::setCommRecordTable(CCommRecordTable * CommRecordTable)
 void CModemPool::setProType(processType proType)
 {
     m_proType = proType;
+}
+
+void CModemPool::setMsgToSend(QString str)
+{
+    m_msgToSend = str;
 }

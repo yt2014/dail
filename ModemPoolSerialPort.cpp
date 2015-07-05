@@ -171,7 +171,7 @@ void CModemPoolSerialPort::processData()
                 }
             else if(tempStrList.at(0).contains("AT+CMGF=1")&&(!tempStrList.at(0).contains("ERROR")))
                 {
-                     infoToAdd.processStatus = ReadyForSendMessage;
+                     infoToAdd.processStatus = SetForSendMsgStep1;
                 }
 
             //Call Ready
@@ -223,7 +223,7 @@ void CModemPoolSerialPort::processData()
             }
             else if(tempStrList.at(0).contains("AT+CMGF=1")&&(!tempStrList.at(0).contains("ERROR")))
                 {
-                     infoToAdd.processStatus = ReadyForSendMessage;
+                     infoToAdd.processStatus = SetForSendMsgStep1;
                 }
                 /*NO CARRIER*/
             /*+CLCC: 1,0,3,0,0,"13541137539",129*/
@@ -373,6 +373,19 @@ void CModemPoolSerialPort::processData()
             if(tempStrList.at(0).contains("+CMGS:"))
               infoToAdd.processStatus = ReadyForSendMessage;
         }
+            break;
+        case SetForSendMsgStep1:
+        {
+            if(tempStrList.at(0).contains("AT+CSCS=\"UCS2\""))
+               infoToAdd.processStatus = SetForSendMsgStep2;
+        }
+            break;
+        case SetForSendMsgStep2:
+        {
+            if(tempStrList.at(0).contains("AT+CSMP=17,167,2,25"))
+               infoToAdd.processStatus = ReadyForSendMessage;
+        }
+
             break;
         default:
             break;

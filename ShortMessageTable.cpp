@@ -1,4 +1,5 @@
 ﻿#include "ShortMessageTable.h"
+#include <QTextStream>
 
 CShortMessageTable::CShortMessageTable(QString DatabaseAlias,QString TableName)
 {
@@ -458,9 +459,13 @@ QString CShortMessageTable::stringToUCS4String(QString strNormalString)
     QVector<uint> ucs4Vector = str.toUcs4();//get the ucs4 numbers string
     int numOfucs4Vector = ucs4Vector.count();
     QString strUCS4;
+    QString oneNumber;
     for(int i=0;i<numOfucs4Vector;i++)
     {
-       strUCS4 +=  QString::number(ucs4Vector.at(i),16).toUpper();
+      // strUCS4 +=  QString::number(ucs4Vector.at(i),16).toUpper();
+       oneNumber.sprintf("%04x",ucs4Vector.at(i));
+        strUCS4 +=  oneNumber;
+
     }
      //ui->label_indications->setText(strToDisplay);
     return strUCS4;
