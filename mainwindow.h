@@ -145,6 +145,9 @@ private:
 
     void refreshMessageDisplay(bool displayAll);
 
+    QList<QPushButton *> mainBtnList;
+
+    void setColorForBtns(int indexOfToMark);
 };
 
 #endif // MAINWINDOW_H

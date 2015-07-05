@@ -216,6 +216,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
   //   QString strToDisplay1 = QString::fromUcs4(ucs4Vector.data());
      ui->label_indications->setText(strToDisplay);
+
+     mainBtnList.append(ui->pBtn_Contactors);
+     mainBtnList.append(ui->pBtn_Dail);
+     mainBtnList.append(ui->pBtnDail);
+     mainBtnList.append(ui->pBtnMessageRecord);
+     mainBtnList.append(ui->pBtnSendMessage);
+     ui->pBtnShortMessage->hide();
 }
 
 /*void MainWindow::showMe(){
@@ -761,6 +768,7 @@ void MainWindow::on_pBtn_Contactors_clicked()
 {
     //ui->tabWidget->currentChanged(0);
     ui->tabWidget->setCurrentIndex(0);
+    setColorForBtns(0);
 }
 
 
@@ -770,6 +778,7 @@ void MainWindow::on_pBtn_Dail_clicked()
     //ui->tabWidget->currentChanged(1);
     ui->tabWidget->setCurrentIndex(1);
 
+    setColorForBtns(1);
 }
 
 QSerialPort * curentPort;
@@ -782,6 +791,7 @@ void MainWindow::on_pBtnDail_clicked()
     recordToUpdate.telenum = "12612812911";
     m_ContactorTable->InsertPinyinForRecord(recordToUpdate);*/
     ui->tabWidget->setCurrentIndex(2);
+    setColorForBtns(2);
 
 }
 
@@ -2015,7 +2025,7 @@ void MainWindow::on_pBtnMessageRecord_clicked()
     {
        refreshMessageDisplay(0);
     }
-
+    setColorForBtns(3);
 }
 
 void MainWindow::refreshMessageDisplay(bool displayAll)
@@ -2205,8 +2215,7 @@ void MainWindow::on_pBtnSendMessage_clicked()
     ui->listWidget->setGeometry(pos.left(),topListWidegtCon+40,widthListWidegtCon-120,heightListWidgetCon-170);
     ui->listWidget->show();
     ui->listWidget->setCurrentRow(-1);
-
-
+    setColorForBtns(4);
 }
 
 void MainWindow::teToSendTextChanged()
@@ -2233,4 +2242,33 @@ void MainWindow::teToSendTextChanged()
             pBtnStart->setEnabled(false);
         }
     }
+}
+
+void MainWindow::setColorForBtns(int indexOfToMark)
+{
+    QColor defaultColor = QColor(220,220,220);
+
+    QPalette pal;
+
+    pal.setColor(QPalette::Button,defaultColor);
+    pal.setColor(QPalette::ButtonText,QColor("black"));
+    int i=0;
+    for(i=0;i<5;i++)
+    {
+        if(i!=indexOfToMark)
+        {
+            mainBtnList.at(i)->setAutoFillBackground(true);// autoFillBackground(true);
+            //mainBtnList.at(i)->setStyleSheet("");
+            mainBtnList.at(i)->setPalette(pal);
+
+        }
+    }
+
+    pal.setColor(QPalette::Button,QColor(0x77,0xff,0xcc));
+    pal.setColor(QPalette::ButtonText,QColor(0xff,0xbb,0x66));
+    mainBtnList.at(indexOfToMark)->setAutoFillBackground(true);
+    mainBtnList.at(indexOfToMark)->setPalette(pal);
+
+    //mainBtnList.at(indexOfToMark)->setStyleSheet("QPushButton{background-color:#77ffcc;}");
+
 }
