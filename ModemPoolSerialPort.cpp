@@ -366,6 +366,11 @@ void CModemPoolSerialPort::processData()
                     infoToAdd.processStatus = NeedSendContext;
                 }
             }
+
+            if(tempStrList.at(0).contains("COPS: 0,0,"))
+            {
+                infoToAdd.processStatus = READY;
+            }
         }
             break;
         case NeedSendContext:

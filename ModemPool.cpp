@@ -633,10 +633,10 @@ void CModemPool::preparePorts()
     {
         SIM_status st = PortSIMList.at(i)->getSimStatus();
         qDebug()<<"sim"<<i<<" status:"<<st;
-        if(st==IDLE)
-        {
+
             PortSIMList.at(i)->write("AT+COPS?\n");
-        }
+
+
     }
     setProType(Dial);
 
