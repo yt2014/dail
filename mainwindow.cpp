@@ -223,6 +223,8 @@ MainWindow::MainWindow(QWidget *parent) :
      mainBtnList.append(ui->pBtnMessageRecord);
      mainBtnList.append(ui->pBtnSendMessage);
      ui->pBtnShortMessage->hide();
+
+     connect(m_Modem,SIGNAL(startProcessToMainUI()),this,SLOT(startProcess()));
 }
 
 /*void MainWindow::showMe(){
@@ -740,6 +742,12 @@ void MainWindow::on_tabWidget_currentChanged(int index)
             inputMsg->setText("输入信息:");
             inputMsg->setGeometry(120,heightListWidgetCon-110,100,30);
             inputMsg->show();
+        }
+
+        if(m_ShortMessageTable==NULL)
+        {
+            m_ShortMessageTable = new CShortMessageTable();
+            m_Modem->setShortMsgTable(m_ShortMessageTable);
         }
 
     }
@@ -1913,7 +1921,7 @@ void MainWindow::endProcess()
        oneRecord = dataInItem.value<ContactorInfo>();
 
           itemToAdd = new QListWidgetItem();
-          itemToAdd->setText(oneRecord.name + " " + oneRecord.telenum);
+          itemToAdd->setText(oneRecord.name);// + " " + oneRecord.telenum);
           itemToAdd->setData(Qt::UserRole,dataInItem);
           ui->listWidget->insertItem(i+countBegin,itemToAdd);
           mutex.lock();
@@ -1935,6 +1943,7 @@ void MainWindow::endProcess()
     pBtnStart =  this->findChild<QPushButton  *>("pBtnStart");
     pBtnStart->setEnabled(false);
 
+    setEnabledForBtns(true);
 
 }
 
@@ -2026,6 +2035,7 @@ void MainWindow::on_pBtnMessageRecord_clicked()
     if(m_ShortMessageTable==NULL)
     {
         m_ShortMessageTable = new CShortMessageTable();
+        m_Modem->setShortMsgTable(m_ShortMessageTable);
     }
     if(NeedRead_ShortMessageRecordInfoAll)
     {
@@ -2289,4 +2299,19 @@ void MainWindow::setColorForBtns(int indexOfToMark)
 
     //mainBtnList.at(indexOfToMark)->setStyleSheet("QPushButton{background-color:#77ffcc;}");
 
+}
+
+void MainWindow::startProcess()
+{
+    setEnabledForBtns(false);
+}
+
+void MainWindow::setEnabledForBtns(bool enabled)
+{
+    int i=0;
+    for(i=0;i<5;i++)
+    {
+
+            mainBtnList.at(i)->setEnabled(enabled);// autoFillBackground(true);
+    }
 }

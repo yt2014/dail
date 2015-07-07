@@ -46,6 +46,7 @@ CModemPool::CModemPool()
     m_CommRecordTable = NULL;
     isAllProcessed = true;
     m_proType = Dial;
+    m_ShortMessageTable = NULL;
 }
 
 CModemPool * CModemPool::getInstance()
@@ -198,6 +199,7 @@ void CModemPool::startProcess()
        m_pBtn->setText("停止");
        isAllProcessed = false;
         }
+        emit startProcessToMainUI();
     }
        else if(numClicked==1)
     {
@@ -291,7 +293,7 @@ void CModemPool::startProcess()
                 SIM_status st = PortSIMList.at(i)->getSimStatus();
                 proInfoToInit.simPort = PortSIMList.at(i)->portName();
                 proInfoToInit.processStatus = st;
-
+                teleProSteps oneTeleProStepInfoToChange;
                 qDebug()<<"start pro sim"<<i<<" status:"<<st;
                 if(i<len)
                 {
@@ -304,6 +306,11 @@ void CModemPool::startProcess()
 
                       char* ch = ba.data();
                       PortSIMList.at(i)->write(ch);
+
+                      oneTeleProStepInfoToChange = m_teleProStepList.takeAt(i);
+                      oneTeleProStepInfoToChange.teleStep = START_PROCESS;
+                      m_teleProStepList.insert(i,oneTeleProStepInfoToChange);
+
                   }
                   else if(st==IDLE)
                   {
@@ -322,6 +329,7 @@ void CModemPool::startProcess()
             m_pBtn->setText("停止");
             isAllProcessed = false;
              }
+             emit startProcessToMainUI();
         }
         else if(numClicked==1)
         {
@@ -491,10 +499,18 @@ void CModemPool::processStatusChange()
                    stepsInfoOneNum = m_teleProStepList.takeAt(index);
                    stepsInfoOneNum.teleStep = PROCESS_FINISHED;
                    stepsInfoOneNum.MsgRecordToStore.isReceived = false;
+                   stepsInfoOneNum.MsgRecordToStore.messageContext = m_msgToSend;
+                   stepsInfoOneNum.MsgRecordToStore.NumberRemote = stepsInfoOneNum.telenumber;
+                   stepsInfoOneNum.MsgRecordToStore.send_recvTime = QDateTime::currentDateTime();
+                   stepsInfoOneNum.MsgRecordToStore.subID = 0;
                    m_teleProStepList.insert(index,stepsInfoOneNum);
-                   if(m_CommRecordTable!=NULL)
+                   if(m_ShortMessageTable!=NULL)
                    {
-                       m_CommRecordTable->addOneRecord(stepsInfoOneNum.recordToStore);
+                       m_ShortMessageTable->addOneRecord(stepsInfoOneNum.MsgRecordToStore);
+                   }
+                   else
+                   {
+                       qDebug()<<"shorMessageTable is NULL";
                    }
                    m_treeWidget->topLevelItem(index)->setText(1,"发送完成");
                    m_treeWidget->show();
@@ -855,6 +871,11 @@ int CModemPool::getNumClicked()
 void CModemPool::setCommRecordTable(CCommRecordTable * CommRecordTable)
 {
     m_CommRecordTable = CommRecordTable;
+}
+
+void CModemPool::setShortMsgTable(CShortMessageTable * shorMsgTable)
+{
+    m_ShortMessageTable = shorMsgTable;
 }
 
 void CModemPool::setProType(processType proType)

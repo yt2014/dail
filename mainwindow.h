@@ -81,6 +81,7 @@ private slots:
     void DelNumsProcess();
 
     void endProcess();
+    void startProcess();
 
     void on_pBtnMessageRecord_clicked();
     void shortMessageTree_ItemClicked(QTreeWidgetItem *item, int column);
@@ -148,6 +149,7 @@ private:
     QList<QPushButton *> mainBtnList;
 
     void setColorForBtns(int indexOfToMark);
+    void setEnabledForBtns(bool enabled);
 };
 
 #endif // MAINWINDOW_H

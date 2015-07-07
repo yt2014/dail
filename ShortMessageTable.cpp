@@ -279,8 +279,9 @@ Operation_Result CShortMessageTable::addOneRecord(messageInfo RecordToStore)
 {
     Operation_Result value_ret = AddFailed;
 
-     if(!db.isOpen())
+     if(!openDatabase())
      {
+        qDebug()<<"data base not open";
         value_ret =  DataBaseNotOpen;
      }
      else
@@ -295,7 +296,7 @@ Operation_Result CShortMessageTable::addOneRecord(messageInfo RecordToStore)
                                                            + RecordToStore.NumberLocal + "\',"
                                                            + QString::number(RecordToStore.isReceived) + ",\'"
                                                            + RecordToStore.messageContext + "\')";
-            // qDebug()<<strSQL;
+            qDebug()<<strSQL;
             if(query.exec(strSQL))
             {
                 value_ret = AddSuccess;

@@ -64,6 +64,7 @@ private: CModemPool();
     QPushButton * m_pBtn;
     QTreeWidget * m_treeWidget;
     CCommRecordTable * m_CommRecordTable;
+    CShortMessageTable * m_ShortMessageTable;
     int numClicked;
     bool isAllProcessed;
     decodedChangeInfo infoDecoded;
@@ -81,6 +82,7 @@ public:
     void setPushButton(QPushButton * pBtnToSet);
     void setTreeWidget(QTreeWidget *treeToSet);
     void setCommRecordTable(CCommRecordTable * CommRecordTable);
+    void setShortMsgTable(CShortMessageTable * shorMsgTable);
 
     void setProType(processType proType);
     void setMsgToSend(QString str);
@@ -95,6 +97,7 @@ public:
 signals:
     void needInteract();
     void endProcess();
+    void startProcessToMainUI();
 private slots:
     void startProcess();
     void preparePorts();

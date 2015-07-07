@@ -387,8 +387,12 @@ void CModemPoolSerialPort::processData()
             break;
         case SetForSendMsgStep2:
         {
+            qDebug()<<"SetForSendMsgStep2 ";
             if(tempStrList.at(0).contains("AT+CSMP=17,167,2,25"))
+            {
                infoToAdd.processStatus = ReadyForSendMessage;
+               qDebug()<<"change to  ReadyForSendMessage";
+            }
         }
 
             break;

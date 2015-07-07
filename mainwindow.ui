@@ -28,7 +28,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>成都与飞科技</string>
+     <string>成都与飞科技智能锁控制平台</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pBtn_Contactors">
