@@ -352,6 +352,10 @@ void MainWindow::on_tabWidget_currentChanged(int index)
          ui->pBtnEdit_Add->setParent(TabWidgetSelected);
          ui->pBtnEdit_Add->show();
     }
+    else
+    {
+        ui->pBtnEdit_Add->hide();
+    }
     ui->label_Telenumber->show();
     ui->label_Telenumber->setText("");
 
@@ -567,7 +571,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
             treeWidgetNumsNeedProcess->setHeaderLabels(headers);
             treeWidgetNumsNeedProcess->setSelectionMode(QAbstractItemView::ExtendedSelection);
             treeWidgetNumsNeedProcess->show();
-
+            treeWidgetNumsNeedProcess->setColumnWidth(0,350);
             m_Modem->setTreeWidget(treeWidgetNumsNeedProcess);
         }
         else
@@ -743,6 +747,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     default:
         break;
     }
+    RefreshContent(index,true);
 }
 
 
@@ -1165,7 +1170,7 @@ void MainWindow::RefreshContent(int index,bool displayAll)
         tmpCommTopList = m_topFreshCommRecordList;
     }
 
-    if((index==0)||(index==2))
+    if((index==0)||(index==2)||(index==5))
     {
         /*refresh the contactors*/
         qDebug()<<"MainWindow::RefreshContent";
@@ -1177,13 +1182,22 @@ void MainWindow::RefreshContent(int index,bool displayAll)
         for(int i=0;i<num_ToAdd;i++)
         {
              ContactorInfo oneRecord = tmpContactorList.at(i);
-             if( (index!=2)
-                ||( (index==2)
+             if( (index==0)
+                ||( ((index==2)||(index==5))
                   &&(numsNeedProcess.contains(oneRecord.telenum)==false)
                   )
               )
              {
-                QString str_ToAdd = oneRecord.name + " " + oneRecord.telenum;
+                QString str_ToAdd;
+
+                if(index==0)
+                {
+                   str_ToAdd = oneRecord.name + " " + oneRecord.telenum;
+                }
+                else
+                {
+                    str_ToAdd = oneRecord.name;
+                }
                 itemToAdd = new QListWidgetItem(str_ToAdd);
 
                 //setting the value of the item.
@@ -1825,7 +1839,7 @@ void MainWindow::DelNumsProcess()
        if(numsNeedProcess.contains(oneRecord.telenum)==true)
        {
           itemToAdd = new QListWidgetItem();
-          itemToAdd->setText(oneRecord.name + " " + oneRecord.telenum);
+          itemToAdd->setText(oneRecord.name);// + " " + oneRecord.telenum);
           itemToAdd->setData(Qt::UserRole,dataInItem);
           ui->listWidget->insertItem(i+countBegin,itemToAdd);
           mutex.lock();

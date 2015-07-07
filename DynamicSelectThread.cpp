@@ -51,7 +51,7 @@ void CDynamicSelectThread::SelectRecords()
             oneChar = oneChar.toLower();
             KeyWord.replace(i,1,oneChar);
         }
-        if((index==0)||(index==2))
+        if((index==0)||(index==2)||(index==5))
         {
             /*get contactors only here*/
             QString strSql = "select * from contactors where name like \'%"
