@@ -69,14 +69,16 @@ int main(int argc, char *argv[])
          }
          else
          {
-             QMessageBox::information(NULL,"NO","认证不通过");
+             QMessageBox::information(NULL,"NO","认证不通过 num is"+ strDiskInfo+"ok");
          }
 
          db1.close();
+         return 0;
      }
      else
      {
          QMessageBox::information(NULL,"NO","数据库文件丢失");
+         return 0;
      }
 
 

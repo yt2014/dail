@@ -1240,7 +1240,7 @@ void MainWindow::RefreshContent(int index,bool displayAll)
 
         int j=0;
         int numOneTeleNum;//number of records for one telephone number
-        QTreeWidgetItem * ItemToAdd;
+        QTreeWidgetItem * ItemToAdd = NULL;
         CommRecordInfo oneFullRecord;
         CommRecordInfoList tempListOneNum;
         for(int i=0;i<num_ToAdd;i++)
