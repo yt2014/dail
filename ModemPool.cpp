@@ -375,7 +375,7 @@ void CModemPool::startProcess()
 void CModemPool::processStatusChange()
 {
 
-   // qDebug()<<"m_modem thread is running";
+    //qDebug()<<"m_modem thread is running";
     processInfoList tempInfoList;
     mutex.lock();
     tempInfoList =  proInfoListFromSIMs;

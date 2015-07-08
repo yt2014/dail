@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
         Fun getDiskInfo=(Fun)mylib.resolve("getDiskInfo"); //援引 add() 函数
         if (getDiskInfo) //是否成功连接上 add() 函数
         {
-           qDebug() << "serialNumber:" << getDiskInfo().serialNumber;
+           //qDebug() << "serialNumber:" << getDiskInfo().serialNumber;
 
            strDiskInfo = getDiskInfo().serialNumber;
         }
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 
      if(db1.isValid()&&db1.isOpen())
      {
-         QString strQuery = "select * from verification where hdnumber = \'" + strDiskInfo +"\'";
+         QString strQuery = "select * from verification where hdnumber like \'%" + strDiskInfo.trimmed() +"%\'";
 
          QSqlQuery query(db1);
 
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
          }
          else
          {
-             QMessageBox::information(NULL,"NO","认证不通过 num is"+ strDiskInfo+"ok");
+             QMessageBox::information(NULL,"NO","认证不通过"+ strQuery);
          }
 
          db1.close();

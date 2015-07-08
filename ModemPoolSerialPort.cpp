@@ -173,6 +173,10 @@ void CModemPoolSerialPort::processData()
                 {
                      infoToAdd.processStatus = SetForSendMsgStep1;
                 }
+            else if(tempStrList.at(0).contains("AT+CLIP=1")&&(!tempStrList.at(0).contains("ERROR")))
+                {
+                    infoToAdd.processStatus = NeedRegist;
+                }
 
             //Call Ready
 
@@ -404,6 +408,7 @@ void CModemPoolSerialPort::processData()
 
         if(tempStatus!=infoToAdd.processStatus)
         {
+           qDebug()<<"add to list in serial thread";
            mutex.lock();
            proInfoListFromSIMs.append(infoToAdd);
            mutex.unlock();
