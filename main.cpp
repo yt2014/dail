@@ -5,6 +5,7 @@
 
 #include "diskid32.h"
 #include <QLibrary>
+#include <QUuid>
 
 typedef diskInfo (*Fun)();
 
@@ -21,6 +22,10 @@ int main(int argc, char *argv[])
     QString strDiskInfo;
 
     //read the disk number of this computer.
+    QUuid id = QUuid::createUuidV3(QUuid("{1f695c5f-df58-44fb-bf28-0f5556443050}"),QString("aaaaa"));
+    QString strId = id.toString();
+
+    qDebug()<<"uuid is "<<strId;
      QLibrary mylib("diskid32.dll"); //声明所用到的dll文件
      if (mylib.load()) //判断是否正确加载
      {
