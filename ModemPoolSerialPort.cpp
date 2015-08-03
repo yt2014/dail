@@ -4,6 +4,7 @@
 #include <QMutex>
 
 extern QMutex mutex;
+extern QTextStream logfile;
 
 CModemPoolSerialPort::CModemPoolSerialPort()
 {
@@ -130,6 +131,7 @@ void CModemPoolSerialPort::processData()
     if(tempStrList.count()!=0)
     {
         qDebug()<<"received " << this->portName() <<" " + tempStrList.at(0);
+        logfile<<"received " << this->portName() <<" " + tempStrList.at(0);
         processInfo infoToAdd;
         infoToAdd.simPort = this->portName();
         infoToAdd.processStatus = tempStatus;
@@ -171,7 +173,7 @@ void CModemPoolSerialPort::processData()
                 }
             else if(tempStrList.at(0).contains("AT+CMGF=1")&&(!tempStrList.at(0).contains("ERROR")))
                 {
-                     infoToAdd.processStatus = SetForSendMsgStep1;
+                     infoToAdd.processStatus = ReadyForSendMessage;
                 }
             else if(tempStrList.at(0).contains("AT+CLIP=1")&&(!tempStrList.at(0).contains("ERROR")))
                 {
@@ -227,7 +229,7 @@ void CModemPoolSerialPort::processData()
             }
             else if(tempStrList.at(0).contains("AT+CMGF=1")&&(!tempStrList.at(0).contains("ERROR")))
                 {
-                     infoToAdd.processStatus = SetForSendMsgStep1;
+                     infoToAdd.processStatus = ReadyForSendMessage;
                 }
                 /*NO CARRIER*/
             /*+CLCC: 1,0,3,0,0,"13541137539",129*/
@@ -241,7 +243,7 @@ void CModemPoolSerialPort::processData()
                // delaySeconds(1);
                 qDebug()<<"clcc received 拨号中。。。";
                 counterRecv = counterRecv+1;
-                if(counterRecv==6)
+                if(counterRecv==12)
                 {
                     infoToAdd.processStatus = WaitForFeedBack;
                     counterRecv = 0;
@@ -397,6 +399,10 @@ void CModemPoolSerialPort::processData()
                infoToAdd.processStatus = ReadyForSendMessage;
                qDebug()<<"change to  ReadyForSendMessage";
             }
+            else if(tempStrList.at(0).contains("AT+CMGF=1"))
+            {
+                infoToAdd.processStatus = ReadyForSendMessage;
+            }
         }
 
             break;
@@ -408,7 +414,7 @@ void CModemPoolSerialPort::processData()
 
         if(tempStatus!=infoToAdd.processStatus)
         {
-           qDebug()<<"add to list in serial thread";
+           //qDebug()<<"add to list in serial thread";
            mutex.lock();
            proInfoListFromSIMs.append(infoToAdd);
            mutex.unlock();

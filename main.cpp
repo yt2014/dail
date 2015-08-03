@@ -6,8 +6,13 @@
 #include "diskid32.h"
 #include <QLibrary>
 #include <QUuid>
+#include <QFile>
+#include <QDateTime>
 
 typedef diskInfo (*Fun)();
+
+QTextStream logfile;
+QFile file;
 
 int main(int argc, char *argv[])
 {
@@ -15,7 +20,12 @@ int main(int argc, char *argv[])
     //a.setStyle("macintosh");
     QApplication::setStyle("macintosh");
 
-    QSqlDatabase db = QSqlDatabase::addDatabase("QODBC","Dail");
+        file.setFileName("log.txt");
+        file.open(QIODevice::ReadWrite | QIODevice::Text);
+        logfile.setDevice(&file);
+        logfile<<QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+
+        QSqlDatabase db = QSqlDatabase::addDatabase("QODBC","Dail");
     db.setDatabaseName("DRIVER={Microsoft Access Driver (*.mdb)};FIL={MS Access};DBQ=dail.mdb");
     db.setPassword("yt_2015_sdh");
 
@@ -69,20 +79,22 @@ int main(int argc, char *argv[])
          {
             MainWindow w;
             w.show();
-
+            file.close();
             return a.exec();
          }
          else
          {
-             QMessageBox::information(NULL,"NO","认证不通过"+ strQuery);
+             QMessageBox::information(NULL,"NO","认证不通过");
          }
 
          db1.close();
+         file.close();
          return 0;
      }
      else
      {
          QMessageBox::information(NULL,"NO","数据库文件丢失");
+         file.close();
          return 0;
      }
 

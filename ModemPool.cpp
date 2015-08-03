@@ -1,5 +1,6 @@
 ﻿#include "ModemPool.h"
 #include <QDebug>
+#include <QFile>
 
 CModemPool * CModemPool::_instance = NULL;
 
@@ -7,7 +8,8 @@ QStringList numsNeedProcess;
 processInfoList proInfoListFromSIMs; //this global list is used to synchronize the thread.
 extern QMutex mutex;
 
-
+extern QTextStream logfile;
+extern QFile file;
 CModemPool::CModemPool()
 {
     CModemPoolSerialPort * tempSIMPort;
@@ -288,6 +290,8 @@ void CModemPool::startProcess()
              QString strDial;
              proInfoListFromSIMs.clear();
              processInfo proInfoToInit;
+             file.setFileName("log.txt");
+             logfile.setDevice(&file);
              for(i=0;i<num;i++)
              {
                 SIM_status st = PortSIMList.at(i)->getSimStatus();
@@ -295,6 +299,7 @@ void CModemPool::startProcess()
                 proInfoToInit.processStatus = st;
                 teleProSteps oneTeleProStepInfoToChange;
                 qDebug()<<"start pro sim"<<i<<" status:"<<st;
+                logfile<<"start pro sim"<<i<<" status:"<<st;
                 if(i<len)
                 {
                   proInfoToInit.telenumber = numsNeedProcess.at(i);
@@ -303,6 +308,8 @@ void CModemPool::startProcess()
                   {
                       strDial = "AT+CMGS=\""+CShortMessageTable::stringToUCS4String(numsNeedProcess.at(i)) + "\"\n";
                       QByteArray ba = strDial.toLatin1();
+
+                      logfile<<"start send message " << strDial<<"\n";
 
                       char* ch = ba.data();
                       PortSIMList.at(i)->write(ch);
@@ -315,6 +322,8 @@ void CModemPool::startProcess()
                   else if(st==IDLE)
                   {
                        PortSIMList.at(i)->write("AT+CMGF=1\n");
+
+                       logfile<<"send AT+CMGF=1\n";
                   }
                 }
 

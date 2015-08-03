@@ -1055,13 +1055,13 @@ void MainWindow::on_pBtn_EditSave_clicked()
         {
            ui->pBtn_EditSave->setText("确定");
 
-           //QRect positionBtn = ui->pBtn_EditSave->geometry();
+           QRect positionBtn = ui->pBtn_EditSave->geometry();
 
            // positionBtn.moveRight(2);
-            //positionBtn.width();
+           // positionBtn.width();
 
-          // positionBtn.adjust(20,0,20,0);
-         //  ui->pBtn_EditSave->setGeometry(positionBtn);
+           positionBtn.adjust(20,0,20,0);
+           ui->pBtn_EditSave->setGeometry(positionBtn);
            ui->pBtnCancel->hide();
            m_ContactorTable->setOperation(OperationFinished);
            opResult = m_ContactorTable->UpdateOneRecord(infoToOperate,conInfoSelected);
