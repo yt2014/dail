@@ -10,6 +10,8 @@ extern QMutex mutex;
 
 extern QTextStream logfile;
 extern QFile file;
+QFile * logFile;
+
 CModemPool::CModemPool()
 {
     CModemPoolSerialPort * tempSIMPort;
@@ -407,6 +409,11 @@ void CModemPool::processStatusChange()
 
 
        qDebug()<<"index sim "<<indexSim<<"all processed?"<<isAllProcessed;
+
+       QString logToWrite = "sim "+ QString::number(indexSim) + "status " + QString::number(st);
+
+       logFile->write(logToWrite);
+
        infoDecoded.indexOfSim = indexSim;       
        infoDecoded.simST = st;
        teleProSteps stepsInfoOneNum;

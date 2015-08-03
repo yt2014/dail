@@ -36,6 +36,8 @@ int widthListWidegtCon;
 int heightListWidgetCon;
 int topListWidegtCon;
 
+extern QFile * logFile;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -225,6 +227,15 @@ MainWindow::MainWindow(QWidget *parent) :
      ui->pBtnShortMessage->hide();
 
      connect(m_Modem,SIGNAL(startProcessToMainUI()),this,SLOT(startProcess()));
+
+     QDateTime timeNow = QDateTime::currentDateTime();
+
+     QString logFileName = timeNow.toString("yyyy_MM_dd_hh_mm_") + "log.txt";
+
+    // qDebug()<<logFileName;
+
+     logFile = new QFile(logFileName);
+     logFile->open(QIODevice::WriteOnly|QIODevice::Text);
 }
 
 /*void MainWindow::showMe(){
@@ -268,6 +279,8 @@ MainWindow::~MainWindow()
 
     //delete ThreadSearching;
     delete ui;
+    logFile->close();
+    delete logFile;
 
 }
 
