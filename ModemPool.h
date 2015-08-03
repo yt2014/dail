@@ -8,10 +8,12 @@
 #include <QPushButton>
 #include "CommRecordTable.h"
 #include "ShortMessageTable.h"
+#include <QFile>
 
 class MainWindow;
 class CCommRecordTable;
 extern QStringList numsNeedProcess;
+extern QFile * logFile;
 
 typedef enum
 {

@@ -6,7 +6,7 @@ CModemPool * CModemPool::_instance = NULL;
 QStringList numsNeedProcess;
 processInfoList proInfoListFromSIMs; //this global list is used to synchronize the thread.
 extern QMutex mutex;
-
+QFile * logFile;
 
 CModemPool::CModemPool()
 {
@@ -398,6 +398,11 @@ void CModemPool::processStatusChange()
 
 
        qDebug()<<"index sim "<<indexSim<<"all processed?"<<isAllProcessed;
+
+       QString logToWrite = "sim "+ QString::number(indexSim) + "status " + QString::number(st);
+
+       logFile->write(logToWrite);
+
        infoDecoded.indexOfSim = indexSim;       
        infoDecoded.simST = st;
        teleProSteps stepsInfoOneNum;
