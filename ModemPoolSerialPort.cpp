@@ -108,7 +108,7 @@ CModemPoolSerialPort::~CModemPoolSerialPort()
      while(!stopped)
      {
          m_simCardPort->processData();
-         msleep(200);
+        // msleep(200);
      }
      stopped = false;
  }
@@ -173,7 +173,7 @@ void CModemPoolSerialPort::processData()
                 }
             else if(tempStrList.at(0).contains("AT+CMGF=1")&&(!tempStrList.at(0).contains("ERROR")))
                 {
-                     infoToAdd.processStatus = ReadyForSendMessage;
+                     infoToAdd.processStatus = SetForSendMsgStep1;
                 }
             else if(tempStrList.at(0).contains("AT+CLIP=1")&&(!tempStrList.at(0).contains("ERROR")))
                 {
@@ -229,7 +229,7 @@ void CModemPoolSerialPort::processData()
             }
             else if(tempStrList.at(0).contains("AT+CMGF=1")&&(!tempStrList.at(0).contains("ERROR")))
                 {
-                     infoToAdd.processStatus = ReadyForSendMessage;
+                     infoToAdd.processStatus = SetForSendMsgStep1;
                 }
                 /*NO CARRIER*/
             /*+CLCC: 1,0,3,0,0,"13541137539",129*/
@@ -399,10 +399,10 @@ void CModemPoolSerialPort::processData()
                infoToAdd.processStatus = ReadyForSendMessage;
                qDebug()<<"change to  ReadyForSendMessage";
             }
-            else if(tempStrList.at(0).contains("AT+CMGF=1"))
+         /*   else if(tempStrList.at(0).contains("AT+CMGF=1"))
             {
                 infoToAdd.processStatus = ReadyForSendMessage;
-            }
+            }*/
         }
 
             break;

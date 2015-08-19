@@ -173,18 +173,23 @@ void CModemPool::startProcess()
            proInfoToInit.processStatus = st;
 
            qDebug()<<"start pro sim"<<i<<" status:"<<st;
-           if(i<len)
+           int indexTeleToPro = getNextIndexToProcess();
+           if(indexTeleToPro!=-1)
            {
-             proInfoToInit.telenumber = numsNeedProcess.at(i);
-             m_proInfoList.append(proInfoToInit);
+             proInfoToInit.telenumber = m_teleProStepList.at(indexTeleToPro).telenumber;
+
              if(st==READY)
              {
-                 strDial = "ATD"+numsNeedProcess.at(i) + ";\n";
+                 strDial = "ATD"+numsNeedProcess.at(indexTeleToPro) + ";\n";//\n
+                 //strDial = "ATD13541137539;\n";
                  QByteArray ba = strDial.toLatin1();
 
                  char* ch = ba.data();
                  PortSIMList.at(i)->write(ch);
 
+                // logFile->write("dial now\n");
+
+                 m_proInfoList.append(proInfoToInit);
              }
              else if(st==IDLE)
              {
@@ -294,7 +299,7 @@ void CModemPool::startProcess()
              processInfo proInfoToInit;
              file.setFileName("log.txt");
              logfile.setDevice(&file);
-             for(i=0;i<num;i++)
+             for(i=0;i<num;i++)//num is the number of ports;
              {
                 SIM_status st = PortSIMList.at(i)->getSimStatus();
                 proInfoToInit.simPort = PortSIMList.at(i)->portName();
@@ -302,30 +307,46 @@ void CModemPool::startProcess()
                 teleProSteps oneTeleProStepInfoToChange;
                 qDebug()<<"start pro sim"<<i<<" status:"<<st;
                 logfile<<"start pro sim"<<i<<" status:"<<st;
-                if(i<len)
+                QString strlog = "start pro sim" + QString::number(i) + " status:" + QString::number(st)+"\n";
+                logFile->write(strlog.toLatin1());
+                int indexTeleToPro = getNextIndexToProcess();
+                if(indexTeleToPro!=-1)
                 {
-                  proInfoToInit.telenumber = numsNeedProcess.at(i);
-                  m_proInfoList.append(proInfoToInit);
+                  proInfoToInit.telenumber = m_teleProStepList.at(indexTeleToPro).telenumber;
+                  //QString strToWrite = "indexGot is " + QString::number(indexTeleToPro) + "\n";
+                  //logFile->write(strToWrite.toLatin1());
                   if(st==ReadyForSendMessage)
                   {
-                      strDial = "AT+CMGS=\""+CShortMessageTable::stringToUCS4String(numsNeedProcess.at(i)) + "\"\n";
+                     // strDial = "AT+CMGS=\""+CShortMessageTable::stringToUCS4String(numsNeedProcess.at(indexTeleToPro)) + "\"\n";
+
+                      strDial = "AT+CMGS=\""+CShortMessageTable::stringToUCS4String("10086") + "\"\n";
                       QByteArray ba = strDial.toLatin1();
 
                       logfile<<"start send message " << strDial<<"\n";
 
+                      logFile->write(ba);
+
+
                       char* ch = ba.data();
+
                       PortSIMList.at(i)->write(ch);
+                     // PortSIMList.at(i)->write();
 
-                      oneTeleProStepInfoToChange = m_teleProStepList.takeAt(i);
+                      oneTeleProStepInfoToChange = m_teleProStepList.takeAt(indexTeleToPro);
                       oneTeleProStepInfoToChange.teleStep = START_PROCESS;
-                      m_teleProStepList.insert(i,oneTeleProStepInfoToChange);
+                      m_teleProStepList.insert(indexTeleToPro,oneTeleProStepInfoToChange);
 
+                      m_proInfoList.append(proInfoToInit);
+/**/
+                      //logFile->write(strDial.toLatin1());
+                      logFile->write(" send message here\n");
                   }
                   else if(st==IDLE)
                   {
                        PortSIMList.at(i)->write("AT+CMGF=1\n");
 
                        logfile<<"send AT+CMGF=1\n";
+                       logFile->write("send AT+CMGF=1\n");
                   }
                 }
 
@@ -410,9 +431,9 @@ void CModemPool::processStatusChange()
 
        qDebug()<<"index sim "<<indexSim<<"all processed?"<<isAllProcessed;
 
-       QString logToWrite = "sim "+ QString::number(indexSim) + "status " + QString::number(st);
+       QString logToWrite = "sim "+ QString::number(indexSim) + "status " + QString::number(st)+"\n";
 
-       logFile->write(logToWrite);
+       logFile->write(logToWrite.toLatin1());
 
        infoDecoded.indexOfSim = indexSim;       
        infoDecoded.simST = st;
@@ -537,11 +558,11 @@ void CModemPool::processStatusChange()
            infoDecoded.indexOfTel = index;
        }
        emit needInteract();
-       sleep(1);
+      // sleep(1);
        mutex.lock();
        proInfoListFromSIMs.removeAt(0);
        mutex.unlock();
-       sleep(5);
+      // sleep(5);
     }
     else
     {
@@ -558,7 +579,7 @@ void CModemPool::processStatusChange()
                    infoDecoded.indexOfSim = i;
                    infoDecoded.simST = DialingOut;
                    emit needInteract();
-                   sleep(1);
+        //           sleep(1);
                }
            }
         }
@@ -704,7 +725,8 @@ void CModemPool::interact()
             int index_Sim = infoDecoded.indexOfSim;
             //SIM_status stLast = m_proInfoList.at(indexSim).processStatus;
             qDebug()<<"in interact sim"<<index_Sim<<" status:"<<stNew;
-
+            QString strLog = "in interact sim" + QString::number(index_Sim)+" status:"+QString::number(stNew)+"\n";
+            logFile->write(strLog.toLatin1());
             switch (stNew) {
             case IDLE:
                PortSIMList.at(index_Sim)->write("AT+COPS?\n");
@@ -817,11 +839,13 @@ void CModemPool::interact()
                      strToSend = "AT+CMGS=\""+CShortMessageTable::stringToUCS4String(strToSend)+"\"\n";
                      QByteArray ba = strToSend.toLatin1();
                      char* ch = ba.data();
+                     logFile->write(ba);
                      PortSIMList.at(index_Sim)->write(ch);
                 }
                 else
                 {
                      qDebug()<<"no tele to send message again";
+                     logFile->write("no tele to send message again\n");
                      isAllProcessed = checkAllProcessed();
                      if(isAllProcessed)
                      {
@@ -833,6 +857,8 @@ void CModemPool::interact()
 
                 }
                 }
+                QString strLog1 = "isAllProcessed:" + QString::number(isAllProcessed)+"\n";
+                logFile->write(strLog1.toLatin1());
             }
                 //PortSIMList.at(index_Sim)->write("AT+CMGS=\n");
                 break;
