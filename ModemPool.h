@@ -78,6 +78,7 @@ public:
     CModemPoolSerialPort * getSIMPort(int index);
     QSerialPortInfo getPortInfo(int index);
     int findSimPortByPortName(QString portName);
+    int findSimPortInProByPortName(QString portName);
     int getNextIndexToProcess();
     bool checkAllProcessed();
 

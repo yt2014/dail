@@ -317,9 +317,9 @@ void CModemPool::startProcess()
                   //logFile->write(strToWrite.toLatin1());
                   if(st==ReadyForSendMessage)
                   {
-                     // strDial = "AT+CMGS=\""+CShortMessageTable::stringToUCS4String(numsNeedProcess.at(indexTeleToPro)) + "\"\n";
+                      strDial = "AT+CMGS=\""+CShortMessageTable::stringToUCS4String(numsNeedProcess.at(indexTeleToPro)) + "\"\n";
 
-                      strDial = "AT+CMGS=\""+CShortMessageTable::stringToUCS4String("10086") + "\"\n";
+                    //  strDial = "AT+CMGS=\""+CShortMessageTable::stringToUCS4String("10086") + "\"\n";
                       QByteArray ba = strDial.toLatin1();
 
                       logfile<<"start send message " << strDial<<"\n";
@@ -440,7 +440,8 @@ void CModemPool::processStatusChange()
        teleProSteps stepsInfoOneNum;
        if(!isAllProcessed)
        {
-           SIM_status tempStatus = m_proInfoList.at(indexSim).processStatus;
+           int indexSimInPro = findSimPortInProByPortName(simPort);
+           SIM_status tempStatus = m_proInfoList.at(indexSimInPro).processStatus;
            if((st>READY)||((st==READY)&&(tempStatus>READY)))
            {
 
@@ -454,7 +455,7 @@ void CModemPool::processStatusChange()
                      {
                          qDebug()<<"num of m_proInfoList "<<m_proInfoList.count();
 
-                         telenumber = m_proInfoList.at(indexSim).telenumber;
+                         telenumber = m_proInfoList.at(indexSimInPro).telenumber;
                          index = numsNeedProcess.indexOf(telenumber);
                       }
                       else
@@ -625,6 +626,31 @@ int CModemPool::findSimPortByPortName(QString portName)
     return rev;
 
 }
+
+int CModemPool::findSimPortInProByPortName(QString portName)
+{
+    int rev = -1;
+    int num = m_proInfoList.count();
+    int i=0;
+    for(i=0;i<num;i++)
+    {
+        if(m_proInfoList.at(i).simPort == portName)
+            break;
+    }
+
+    if(i<num)
+    {
+        rev = i;
+    }
+    else
+    {
+        rev = -1;
+    }
+
+    return rev;
+
+}
+
 
 int CModemPool::getNextIndexToProcess()
 {
