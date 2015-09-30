@@ -313,6 +313,10 @@ void CModemPoolSerialPort::processData()
                 {
                     infoToAdd.processStatus = ComeRing;
                 }
+                else if(tempStrList.at(0).contains("AT+CMGF=1")&&(!tempStrList.at(0).contains("ERROR")))
+                    {
+                         infoToAdd.processStatus = SetForSendMsgStep1;
+                    }
             break;
          case WaitForCommandResult:
             if(tempStrList.at(0).contains("OK"))

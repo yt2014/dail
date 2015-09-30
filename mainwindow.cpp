@@ -235,7 +235,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // qDebug()<<logFileName;
 
      logFile = new QFile(logFileName);
-     logFile->open(QIODevice::WriteOnly|QIODevice::Text);
+     logFile->open(QIODevice::ReadWrite|QIODevice::Text);
 }
 
 /*void MainWindow::showMe(){
