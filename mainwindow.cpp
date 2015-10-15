@@ -234,8 +234,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // qDebug()<<logFileName;
 
+
      logFile = new QFile(logFileName);
      logFile->open(QIODevice::ReadWrite|QIODevice::Text);
+
+     logFileName = timeNow.toString("yyyy_MM_dd_hh_mm_") + "log0.txt";
 
      fp_log = fopen(logFileName.toLatin1(),"a");
 }
@@ -283,6 +286,7 @@ MainWindow::~MainWindow()
     delete ui;
     logFile->close();
     delete logFile;
+    fclose(fp_log);
 
 }
 

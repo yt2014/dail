@@ -317,7 +317,8 @@ void CModemPool::startProcess()
                 qDebug()<<"start pro sim"<<i<<" status:"<<st;
                 logfile<<"start pro sim"<<i<<" status:"<<st;
                 QString strlog = "start pro sim" + QString::number(i) + " status:" + QString::number(st)+"\n";
-                logFile->write(strlog.toLatin1());
+                //logFile->write(strlog.toLatin1());
+                fputs(strlog.toLatin1(),fp_log);
                 int indexTeleToPro = getNextIndexToProcess();
                 if(indexTeleToPro!=-1)
                 {
@@ -439,12 +440,14 @@ void CModemPool::processStatusChange()
        QString telenumber = infoFromSIMCard.telenumber;
        SIM_status st = infoFromSIMCard.processStatus;
 
-       qDebug()<<"status received is "<<st;
+       qDebug()<<"status received is "<<st<<"number received is "<<telenumber<<" end";
        QString simPort = infoFromSIMCard.simPort;
 
        int index = -1;//index of tele number, search in tele number list
 
        int indexSim = findSimPortByPortName(simPort);
+
+
 
 
        qDebug()<<"index sim "<<indexSim<<"all processed?"<<isAllProcessed;
@@ -463,6 +466,7 @@ void CModemPool::processStatusChange()
        {
            int indexSimInPro = findSimPortInProByPortName(simPort);
            SIM_status tempStatus = m_proInfoList.at(indexSimInPro).processStatus;
+           //telenumber = m_proInfoList.at(indexSimInPro).telenumber;
            if((st>READY)||((st==READY)&&(tempStatus>READY)))
            {
 
@@ -478,8 +482,6 @@ void CModemPool::processStatusChange()
 
                          telenumber = m_proInfoList.at(indexSimInPro).telenumber;
                          index = numsNeedProcess.indexOf(telenumber);
-
-
 
                   }
 
@@ -552,7 +554,8 @@ void CModemPool::processStatusChange()
            {
                qDebug()<<"to ready from "<<tempStatus<<"index of tele "<<index<<"num "<<telenumber;
                QString strlog = "to ready from "+ QString::number(tempStatus) + " "+ telenumber + "\n";
-               logFile->write(strlog.toLatin1());
+              // logFile->write(strlog.toLatin1());
+               fputs(strlog.toLatin1(),fp_log);
                if(tempStatus == NeedSendContext)
                {
                    stepsInfoOneNum = m_teleProStepList.takeAt(index);
@@ -642,13 +645,13 @@ int CModemPool::findSimPortByPortName(QString portName)
     int rev = -1;
     int num = portsCount();
     int i=0;
-    for(i=0;i<num;i++)
+    for(i=(num-1);i>=0;i--)
     {
         if(portsInfo.at(i).portName()==portName)
             break;
     }
 
-    if(i<num)
+    if(i>=0)
     {
         rev = i;
     }
@@ -666,13 +669,13 @@ int CModemPool::findSimPortInProByPortName(QString portName)
     int rev = -1;
     int num = m_proInfoList.count();
     int i=0;
-    for(i=0;i<num;i++)
+    for(i=(num-1);i>=0;i--)
     {
         if(m_proInfoList.at(i).simPort == portName)
             break;
     }
 
-    if(i<num)
+    if(i>=0)
     {
         rev = i;
     }
@@ -911,6 +914,7 @@ void CModemPool::interact()
                 {
                      qDebug()<<"no tele to send message again";
                      logFile->write("no tele to send message again\n");
+                     fputs("no tele to send message again\n",fp_log);
                      isAllProcessed = checkAllProcessed();
                      if(isAllProcessed)
                      {
@@ -936,6 +940,7 @@ void CModemPool::interact()
                 char* ch = ba.data();
                 logFile->write("send text message now");
                 logFile->write(ba);
+                fputs(ba,fp_log);
                 PortSIMList.at(index_Sim)->write(ch);
             }
                 break;
