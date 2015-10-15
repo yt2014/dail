@@ -1,6 +1,7 @@
 ﻿#include "ModemPool.h"
 #include <QDebug>
 #include <QFile>
+#include <stdio.h>
 
 CModemPool * CModemPool::_instance = NULL;
 
@@ -11,6 +12,8 @@ extern QMutex mutex;
 extern QTextStream logfile;
 extern QFile file;
 QFile * logFile;
+
+FILE * fp_log;
 
 CModemPool::CModemPool()
 {
@@ -450,6 +453,8 @@ void CModemPool::processStatusChange()
        QString logToWrite = "sim "+ QString::number(indexSim) + "status " + QString::number(st)+ " is all processed?"+QString::number(isAllProcessed)+"\n";
 
        logFile->write(logToWrite.toLatin1());
+
+       fputs(logToWrite.toLatin1(),fp_log);
 
        infoDecoded.indexOfSim = indexSim;       
        infoDecoded.simST = st;

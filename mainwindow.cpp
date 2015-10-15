@@ -37,7 +37,7 @@ int heightListWidgetCon;
 int topListWidegtCon;
 
 extern QFile * logFile;
-
+extern FILE * fp_log;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -230,12 +230,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
      QDateTime timeNow = QDateTime::currentDateTime();
 
-     QString logFileName = timeNow.toString("yyyy_MM_dd_hh_mm_") + "log.txt";
+     QString logFileName = timeNow.toString("yyyy_MM_dd_hh_mm_") + "log1.txt";
 
     // qDebug()<<logFileName;
 
      logFile = new QFile(logFileName);
      logFile->open(QIODevice::ReadWrite|QIODevice::Text);
+
+     fp_log = fopen(logFileName.toLatin1(),"a");
 }
 
 /*void MainWindow::showMe(){
