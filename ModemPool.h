@@ -52,6 +52,8 @@ typedef struct
     SIM_status simST;
 }decodedChangeInfo;
 
+typedef QList<decodedChangeInfo> decodedChangeInfoList;
+
 class CModemPool:public QThread
 {
     Q_OBJECT
@@ -70,6 +72,7 @@ private: CModemPool();
     int numClicked;
     bool isAllProcessed;
     decodedChangeInfo infoDecoded;
+    decodedChangeInfoList infoDecodedList;
     processType m_proType;
     QString m_msgToSend;
 

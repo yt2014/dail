@@ -199,7 +199,9 @@ void CModemPool::startProcess()
                   //PortSIMList.at(i)->write("AT+COPS?\n");
                   infoDecoded.indexOfSim = i;
                   infoDecoded.simST = st;
-                  //emit needInteract();
+
+                  infoDecodedList.append(infoDecoded);
+                  emit needInteract();
                   //delayMilliSeconds(100);
              }
            }
@@ -357,7 +359,7 @@ void CModemPool::startProcess()
                        infoDecoded.indexOfSim = i;
                        infoDecoded.simST = st;
                        //isAllProcessed = false;
-
+                       infoDecodedList.append(infoDecoded);
                        emit needInteract();
                        //delayMilliSeconds(100);
                        //logfile<<"send AT+CMGF=1\n";
@@ -461,6 +463,7 @@ void CModemPool::processStatusChange()
 
        infoDecoded.indexOfSim = indexSim;       
        infoDecoded.simST = st;
+
        teleProSteps stepsInfoOneNum;
        if(!isAllProcessed)
        {
@@ -490,7 +493,7 @@ void CModemPool::processStatusChange()
                   }
 
                }
-		   }
+
 
 
            if(st==DialingOut)
@@ -595,7 +598,9 @@ void CModemPool::processStatusChange()
                logFile->write(strlog.toLatin1());
            }
            infoDecoded.indexOfTel = index;
+           }
        }
+       infoDecodedList.append(infoDecoded);
        emit needInteract();
       // sleep(1);
        mutex.lock();
@@ -621,6 +626,7 @@ void CModemPool::processStatusChange()
                {
                    infoDecoded.indexOfSim = indexSim;
                    infoDecoded.simST = DialingOut;
+                   infoDecodedList.append(infoDecoded);
                    emit needInteract();
                    sleep(4);
                }
@@ -793,13 +799,16 @@ void CModemPool::interact()
     /*send AT+COPS?\n to all ports*/
 
         // qDebug()<<"number of ports in interact "<<num;
-            SIM_status stNew = infoDecoded.simST;
-            int index_Sim = infoDecoded.indexOfSim;
-            //SIM_status stLast = m_proInfoList.at(indexSim).processStatus;
-            qDebug()<<"in interact sim"<<index_Sim<<" status:"<<stNew;
-            QString strLog = "in interact sim" + QString::number(index_Sim)+" status:"+QString::number(stNew)+"\n";
-            logFile->write(strLog.toLatin1());
-            switch (stNew) {
+           if(infoDecodedList.count()>0)
+           {
+              decodedChangeInfo infoDecodedTemp = infoDecodedList.takeAt(0);
+              SIM_status stNew = infoDecodedTemp.simST;
+              int index_Sim = infoDecodedTemp.indexOfSim;
+              //SIM_status stLast = m_proInfoList.at(indexSim).processStatus;
+              qDebug()<<"in interact sim"<<index_Sim<<" status:"<<stNew;
+              QString strLog = "in interact sim" + QString::number(index_Sim)+" status:"+QString::number(stNew)+"\n";
+              logFile->write(strLog.toLatin1());
+              switch (stNew) {
             case IDLE:
                PortSIMList.at(index_Sim)->write("AT+COPS?\n");
             break;
@@ -965,7 +974,7 @@ void CModemPool::interact()
            default:
                break;
            }
-            if((!isAllProcessed)/*&&(index_Sim<m_proInfoList.count())*/)
+              if((!isAllProcessed)/*&&(index_Sim<m_proInfoList.count())*/)
             {
                int indexOftele = findSimPortInProByPortName(PortSIMList.at(index_Sim)->portName());
                if(indexOftele!=-1)
@@ -974,6 +983,8 @@ void CModemPool::interact()
                   proInfoToInit.processStatus = stNew;
                   m_proInfoList.insert(indexOftele,proInfoToInit);
                }
+            }
+
             }
 }
 
