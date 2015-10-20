@@ -464,11 +464,15 @@ void CModemPool::processStatusChange()
        teleProSteps stepsInfoOneNum;
        if(!isAllProcessed)
        {
+           SIM_status tempStatus = IDLE;
            int indexSimInPro = findSimPortInProByPortName(simPort);
-           SIM_status tempStatus = m_proInfoList.at(indexSimInPro).processStatus;
-           //telenumber = m_proInfoList.at(indexSimInPro).telenumber;
-           if((st>READY)||((st==READY)&&(tempStatus>READY)))
-           {
+           //qDebug()<<"indexSimInPro:"<<indexSimInPro;
+		   if(indexSimInPro!=(-1))// if indexSimInPro is 1, means simcard has not been bound a telenumber but the status changed.
+		   {
+               tempStatus = m_proInfoList.at(indexSimInPro).processStatus;
+               //telenumber = m_proInfoList.at(indexSimInPro).telenumber;
+               if((st>READY)||((st==READY)&&(tempStatus>READY)))
+               {
 
                   if(telenumber!="")
                   {
@@ -485,7 +489,8 @@ void CModemPool::processStatusChange()
 
                   }
 
-           }
+               }
+		   }
 
 
            if(st==DialingOut)
@@ -668,6 +673,7 @@ int CModemPool::findSimPortInProByPortName(QString portName)
 {
     int rev = -1;
     int num = m_proInfoList.count();
+    qDebug()<<"number in m_proInfoList:"<<num;
     int i=0;
     for(i=(num-1);i>=0;i--)
     {
