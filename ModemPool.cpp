@@ -736,7 +736,7 @@ int CModemPool::getNextIndexToProcess()
             break;
         else
         {
-            qDebug()<<"tele in pro step:"<<m_teleProStepList.at(i).teleStep;
+            //qDebug()<<"tele in pro step:"<<m_teleProStepList.at(i).teleStep;
         }
 
     }
