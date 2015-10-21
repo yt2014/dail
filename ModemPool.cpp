@@ -175,11 +175,14 @@ void CModemPool::startProcess()
            proInfoToInit.simPort = PortSIMList.at(i)->portName();
            proInfoToInit.processStatus = st;
 
-           qDebug()<<"start pro sim"<<i<<" status:"<<st;
+
            int indexTeleToPro = getNextIndexToProcess();
+           qDebug()<<"start pro sim"<<i<<" status:"<<st<<"index:"<<indexTeleToPro;
            if(indexTeleToPro!=-1)
            {
-             proInfoToInit.telenumber = m_teleProStepList.at(indexTeleToPro).telenumber;
+               teleProSteps oneTeleProStepInfo_Got = m_teleProStepList.takeAt(indexTeleToPro);
+
+               proInfoToInit.telenumber = oneTeleProStepInfo_Got.telenumber;
 
              if(st==READY)
              {
@@ -191,7 +194,7 @@ void CModemPool::startProcess()
                  PortSIMList.at(i)->write(ch);
 
                 // logFile->write("dial now\n");
-
+                 oneTeleProStepInfo_Got.teleStep = START_PROCESS;
                  m_proInfoList.append(proInfoToInit);
              }
              else //if(st==IDLE)
@@ -204,6 +207,7 @@ void CModemPool::startProcess()
                   emit needInteract();
                   //delayMilliSeconds(100);
              }
+             m_teleProStepList.insert(indexTeleToPro,oneTeleProStepInfo_Got);
            }
 
        }
@@ -710,6 +714,11 @@ int CModemPool::getNextIndexToProcess()
     {
         if(m_teleProStepList.at(i).teleStep == NOT_PROCESSED)
             break;
+        else
+        {
+            qDebug()<<"tele in pro step:"<<m_teleProStepList.at(i).teleStep;
+        }
+
     }
     if(i<num)
     {
