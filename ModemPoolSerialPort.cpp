@@ -242,12 +242,12 @@ void CModemPoolSerialPort::processData()
             {
                // delaySeconds(1);
                 qDebug()<<"clcc received 拨号中。。。";
-                counterRecv = counterRecv+1;
-                if(counterRecv==12)
-                {
-                    infoToAdd.processStatus = WaitForFeedBack;
-                    counterRecv = 0;
-                }
+                //counterRecv = counterRecv+1;
+                //if(counterRecv==12)
+                //{
+                //    infoToAdd.processStatus = WaitForFeedBack;
+                //    counterRecv = 0;
+                //}
                // this->write("AT+CLCC\n");
             }
             else

@@ -195,6 +195,7 @@ void CModemPool::startProcess()
 
                 // logFile->write("dial now\n");
                  oneTeleProStepInfo_Got.teleStep = START_PROCESS;
+                 proInfoToInit.ringTimes = 0;
                  m_proInfoList.append(proInfoToInit);
              }
              else //if(st==IDLE)
@@ -352,6 +353,7 @@ void CModemPool::startProcess()
                       oneTeleProStepInfoToChange.teleStep = START_PROCESS;
                       m_teleProStepList.insert(indexTeleToPro,oneTeleProStepInfoToChange);
 
+                      proInfoToInit.ringTimes = 0;
                       m_proInfoList.append(proInfoToInit);
 /**/
                       //logFile->write(strDial.toLatin1());
@@ -623,15 +625,33 @@ void CModemPool::processStatusChange()
            SIM_status tempStatus;
            for (int i=0;i<numOfProcessing;i++)
            {
-               tempStatus = m_proInfoList.at(i).processStatus;
-               QString portname = m_proInfoList.at(i).simPort;
+               processInfo proInfoInProcessing = m_proInfoList.at(i);
+
+               tempStatus = proInfoInProcessing.processStatus;
+               QString portname = proInfoInProcessing.simPort;
                int indexSim = findSimPortByPortName(portname);
                if(tempStatus==DialingOut)
                {
                    infoDecoded.indexOfSim = indexSim;
-                   infoDecoded.simST = DialingOut;
+                   int TimesRing = proInfoInProcessing.ringTimes;
+                   if(TimesRing < 12)
+                   {
+                     infoDecoded.simST = DialingOut;
+
+                   }
+                   else
+                   {
+                     infoDecoded.simST = WaitForFeedBack;
+                   }
                    infoDecodedList.append(infoDecoded);
+
+                   TimesRing = TimesRing + 1;
+                   proInfoInProcessing.ringTimes = TimesRing;
                    emit needInteract();
+                   mutex.lock();
+                   m_proInfoList.removeAt(i);
+                   m_proInfoList.insert(i,proInfoInProcessing);
+                   mutex.unlock();
                    sleep(4);
                }
            }
@@ -848,6 +868,7 @@ void CModemPool::interact()
                        proInfoToInit.simPort = PortSIMList.at(index_Sim)->portName();
                        proInfoToInit.telenumber = strToSend;
                        proInfoToInit.processStatus = stNew;
+                       proInfoToInit.ringTimes = 0;
                        m_proInfoList.append(proInfoToInit);
 
 

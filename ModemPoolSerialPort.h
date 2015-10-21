@@ -44,6 +44,7 @@ typedef struct
     QString simPort;
     SIM_status processStatus;
     QString telenumber;
+    int ringTimes;
 }processInfo;
 
 typedef QList<processInfo> processInfoList;

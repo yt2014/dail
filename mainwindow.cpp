@@ -592,7 +592,7 @@ void MainWindow::on_tabWidget_currentChanged(int index)
             treeWidgetNumsNeedProcess->setHeaderLabels(headers);
             treeWidgetNumsNeedProcess->setSelectionMode(QAbstractItemView::ExtendedSelection);
             treeWidgetNumsNeedProcess->show();
-            treeWidgetNumsNeedProcess->setColumnWidth(0,350);
+            treeWidgetNumsNeedProcess->setColumnWidth(0,150);
             m_Modem->setTreeWidget(treeWidgetNumsNeedProcess);
         }
         else
@@ -2041,7 +2041,7 @@ void MainWindow::on_pBtnMessageRecord_clicked()
         treeWidgetMessageRecord->setHeaderLabels(headers);
        // treeWidgetNumsNeedProcess->setSelectionMode(QAbstractItemView::ExtendedSelection);
         treeWidgetMessageRecord->show();
-        treeWidgetMessageRecord->setColumnWidth(0,300);
+        treeWidgetMessageRecord->setColumnWidth(0,150);
 
         connect(treeWidgetMessageRecord,SIGNAL(itemClicked(QTreeWidgetItem*, int)),this,SLOT(shortMessageTree_ItemClicked(QTreeWidgetItem*, int)));
 
