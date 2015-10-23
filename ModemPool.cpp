@@ -642,6 +642,7 @@ void CModemPool::processStatusChange()
                    else
                    {
                      infoDecoded.simST = WaitForFeedBack;
+                     proInfoInProcessing.processStatus = WaitForFeedBack;
                    }
                    infoDecodedList.append(infoDecoded);
 
@@ -775,7 +776,7 @@ bool CModemPool::checkAllProcessed()
         rev = true;
     }
    // qDebug()<<"return from AllProcessed ";
-    logFile->write("in AllProcessed");
+    logFile->write("in AllProcessed\n");
     return rev;
 
 
